@@ -44,7 +44,9 @@
     <Compile Include="ParseException.cs" />
     <Compile Include="GeneralExtensions.cs" />
     <Compile Include="ScannerTests.cs" />
-    <Compile Include="DictionaryParser.cs" />
+    <Compile Include="JsonParser.cs" />
+    <Compile Include="JsonParserTests.cs" />
+    <Compile Include="JsonObject.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
