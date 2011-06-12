@@ -12,13 +12,11 @@ namespace json
             this.valueFactory = valueFactory;
         }
 
-        public static ParseObject Parse(object obj, ParseValueFactory valueFactory)
+        public static ParseValue Parse(object obj, ParseValueFactory valueFactory)
         {
             ObjectParser parser = new ObjectParser(valueFactory);
 
-            ParseValue value = parser.ParseValue(obj);
-
-            return value.AsObject();
+            return parser.ParseValue(obj);
         }
 
         private ParseValue ParseValue(object input)

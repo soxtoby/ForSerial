@@ -55,6 +55,7 @@
     <Compile Include="PropertyDefinition.cs" />
     <Compile Include="TypedObjectBuilder.cs" />
     <Compile Include="CollectionDefinition.cs" />
+    <Compile Include="TypedObjectBuilderTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

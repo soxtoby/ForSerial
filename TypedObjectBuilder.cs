@@ -1,9 +1,6 @@
 using System;
-using System.Linq;
-using System.Collections;
-using NUnit.Framework;
 using System.Collections.Generic;
-using System.Reflection;
+
 namespace json
 {
     public class TypedObjectBuilder : ParseValueFactory
@@ -14,6 +11,45 @@ namespace json
             if (objectObj == null)
                 throw new InvalidResultObject();
             return objectObj.Object;
+        }
+
+        public static T GetResult<T>(ParseValue value)
+        {
+            TypedObjectArray array = value as TypedObjectArray;
+            if (array != null)
+            {
+                CollectionDefinition collectionDef = CollectionDefinition.GetCollectionDefinition(typeof(T));
+                if (collectionDef.IsCollection)
+                {
+                    return (T)PopulateCollection(typeof(T), array, () => Activator.CreateInstance(typeof(T)));
+                }
+            }
+
+            TypedObjectObject obj = value.AsObject() as TypedObjectObject;
+            if (obj == null)
+                throw new InvalidResultObject();
+
+            return (T)obj.Object;
+        }
+
+        private static object PopulateCollection(Type collectionType, TypedObjectArray array, Func<object> getCollection)
+        {
+            CollectionDefinition collectionDef = CollectionDefinition.GetCollectionDefinition(collectionType);
+            
+            if (collectionDef != null && collectionDef.IsCollection)
+            {
+                object collection = getCollection();
+                
+                if (collection != null)
+                {
+                    foreach (object item in array.Array)
+                        collectionDef.AddToCollection(collection, item);
+                }
+                
+                return collection;
+            }
+
+            return null;
         }
 
         public ParseObject CreateObject()
@@ -123,7 +159,7 @@ namespace json
 
             private void SetArrayProperty(PropertyDefinition property, TypedObjectArray array)
             {
-                object collection = PopulateArray(property, array, () => Activator.CreateInstance(property.Type));
+                object collection = PopulateCollection(property.Type, array, () => Activator.CreateInstance(property.Type));
 
                 if (collection != null)
                     property.SetOn(Object, collection);
@@ -131,27 +167,7 @@ namespace json
 
             private void PopulateArrayProperty(PropertyDefinition property, TypedObjectArray array)
             {
-                PopulateArray(property, array, () => property.GetFrom(Object));
-            }
-
-            private static object PopulateArray(PropertyDefinition property, TypedObjectArray array, Func<object> getCollection)
-            {
-                CollectionDefinition collectionDef = CollectionDefinition.GetCollectionDefinition(property.Type);
-
-                if (collectionDef != null && collectionDef.IsCollection)
-                {
-                    object collection = getCollection();
-
-                    if (collection != null)
-                    {
-                        foreach (object item in array.Array)
-                            collectionDef.AddToCollection(collection, item);
-                    }
-
-                    return collection;
-                }
-
-                return null;
+                PopulateCollection(property.Type, array, () => property.GetFrom(Object));
             }
 
             private void SetProperty(string name, object value)
@@ -274,12 +290,12 @@ namespace json
             }
         }
 
-        private class UnsupportedParseObject : Exception
+        internal class UnsupportedParseObject : Exception
         {
             public UnsupportedParseObject() : base("Can only add ParseObjects of type TypedObjectObject.") { }
         }
 
-        public class PropertyTypeMismatch : Exception
+        internal class PropertyTypeMismatch : Exception
         {
             public PropertyTypeMismatch(Type objectType, string propertyName, Type expected, Type actual)
                 : base("Type mismatch attempting to set property {0}{1}. Property is {2} and value was {3}."
@@ -287,178 +303,19 @@ namespace json
             { }
         }
 
-        private class UnsupportedParseArray : Exception
+        internal class UnsupportedParseArray : Exception
         {
             public UnsupportedParseArray() : base("Can only add ParseArrays of type TypedObjectArray.") { }
         }
 
-        private class ObjectNotInitialized : Exception
+        internal class ObjectNotInitialized : Exception
         {
             public ObjectNotInitialized() : base("Tried to add a property to an uninitialized object. Make sure input contains type information.") { }
         }
 
-        private class InvalidResultObject : Exception
+        internal class InvalidResultObject : Exception
         {
             public InvalidResultObject() : base("Invalid ParseObject type. Object must be constructed using a TypedObjectBuilder.") { }
-        }
-    }
-
-    [TestFixture]
-    public class TypedObjectBuilderTests
-    {
-        [Test]
-        public void Null()
-        {
-            Assert.IsNull(Clone(null));
-        }
-
-        [Test]
-        public void Boolean()
-        {
-            Assert.IsTrue((bool)Clone(true));
-            Assert.IsFalse((bool)Clone(false));
-        }
-
-        [Test]
-        public void Number()
-        {
-            Assert.AreEqual(5, Clone((object)5));
-        }
-
-        [Test]
-        public void String()
-        {
-            Assert.AreEqual("foo", Clone("foo"));
-        }
-
-        [Test]
-        public void Array()
-        {
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, Clone(new List<int> { 1, 2, 3 }));
-        }
-
-        [Test]
-        public void BooleanProperty()
-        {
-            Assert.IsTrue(Clone(new BooleanPropertyClass { Boolean = true }).Boolean);
-            Assert.IsFalse(Clone(new BooleanPropertyClass { Boolean = false }).Boolean);
-        }
-
-        private class BooleanPropertyClass
-        {
-            public bool Boolean { get; set; }
-        }
-
-        [Test]
-        public void DoubleProperty()
-        {
-            Assert.AreEqual(1.2, Clone(new DoublePropertyClass { Double = 1.2 }).Double);
-        }
-
-        private class DoublePropertyClass
-        {
-            public double Double { get; set; }
-        }
-
-        [Test]
-        public void IntProperty()
-        {
-            Assert.AreEqual(5, Clone(new IntPropertyClass { Integer = 5 }).Integer);
-        }
-
-        private class IntPropertyClass
-        {
-            public int Integer { get; set; }
-        }
-
-        [Test]
-        public void ObjectProperty()
-        {
-            Assert.AreEqual(5, Clone(new ObjectPropertyClass { Object = new IntPropertyClass { Integer = 5} }).Object.Integer);
-        }
-
-        private class ObjectPropertyClass
-        {
-            public IntPropertyClass Object { get; set; }
-        }
-
-        [Test]
-        public void SetArrayProperty()
-        {
-            SettableListPropertyClass foo = Clone(new SettableListPropertyClass { Array = new List<int> { 1, 2, 3 } });
-            Assert.IsFalse(foo.GetterHasBeenAccessed);
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, foo.Array);
-        }
-
-        private class SettableListPropertyClass
-        {
-            public bool GetterHasBeenAccessed { get; private set; }
-
-            private List<int> list;
-            public List<int> Array
-            {
-                get
-                {
-                    GetterHasBeenAccessed = true;
-                    return list;
-                }
-                set
-                {
-                    list = value;
-                }
-            }
-        }
-
-        [Test]
-        public void PopulateArrayProperty()
-        {
-            GettableListPropertyClass obj = new GettableListPropertyClass();
-            obj.Array.AddRange(new[] { 1, 2, 3 });
-
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, Clone(obj).Array);
-        }
-
-        private class GettableListPropertyClass
-        {
-            private List<int> list = new List<int>();
-            public List<int> Array
-            {
-                get { return list; }
-            }
-        }
-
-        [Test]
-        public void ObjectArrayProperty()
-        {
-            ObjectArrayPropertyClass obj = new ObjectArrayPropertyClass
-            {
-                Array = new List<IntPropertyClass>
-                {
-                    new IntPropertyClass { Integer = 1 },
-                    new IntPropertyClass { Integer = 2 },
-                    new IntPropertyClass { Integer = 3 }
-                }
-            };
-
-            CollectionAssert.AreEqual(new[] { 1, 2, 3}, Clone(obj).Array.Select(i => i.Integer).ToList());
-        }
-
-        private class ObjectArrayPropertyClass
-        {
-            public List<IntPropertyClass> Array { get; set; }
-        }
-
-        private T Clone<T>(T obj)
-        {
-            object clone = Clone((object)obj);
-            Assert.IsInstanceOfType(typeof(T), clone);
-            return (T)clone;
-        }
-
-        private object Clone(object obj)
-        {
-            ParseObject parseObject = ObjectParser.Parse(obj, new TypedObjectBuilder());
-            return TypedObjectBuilder.GetResult(parseObject);
         }
     }
 }

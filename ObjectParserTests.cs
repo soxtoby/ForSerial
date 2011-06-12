@@ -126,7 +126,7 @@ namespace json
 
         private string ParseToJson(object obj)
         {
-            ParseObject json = ObjectParser.Parse(obj, new JsonStringBuilder());
+            ParseObject json = ObjectParser.Parse(obj, new JsonStringBuilder()).AsObject();
             return JsonStringBuilder.GetResult(json);
         }
     }
