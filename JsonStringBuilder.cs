@@ -2,45 +2,45 @@ using System.Text;
 
 namespace json
 {
-    public class JsonOutput : ParseValueFactory
+    public class JsonStringBuilder : ParseValueFactory
     {
         public ParseObject CreateObject()
         {
-            return new JsonObject();
+            return new JsonStringObject();
         }
 
         public ParseArray CreateArray()
         {
-            return new JsonArray();
+            return new JsonStringArray();
         }
 
         public ParseNumber CreateNumber(double value)
         {
-            return new JsonNumber(value);
+            return new JsonStringNumber(value);
         }
 
         public ParseString CreateString(string value)
         {
-            return new JsonString(value);
+            return new JsonStringString(value);
         }
 
         public ParseBoolean CreateBoolean(bool value)
         {
-            return value ? JsonBoolean.True : JsonBoolean.False;
+            return value ? JsonStringBoolean.True : JsonStringBoolean.False;
         }
 
         public ParseNull CreateNull()
         {
-            return JsonNull.Value;
+            return JsonStringNull.Value;
         }
     }
 
-    public class JsonObject : ParseObject
+    public class JsonStringObject : ParseObject
     {
         private StringBuilder json = new StringBuilder();
         private bool isFirstProperty = true;
 
-        public JsonObject()
+        public JsonStringObject()
         {
             json.Append("{");
         }
@@ -120,12 +120,12 @@ namespace json
         }
     }
 
-    public class JsonArray : ParseArray
+    public class JsonStringArray : ParseArray
     {
         private StringBuilder json = new StringBuilder();
         private bool isFirstItem = true;
 
-        public JsonArray()
+        public JsonStringArray()
         {
             json.Append('[');
         }
@@ -187,7 +187,7 @@ namespace json
 
         public ParseObject AsObject()
         {
-            ParseObject obj = new JsonObject();
+            ParseObject obj = new JsonStringObject();
             obj.AddArray("items", this);
             return obj;
         }
@@ -198,7 +198,7 @@ namespace json
         }
     }
 
-    public class TypedJsonObject : JsonObject
+    public class TypedJsonObject : JsonStringObject
     {
         private string typeIdentifier;
         public override string TypeIdentifier {
@@ -212,67 +212,67 @@ namespace json
 
     }
 
-    public class JsonNumber : ParseNumber
+    public class JsonStringNumber : ParseNumber
     {
-        public JsonNumber(double value) : base(value) { }
+        public JsonStringNumber(double value) : base(value) { }
 
         public override ParseObject AsObject()
         {
-            ParseObject obj = new JsonObject();
+            ParseObject obj = new JsonStringObject();
             obj.AddNumber("value", value);
             return obj;
         }
     }
 
-    public class JsonString : ParseString
+    public class JsonStringString : ParseString
     {
-        public JsonString(string value) : base(value) { }
+        public JsonStringString(string value) : base(value) { }
 
         public override ParseObject AsObject()
         {
-            ParseObject obj = new JsonObject();
+            ParseObject obj = new JsonStringObject();
             obj.AddString("value", value);
             return obj;
         }
     }
 
-    public class JsonBoolean : ParseBoolean
+    public class JsonStringBoolean : ParseBoolean
     {
-        private JsonBoolean(bool value) : base(value) { }
+        private JsonStringBoolean(bool value) : base(value) { }
 
-        private static JsonBoolean trueValue;
-        public static JsonBoolean True
+        private static JsonStringBoolean trueValue;
+        public static JsonStringBoolean True
         {
-            get { return trueValue = trueValue ?? new JsonBoolean(true); }
+            get { return trueValue = trueValue ?? new JsonStringBoolean(true); }
         }
 
-        private static JsonBoolean falseValue;
-        public static JsonBoolean False
+        private static JsonStringBoolean falseValue;
+        public static JsonStringBoolean False
         {
-            get { return falseValue = falseValue ?? new JsonBoolean(false); }
+            get { return falseValue = falseValue ?? new JsonStringBoolean(false); }
         }
 
         public override ParseObject AsObject()
         {
-            ParseObject obj = new JsonObject();
+            ParseObject obj = new JsonStringObject();
             obj.AddBoolean("value", value);
             return obj;
         }
     }
 
-    public class JsonNull : ParseNull
+    public class JsonStringNull : ParseNull
     {
-        private JsonNull() { }
+        private JsonStringNull() { }
 
-        private static JsonNull value;
-        public static JsonNull Value
+        private static JsonStringNull value;
+        public static JsonStringNull Value
         {
-            get { return value = value ?? new JsonNull(); }
+            get { return value = value ?? new JsonStringNull(); }
         }
 
         public override ParseObject AsObject()
         {
-            ParseObject obj = new JsonObject();
+            ParseObject obj = new JsonStringObject();
             obj.AddNull("value");
             return obj;
         }

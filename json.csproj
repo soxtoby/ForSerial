@@ -46,10 +46,10 @@
     <Compile Include="ScannerTests.cs" />
     <Compile Include="JsonParser.cs" />
     <Compile Include="JsonParserTests.cs" />
-    <Compile Include="JsonObject.cs" />
+    <Compile Include="JsonObjectBuilder.cs" />
     <Compile Include="ObjectParser.cs" />
     <Compile Include="ParseValues.cs" />
-    <Compile Include="JsonOutputValues.cs" />
+    <Compile Include="JsonStringBuilder.cs" />
     <Compile Include="ObjectParserTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
