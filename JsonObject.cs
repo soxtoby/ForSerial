@@ -1,12 +1,29 @@
-using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-using System.Collections;
 
 namespace json
 {
-    public class JsonObject : Dictionary<string, object>
+    public class JsonDictionary : Dictionary<string, object>
     {
-        // Note: I intend to fill this out later :)
+        public string TypeIdentifier { get; set; }
+
+        public void AddNumber (string name, double value)
+        {
+            this[name] = value;
+        }
+
+        public void AddString (string name, string value)
+        {
+            this[name] = value;
+        }
+
+        public void AddObject (string name, ParseObject value)
+        {
+            this[name] = value;
+        }
+
+        public void AddArray (string name, ParseArray value)
+        {
+            this[name] = value;
+        }
     }
 }

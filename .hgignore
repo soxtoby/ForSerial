@@ -1,2 +1,4 @@
 glob:bin/*
 glob:test-results/*
+glob:*.pidb
+glob:*.userprefs

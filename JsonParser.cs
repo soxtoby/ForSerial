@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-using System.Collections;
 
 namespace json
 {
@@ -9,13 +6,13 @@ namespace json
     {
         private IEnumerator<Token> tokenEnumerator;
 
-        internal static JsonObject Parse(IEnumerable<Token> tokens)
+        internal static JsonDictionary Parse(IEnumerable<Token> tokens)
         {
             JsonParser parser = new JsonParser();
             return parser.ParseTokens(tokens);
         }
 
-        private JsonObject ParseTokens(IEnumerable<Token> tokens)
+        private JsonDictionary ParseTokens(IEnumerable<Token> tokens)
         {
             using (tokenEnumerator = tokens.GetEnumerator())
             {
@@ -78,11 +75,11 @@ namespace json
             }
         }
 
-        private JsonObject ParseObject()
+        private JsonDictionary ParseObject()
         {
             ExpectSymbol("{");
 
-            JsonObject obj = new JsonObject();
+            JsonDictionary obj = new JsonDictionary();
 
             if (!IsSymbol("}"))
             {

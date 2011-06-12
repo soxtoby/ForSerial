@@ -1,8 +1,6 @@
-
-using System;
-using System.Collections.Generic;
-using NUnit.Framework;
 using System.Collections;
+using NUnit.Framework;
+
 namespace json
 {
     [TestFixture]
@@ -17,7 +15,7 @@ namespace json
         [Test]
         public void EmptyObject()
         {
-            JsonObject obj = Parse("{}");
+            JsonDictionary obj = Parse("{}");
             Assert.IsEmpty(obj);
         }
 
@@ -49,21 +47,21 @@ namespace json
         [Test]
         public void EmptyObjectProperty()
         {
-            Assert.IsEmpty(ParseFooProperty<JsonObject>("{ \"foo\": { } }"));
+            Assert.IsEmpty(ParseFooProperty<JsonDictionary>("{ \"foo\": { } }"));
         }
 
         [Test]
         public void ObjectThenNumberProperty()
         {
-            JsonObject obj = Parse("{ \"foo\": { }, \"bar\": 4 }");
-            Assert.IsInstanceOfType(typeof(JsonObject), obj["foo"]);
+            JsonDictionary obj = Parse("{ \"foo\": { }, \"bar\": 4 }");
+            Assert.IsInstanceOfType(typeof(JsonDictionary), obj["foo"]);
             Assert.AreEqual(4, obj["bar"]);
         }
 
         [Test]
         public void NumberPropertyObjectProperty()
         {
-            JsonObject objProperty = ParseFooProperty<JsonObject>("{ \"foo\": { \"bar\": 3 } }");
+            JsonDictionary objProperty = ParseFooProperty<JsonDictionary>("{ \"foo\": { \"bar\": 3 } }");
             Assert.AreEqual(3, objProperty["bar"]);
         }
 
@@ -157,12 +155,12 @@ namespace json
 
         private T ParseFooProperty<T>(string json)
         {
-            JsonObject obj = Parse(json);
+            JsonDictionary obj = Parse(json);
             Assert.IsInstanceOfType(typeof(T), obj["foo"]);
             return (T)obj["foo"];
         }
 
-        private JsonObject Parse(string json)
+        private JsonDictionary Parse(string json)
         {
             return JsonParser.Parse(Scanner.Scan(json));
         }
