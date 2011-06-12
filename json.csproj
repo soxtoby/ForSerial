@@ -51,6 +51,8 @@
     <Compile Include="ParseValues.cs" />
     <Compile Include="JsonStringBuilder.cs" />
     <Compile Include="ObjectParserTests.cs" />
+    <Compile Include="TypeDefinition.cs" />
+    <Compile Include="PropertyDefinition.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

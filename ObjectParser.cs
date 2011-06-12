@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.Linq;
-using NUnit.Framework;
 
 namespace json
 {
@@ -67,29 +65,12 @@ namespace json
 
             ParseObject output = valueFactory.CreateObject();
 
-            Type type = obj.GetType();
-            output.TypeIdentifier = GetTypeIdentifier(type);
+            TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(obj.GetType());
 
-            var properties = type.GetProperties()
-                .Select(p => new {
-                    Name = p.Name,
-                    Get = p.GetGetMethod()
-                })
-                .Where(p => p.Get != null);
-
-            foreach (var property in properties)
+            foreach (PropertyDefinition property in typeDef.Properties.Values)
             {
-                ParseValue value = ParseValue(property.Get.Invoke(obj, new object[] {  }));
+                ParseValue value = ParseValue(property.GetFrom(obj));
                 value.AddToObject(output, property.Name);
-            }
-
-            var fields = type.GetFields()
-                .Where(f => f.IsPublic && !f.IsInitOnly && !f.IsNotSerialized);
-
-            foreach (var field in fields)
-            {
-                ParseValue value = ParseValue(field.GetValue(obj));
-                value.AddToObject(output, field.Name);
             }
 
             return output;
