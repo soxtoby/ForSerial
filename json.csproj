@@ -53,6 +53,8 @@
     <Compile Include="ObjectParserTests.cs" />
     <Compile Include="TypeDefinition.cs" />
     <Compile Include="PropertyDefinition.cs" />
+    <Compile Include="TypedObjectBuilder.cs" />
+    <Compile Include="CollectionDefinition.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

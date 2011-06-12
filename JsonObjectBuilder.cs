@@ -93,10 +93,9 @@ namespace json
                 Object[name] = valueArray.Array;
             }
 
-            public override string TypeIdentifier
+            public override void SetTypeIdentifier(string typeIdentifier)
             {
-                get { return Object.TypeIdentifier; }
-                set { Object.TypeIdentifier = value; }
+                Object.TypeIdentifier = typeIdentifier;
             }
         }
 
@@ -111,22 +110,22 @@ namespace json
 
             public override void AddNull()
             {
-                Append(null);
+                Array.Add(null);
             }
 
             public override void AddBoolean(bool value)
             {
-                Append(value);
+                Array.Add(value);
             }
 
             public override void AddNumber(double value)
             {
-                Append(value);
+                Array.Add(value);
             }
 
             public override void AddString(string value)
             {
-                Append(value);
+                Array.Add(value);
             }
 
             public override void AddObject(ParseObject value)
@@ -134,7 +133,7 @@ namespace json
                 JsonObjectObject valueObject = value as JsonObjectObject;
                 if (valueObject == null)
                     throw new JsonObjectBuilder.UnsupportedParseObject();
-                Append(valueObject.Object);
+                Array.Add(valueObject.Object);
             }
 
             public override void AddArray(ParseArray value)
@@ -142,12 +141,7 @@ namespace json
                 JsonObjectArray valueArray = value as JsonObjectArray;
                 if (valueArray == null)
                     throw new JsonObjectBuilder.UnsupportedParseArray();
-                Append(valueArray.Array);
-            }
-
-            private void Append(object value)
-            {
-                Array.Insert(Array.Count, value);
+                Array.Add(valueArray.Array);
             }
 
             public override ParseObject AsObject()

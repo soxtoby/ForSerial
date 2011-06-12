@@ -67,6 +67,8 @@ namespace json
 
             TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(obj.GetType());
 
+            output.SetTypeIdentifier(typeDef.Type.AssemblyQualifiedName);
+
             foreach (PropertyDefinition property in typeDef.Properties.Values)
             {
                 ParseValue value = ParseValue(property.GetFrom(obj));

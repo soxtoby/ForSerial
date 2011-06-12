@@ -67,7 +67,7 @@ namespace json
             return !collection.Any();
         }
 
-        public static TValue Get<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key)
+        public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
             TValue val;
             return dictionary.TryGetValue(key, out val) ? val : default(TValue);

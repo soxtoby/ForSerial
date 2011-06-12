@@ -8,8 +8,13 @@ namespace json
         public string Name { get; private set; }
         public Type Type { get; private set; }
         public bool IsSerializable { get; private set; }
+
         private MethodInfo getter;
         private MethodInfo setter;
+        private TypeCode typeCode;
+
+        public bool CanGet { get { return getter != null; } }
+        public bool CanSet { get { return setter != null; } }
 
         public PropertyDefinition(PropertyInfo property)
         {
@@ -17,8 +22,9 @@ namespace json
             Type = property.PropertyType;
             getter = property.GetGetMethod();
             setter = property.GetSetMethod();
+            typeCode = Type.GetTypeCode(Type);
 
-            IsSerializable = getter != null;
+            IsSerializable = CanGet;
         }
 
         public object GetFrom(object obj)
@@ -28,7 +34,14 @@ namespace json
 
         public void SetOn(object obj, object value)
         {
-            setter.Invoke(obj, new[] { value });
+            if (CanSet)
+            {
+                // Ensures the correct number type, of which there are way too many
+                if (typeCode != TypeCode.Object)
+                    value = Convert.ChangeType(value, typeCode);
+
+                setter.Invoke(obj, new[] { value });
+            }
         }
     }
 }

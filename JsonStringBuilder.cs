@@ -57,8 +57,6 @@ namespace json
                 json.Append("{");
             }
 
-            public override string TypeIdentifier { get; set; }
-
             public override void AddNull(string name)
             {
                 AddRegularProperty(name, "null");
@@ -187,17 +185,10 @@ namespace json
 
         private class TypedJsonObject : JsonStringObject
         {
-            private string typeIdentifier;
-            public override string TypeIdentifier
+            public override void SetTypeIdentifier(string typeIdentifier)
             {
-                get { return typeIdentifier; }
-                set
-                {
-                    typeIdentifier = value;
-                    AddString("_type", value);
-                }
+                AddString("_type", typeIdentifier);
             }
-            
         }
 
         private class JsonStringNumber : ParseNumber
@@ -276,7 +267,9 @@ namespace json
 
         private class InvalidResultObject : Exception
         {
-            public InvalidResultObject() : base("Invalid ParseObject type. Object must be constructed using a JsonStringBuilder.") { }
+            public InvalidResultObject() : base("Invalid ParseObject type. Object must be constructed using a JsonStringBuilder.")
+            {
+            }
         }
     }
 }

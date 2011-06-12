@@ -12,7 +12,7 @@ namespace json
 
     public interface ParseObject : ParseValue
     {
-        string TypeIdentifier { get; set; }
+        void SetTypeIdentifier(string typeIdentifier);
         void AddNull(string name);
         void AddBoolean(string name, bool value);
         void AddNumber(string name, double value);
@@ -40,6 +40,8 @@ namespace json
             return this;
         }
 
+        public virtual void SetTypeIdentifier(string typeIdentifier) { }
+
         public abstract void AddNull (string name);
 
         public abstract void AddBoolean (string name, bool value);
@@ -51,8 +53,6 @@ namespace json
         public abstract void AddObject (string name, ParseObject value);
 
         public abstract void AddArray (string name, ParseArray value);
-
-        public abstract string TypeIdentifier { get; set; }
     }
 
     public interface ParseArray : ParseValue
