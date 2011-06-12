@@ -5,14 +5,20 @@ namespace json
     internal class JsonParser
     {
         private IEnumerator<Token> tokenEnumerator;
+        private ParseValueFactory valueFactory;
 
-        internal static JsonDictionary Parse(IEnumerable<Token> tokens)
+        private JsonParser(ParseValueFactory valueFactory)
         {
-            JsonParser parser = new JsonParser();
+            this.valueFactory = valueFactory;
+        }
+
+        internal static ParseObject Parse(IEnumerable<Token> tokens, ParseValueFactory valueFactory)
+        {
+            JsonParser parser = new JsonParser(valueFactory);
             return parser.ParseTokens(tokens);
         }
 
-        private JsonDictionary ParseTokens(IEnumerable<Token> tokens)
+        private ParseObject ParseTokens(IEnumerable<Token> tokens)
         {
             using (tokenEnumerator = tokens.GetEnumerator())
             {
@@ -25,35 +31,34 @@ namespace json
             }
         }
 
-        private object ParseValue()
+        private ParseValue ParseValue()
         {
-            object value;
             switch (CurrentToken.TokenType)
             {
                 case TokenType.Numeric:
-                    value = CurrentToken.NumericValue;
+                    ParseNumber number = valueFactory.CreateNumber(CurrentToken.NumericValue);
                     NextToken();
-                    return value;
+                    return number;
 
                 case TokenType.String:
-                    value = CurrentToken.StringValue;
+                    ParseString str = valueFactory.CreateString(CurrentToken.StringValue);
                     NextToken();
-                    return value;
+                    return str;
 
                 case TokenType.Word:
                     switch (CurrentToken.StringValue)
                     {
                         case "true":
                             NextToken();
-                            return true;
+                            return valueFactory.CreateBoolean(true);
 
                         case "false":
                             NextToken();
-                            return false;
+                            return valueFactory.CreateBoolean(false);
 
                         case "null":
                             NextToken();
-                            return null;
+                            return valueFactory.CreateNull();
 
                         default:
                             throw new ParseException("Expected value.", CurrentToken);
@@ -75,11 +80,11 @@ namespace json
             }
         }
 
-        private JsonDictionary ParseObject()
+        private ParseObject ParseObject()
         {
             ExpectSymbol("{");
 
-            JsonDictionary obj = new JsonDictionary();
+            ParseObject obj = valueFactory.CreateObject();
 
             if (!IsSymbol("}"))
             {
@@ -89,7 +94,7 @@ namespace json
 
                     ExpectSymbol(":");
 
-                    obj[name] = ParseValue();
+                    ParseValue().AddToObject(obj, name);
 
                 } while (MoveNextIfSymbol(","));
             }
@@ -111,17 +116,17 @@ namespace json
             return value;
         }
 
-        private List<object> ParseArray()
+        private ParseArray ParseArray()
         {
             ExpectSymbol("[");
 
-            List<object> array = new List<object>();
+            ParseArray array = valueFactory.CreateArray();
 
             if (!IsSymbol("]"))
             {
                 do
                 {
-                    array.Insert(array.Count, ParseValue());
+                    ParseValue().AddToArray(array);
                 } while (MoveNextIfSymbol(","));
             }
 

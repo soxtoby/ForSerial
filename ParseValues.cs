@@ -21,6 +21,40 @@ namespace json
         void AddArray(string name, ParseArray value);
     }
 
+    public abstract class ParseObjectBase : ParseObject
+    {
+        protected ParseObjectBase() { }
+
+        public void AddToObject(ParseObject obj, string name)
+        {
+            obj.AddObject(name, this);
+        }
+
+        public void AddToArray(ParseArray array)
+        {
+            array.AddObject(this);
+        }
+
+        public ParseObject AsObject()
+        {
+            return this;
+        }
+
+        public abstract void AddNull (string name);
+
+        public abstract void AddBoolean (string name, bool value);
+
+        public abstract void AddNumber (string name, double value);
+
+        public abstract void AddString (string name, string value);
+
+        public abstract void AddObject (string name, ParseObject value);
+
+        public abstract void AddArray (string name, ParseArray value);
+
+        public abstract string TypeIdentifier { get; set; }
+    }
+
     public interface ParseArray : ParseValue
     {
         void AddNull();
@@ -29,6 +63,35 @@ namespace json
         void AddString(string value);
         void AddObject(ParseObject value);
         void AddArray(ParseArray value);
+    }
+
+    public abstract class ParseArrayBase : ParseArray
+    {
+        protected ParseArrayBase() { }
+
+        public void AddToObject(ParseObject obj, string name)
+        {
+            obj.AddArray(name, this);
+        }
+
+        public void AddToArray(ParseArray array)
+        {
+            array.AddArray(this);
+        }
+
+        public abstract void AddNull ();
+
+        public abstract void AddBoolean (bool value);
+
+        public abstract void AddNumber (double value);
+
+        public abstract void AddString (string value);
+
+        public abstract void AddObject (ParseObject value);
+
+        public abstract void AddArray (ParseArray value);
+
+        public abstract ParseObject AsObject ();
     }
 
     public abstract class ParseNumber : ParseValue

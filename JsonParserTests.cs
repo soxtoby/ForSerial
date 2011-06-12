@@ -15,7 +15,7 @@ namespace json
         [Test]
         public void EmptyObject()
         {
-            JsonDictionary obj = Parse("{}");
+            JsonObject obj = Parse("{}");
             Assert.IsEmpty(obj);
         }
 
@@ -47,21 +47,21 @@ namespace json
         [Test]
         public void EmptyObjectProperty()
         {
-            Assert.IsEmpty(ParseFooProperty<JsonDictionary>("{ \"foo\": { } }"));
+            Assert.IsEmpty(ParseFooProperty<JsonObject>("{ \"foo\": { } }"));
         }
 
         [Test]
         public void ObjectThenNumberProperty()
         {
-            JsonDictionary obj = Parse("{ \"foo\": { }, \"bar\": 4 }");
-            Assert.IsInstanceOfType(typeof(JsonDictionary), obj["foo"]);
+            JsonObject obj = Parse("{ \"foo\": { }, \"bar\": 4 }");
+            Assert.IsInstanceOfType(typeof(JsonObject), obj["foo"]);
             Assert.AreEqual(4, obj["bar"]);
         }
 
         [Test]
         public void NumberPropertyObjectProperty()
         {
-            JsonDictionary objProperty = ParseFooProperty<JsonDictionary>("{ \"foo\": { \"bar\": 3 } }");
+            JsonObject objProperty = ParseFooProperty<JsonObject>("{ \"foo\": { \"bar\": 3 } }");
             Assert.AreEqual(3, objProperty["bar"]);
         }
 
@@ -155,14 +155,15 @@ namespace json
 
         private T ParseFooProperty<T>(string json)
         {
-            JsonDictionary obj = Parse(json);
+            JsonObject obj = Parse(json);
             Assert.IsInstanceOfType(typeof(T), obj["foo"]);
             return (T)obj["foo"];
         }
 
-        private JsonDictionary Parse(string json)
+        private JsonObject Parse(string json)
         {
-            return JsonParser.Parse(Scanner.Scan(json));
+            ParseObject obj = JsonParser.Parse(Scanner.Scan(json), new JsonObjectBuilder());
+            return JsonObjectBuilder.GetResult(obj);
         }
     }
 }
