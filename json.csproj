@@ -50,6 +50,7 @@
     <Compile Include="ObjectParser.cs" />
     <Compile Include="ParseValues.cs" />
     <Compile Include="JsonOutputValues.cs" />
+    <Compile Include="ObjectParserTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

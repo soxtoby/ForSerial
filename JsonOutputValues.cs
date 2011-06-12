@@ -23,6 +23,16 @@ namespace json
         {
             return new JsonString(value);
         }
+
+        public ParseBoolean CreateBoolean(bool value)
+        {
+            return value ? JsonBoolean.True : JsonBoolean.False;
+        }
+
+        public ParseNull CreateNull()
+        {
+            return JsonNull.Value;
+        }
     }
 
     public class JsonObject : ParseObject
@@ -36,6 +46,16 @@ namespace json
         }
 
         public virtual string TypeIdentifier { get; set; }
+
+        public void AddNull(string name)
+        {
+            AddRegularProperty(name, "null");
+        }
+
+        public void AddBoolean(string name, bool value)
+        {
+            AddRegularProperty(name, value ? "true" : "false");
+        }
 
         public void AddNumber(string name, double value)
         {
@@ -110,10 +130,19 @@ namespace json
             json.Append('[');
         }
 
+        public void AddNull()
+        {
+            AddRegularValue("null");
+        }
+
+        public void AddBoolean(bool value)
+        {
+            AddRegularValue(value ? "true" : "false");
+        }
+
         public void AddNumber(double value)
         {
-            AppendComma();
-            json.Append(value);
+            AddRegularValue(value);
         }
 
         public void AddString(string value)
@@ -124,11 +153,15 @@ namespace json
 
         public void AddObject(ParseObject value)
         {
-            AppendComma();
-            json.Append(value);
+            AddRegularValue(value);
         }
 
         public void AddArray(ParseArray value)
+        {
+            AddRegularValue(value);
+        }
+
+        private void AddRegularValue(object value)
         {
             AppendComma();
             json.Append(value);
@@ -181,24 +214,9 @@ namespace json
 
     public class JsonNumber : ParseNumber
     {
-        private double value;
+        public JsonNumber(double value) : base(value) { }
 
-        public JsonNumber(double value)
-        {
-            this.value = value;
-        }
-
-        public void AddToObject(ParseObject obj, string name)
-        {
-            obj.AddNumber(name, value);
-        }
-
-        public void AddToArray(ParseArray array)
-        {
-            array.AddNumber(value);
-        }
-
-        public ParseObject AsObject()
+        public override ParseObject AsObject()
         {
             ParseObject obj = new JsonObject();
             obj.AddNumber("value", value);
@@ -208,27 +226,54 @@ namespace json
 
     public class JsonString : ParseString
     {
-        private string value;
+        public JsonString(string value) : base(value) { }
 
-        public JsonString(string value)
-        {
-            this.value = value;
-        }
-
-        public void AddToObject (ParseObject obj, string name)
-        {
-           obj.AddString(name, value);
-        }
-
-        public void AddToArray (ParseArray array)
-        {
-           array.AddString(value);
-        }
-
-        public ParseObject AsObject()
+        public override ParseObject AsObject()
         {
             ParseObject obj = new JsonObject();
             obj.AddString("value", value);
+            return obj;
+        }
+    }
+
+    public class JsonBoolean : ParseBoolean
+    {
+        private JsonBoolean(bool value) : base(value) { }
+
+        private static JsonBoolean trueValue;
+        public static JsonBoolean True
+        {
+            get { return trueValue = trueValue ?? new JsonBoolean(true); }
+        }
+
+        private static JsonBoolean falseValue;
+        public static JsonBoolean False
+        {
+            get { return falseValue = falseValue ?? new JsonBoolean(false); }
+        }
+
+        public override ParseObject AsObject()
+        {
+            ParseObject obj = new JsonObject();
+            obj.AddBoolean("value", value);
+            return obj;
+        }
+    }
+
+    public class JsonNull : ParseNull
+    {
+        private JsonNull() { }
+
+        private static JsonNull value;
+        public static JsonNull Value
+        {
+            get { return value = value ?? new JsonNull(); }
+        }
+
+        public override ParseObject AsObject()
+        {
+            ParseObject obj = new JsonObject();
+            obj.AddNull("value");
             return obj;
         }
     }
