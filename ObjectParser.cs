@@ -3,9 +3,10 @@ using System.Collections;
 
 namespace json
 {
-    public class ObjectParser
+    public class ObjectParser : Parser
     {
         private ParseValueFactory valueFactory;
+        private object currentObject;
 
         private ObjectParser(ParseValueFactory valueFactory)
         {
@@ -17,6 +18,11 @@ namespace json
             ObjectParser parser = new ObjectParser(valueFactory);
 
             return parser.ParseValue(obj);
+        }
+
+        public ParseObject ParseSubObject(ParseValueFactory valueFactory)
+        {
+            return Parse(currentObject, valueFactory).AsObject();
         }
 
         private ParseValue ParseValue(object input)
@@ -65,7 +71,8 @@ namespace json
 
             TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(obj.GetType());
 
-            output.SetTypeIdentifier(typeDef.Type.AssemblyQualifiedName);
+            currentObject = obj;
+            output.SetType(typeDef.Type.AssemblyQualifiedName, this);
 
             foreach (PropertyDefinition property in typeDef.Properties.Values)
             {
@@ -86,13 +93,6 @@ namespace json
             }
             return array;
         }
-
-
-        public static string GetTypeIdentifier(Type type)
-        {
-            return type.FullName;
-        }
-
 
         public class ObjectParserException : Exception
         {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 
 namespace json
 {
@@ -75,8 +76,22 @@ namespace json
 
         public static bool IsSingular<T>(this IEnumerable<T> enumerable)
         {
-            IEnumerator<T> enumerator = enumerable.GetEnumerator();
-            return enumerator.MoveNext() && !enumerator.MoveNext();
+            using (IEnumerator<T> enumerator = enumerable.GetEnumerator())
+                return enumerator.MoveNext() && !enumerator.MoveNext();
+        }
+
+        public static T SingleOrDefaultIfMore<T>(this IEnumerable<T> enumerable)
+        {
+            using (IEnumerator<T> enumerator = enumerable.GetEnumerator())
+            {
+                if (enumerator.MoveNext())
+                {
+                    T single = enumerator.Current;
+                    if (!enumerator.MoveNext())
+                        return single;
+                }
+                return default(T);
+            }
         }
 
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
@@ -85,6 +100,13 @@ namespace json
             {
                 action(element);
             }
+        }
+
+        public static IEnumerable<Type> GetParameterTypes(this MethodInfo method)
+        {
+            return method.GetParameters()
+                .Cast<ParameterInfo>()
+                .Select(p => p.ParameterType);
         }
     }
 }

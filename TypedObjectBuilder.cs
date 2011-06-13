@@ -5,14 +5,6 @@ namespace json
 {
     public class TypedObjectBuilder : ParseValueFactory
     {
-        public static object GetResult(ParseObject obj)
-        {
-            TypedObjectObject objectObj = obj as TypedObjectObject;
-            if (objectObj == null)
-                throw new InvalidResultObject();
-            return objectObj.Object;
-        }
-
         public static T GetResult<T>(ParseValue value)
         {
             TypedObjectArray array = value as TypedObjectArray;
@@ -70,7 +62,7 @@ namespace json
             return item;
         }
 
-        public ParseObject CreateObject()
+        public virtual ParseObject CreateObject()
         {
             return new TypedObjectObject();
         }
@@ -114,10 +106,32 @@ namespace json
                 Object = obj;
             }
 
-            public override void SetTypeIdentifier(string typeIdentifier)
+            public override bool SetType(string typeIdentifier, Parser parser)
             {
                 typeDef = TypeDefinition.GetTypeDefinition(typeIdentifier);
                 Object = Activator.CreateInstance(typeDef.Type);
+
+                return typeDef.PreBuild(Object, parser, () => new TypedObjectSubBuilder(this));
+            }
+
+            private class TypedObjectSubBuilder : TypedObjectBuilder
+            {
+                private TypedObjectObject baseObject;
+                private bool isBase = true;
+
+                public TypedObjectSubBuilder(TypedObjectObject baseObject)
+                {
+                    this.baseObject = baseObject;
+                }
+
+                public override ParseObject CreateObject()
+                {
+                    if (!isBase)
+                        return base.CreateObject();
+
+                    isBase = false;
+                    return baseObject;
+                }
             }
 
             public override void AddNull(string name)
@@ -207,6 +221,11 @@ namespace json
             {
                 if (typeDef == null)
                     throw new ObjectNotInitialized();
+            }
+
+            public override ParseObject Parse(ParseValueFactory valueFactory)
+            {
+                return ObjectParser.Parse(Object, valueFactory).AsObject();
             }
         }
 

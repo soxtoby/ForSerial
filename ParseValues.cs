@@ -12,13 +12,25 @@ namespace json
 
     public interface ParseObject : ParseValue
     {
-        void SetTypeIdentifier(string typeIdentifier);
+        /// <summary>
+        /// Sets the object's type.
+        /// </summary>
+        /// <returns>
+        /// True if the object was pre-built and the parser should skip populating it.
+        /// </returns>
+        bool SetType(string typeIdentifier, Parser parser);
         void AddNull(string name);
         void AddBoolean(string name, bool value);
         void AddNumber(string name, double value);
         void AddString(string name, string value);
         void AddObject(string name, ParseObject value);
         void AddArray(string name, ParseArray value);
+        ParseObject Parse(ParseValueFactory valueFactory);
+    }
+
+    public interface Parser
+    {
+        ParseObject ParseSubObject(ParseValueFactory valueFactory);
     }
 
     public abstract class ParseObjectBase : ParseObject
@@ -40,7 +52,7 @@ namespace json
             return this;
         }
 
-        public virtual void SetTypeIdentifier(string typeIdentifier) { }
+        public virtual bool SetType(string typeIdentifier, Parser parser) { return false; }
 
         public abstract void AddNull (string name);
 
@@ -53,6 +65,8 @@ namespace json
         public abstract void AddObject (string name, ParseObject value);
 
         public abstract void AddArray (string name, ParseArray value);
+
+        public abstract ParseObject Parse(ParseValueFactory valueFactory);
     }
 
     public interface ParseArray : ParseValue

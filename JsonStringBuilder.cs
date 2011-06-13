@@ -113,6 +113,11 @@ namespace json
             {
                 return json.ToString() + "}";
             }
+
+            public override ParseObject Parse(ParseValueFactory valueFactory)
+            {
+                return JsonParser.Parse(ToString(), valueFactory);
+            }
         }
 
         private class JsonStringArray : ParseArrayBase
@@ -274,9 +279,10 @@ namespace json
 
         private class TypedJsonStringObject : JsonStringObject
         {
-            public override void SetTypeIdentifier(string typeIdentifier)
+            public override bool SetType(string typeIdentifier, Parser parser)
             {
                 AddString("_type", typeIdentifier);
+                return false;
             }
         }
     }

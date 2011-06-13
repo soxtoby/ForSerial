@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace json
 {
-    internal class JsonParser
+    internal class JsonParser : Parser
     {
         private IEnumerator<Token> tokenEnumerator;
         private ParseValueFactory valueFactory;
@@ -12,10 +12,30 @@ namespace json
             this.valueFactory = valueFactory;
         }
 
+        public static ParseObject Parse(string json, ParseValueFactory valueFactory)
+        {
+            return Parse(Scanner.Scan(json), valueFactory);
+        }
+
         internal static ParseObject Parse(IEnumerable<Token> tokens, ParseValueFactory valueFactory)
         {
             JsonParser parser = new JsonParser(valueFactory);
             return parser.ParseTokens(tokens);
+        }
+
+        public ParseObject ParseSubObject(ParseValueFactory valueFactory)
+        {
+            return Parse(GetSubObjectTokens(), valueFactory);
+        }
+
+        private IEnumerable<Token> GetSubObjectTokens()
+        {
+            yield return new Token("{", TokenType.Symbol, 0, 0);
+
+            yield return tokenEnumerator.Current;
+
+            while (tokenEnumerator.MoveNext())
+                yield return tokenEnumerator.Current;
         }
 
         private ParseObject ParseTokens(IEnumerable<Token> tokens)
@@ -23,10 +43,10 @@ namespace json
             using (tokenEnumerator = tokens.GetEnumerator())
             {
                 NextToken();
-
+    
                 if (CurrentToken.TokenType == TokenType.EOF)
                     return null;
-
+    
                 return ParseObject();
             }
         }
@@ -95,9 +115,14 @@ namespace json
                     ExpectSymbol(":");
 
                     if (name == "_type")
-                        obj.SetTypeIdentifier(ParseString());
+                    {
+                        if (SetObjectType(obj))
+                            return obj; // Object was pre-built
+                    }
                     else
+                    {
                         ParseValue().AddToObject(obj, name);
+                    }
 
                 } while (MoveNextIfSymbol(","));
             }
@@ -107,10 +132,17 @@ namespace json
             return obj;
         }
 
+        private bool SetObjectType(ParseObject obj)
+        {
+            string typeIdentifier = ParseString();
+            MoveNextIfSymbol(",");
+            return obj.SetType(typeIdentifier, this);
+        }
+
         private string ParseString()
         {
             if (CurrentToken.TokenType != TokenType.String)
-                throw new ParseException("Expected name.", CurrentToken);
+                throw new ParseException("Expected string.", CurrentToken);
 
             string value = CurrentToken.StringValue;
 

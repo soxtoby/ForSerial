@@ -176,7 +176,7 @@ namespace json
         public void AddUnsupportedParseObjectToObject_ThrowsException()
         {
             ParseObject obj = new TypedObjectBuilder().CreateObject();
-            obj.SetTypeIdentifier(typeof(IntPropertyClass).AssemblyQualifiedName);
+            obj.SetType(typeof(IntPropertyClass).AssemblyQualifiedName, null);
             obj.AddObject("Integer", new TestParseObject());
         }
 
@@ -219,6 +219,11 @@ namespace json
             {
                 throw new System.NotImplementedException();
             }
+
+            public override ParseObject Parse(ParseValueFactory valueFactory)
+            {
+                throw new System.NotImplementedException();
+            }
         }
 
         [Test]
@@ -226,7 +231,7 @@ namespace json
         public void AddUnsupportedParseArrayToObject_ThrowsException()
         {
             ParseObject obj = new TypedObjectBuilder().CreateObject();
-            obj.SetTypeIdentifier(typeof(SettableListPropertyClass).AssemblyQualifiedName);
+            obj.SetType(typeof(SettableListPropertyClass).AssemblyQualifiedName, null);
             obj.AddArray("Array", new TestParseArray());
         }
 
@@ -291,6 +296,12 @@ namespace json
             public int One { get; set; }
             public int Two { get; set; }
 
+            [PreDeserializeJson]
+            public string PreDeserialize(string json)
+            {
+                Assert.AreEqual("{\"One\":1,\"Two\":2}", json);
+                return "{\"One\":2,\"Two\":1}";
+            }
 
             public void PreDeserialize(JsonObject json)
             {

@@ -1,19 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace json
 {
-    public class TypeDefinition
+    internal class TypeDefinition
     {
         public Type Type { get; private set; }
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
+        private List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
 
         private TypeDefinition(Type type)
         {
             Type = type;
             Properties = new Dictionary<string, PropertyDefinition>();
             PopulateProperties();
+            PopulatePreBuildMethods();
         }
 
         // FIXME Make this thread-safe - use a ConcurrentDictionary. This version of Mono doesn't appear to have it :(
@@ -42,6 +45,64 @@ namespace json
             foreach (PropertyDefinition property in properties.Where(p => p.IsSerializable))
             {
                 Properties[property.Name] = property;
+            }
+        }
+
+        private void PopulatePreBuildMethods()
+        {
+            preBuildMethods.AddRange(Type.GetMethods()
+                .SelectMany(m => m.GetCustomAttributes(typeof(PreBuildAttribute), true)
+                    .Select(a => ValidateAndCreatePreBuildInfo((PreBuildAttribute)a, m))));
+        }
+
+        private static PreBuildInfo ValidateAndCreatePreBuildInfo(PreBuildAttribute preBuildAttribute, MethodInfo method)
+        {
+            preBuildAttribute.AssertValidMethod(method);
+            return new PreBuildInfo(preBuildAttribute, method);
+        }
+
+        public bool PreBuild(object target, Parser parser, Func<ParseValueFactory> getObjectPopulator)
+        {
+            PreBuildInfo preBuildInfo = GetPreBuildInfo(parser);
+
+            if (preBuildInfo == null)
+                return false;
+
+            preBuildInfo.PreBuild(target, parser, getObjectPopulator());
+
+            return true;
+        }
+
+        private PreBuildInfo GetPreBuildInfo(Parser parser)
+        {
+            return parser == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ParserMatches(parser));
+        }
+
+        private class PreBuildInfo
+        {
+            private PreBuildAttribute attribute;
+            private MethodInfo method;
+
+            public PreBuildInfo(PreBuildAttribute attribute, MethodInfo method)
+            {
+                this.attribute = attribute;
+                this.method = method;
+            }
+
+            public void PreBuild(object target, Parser parser, ParseValueFactory objectPopulator)
+            {
+                ParseValueFactory contextBuilder = attribute.GetBuilder();
+                ParseObject parsedContext = parser.ParseSubObject(contextBuilder);
+                object context = attribute.GetContextValue(parsedContext);
+                
+                object preBuildResult = method.Invoke(target, new[] { context });
+                
+                attribute.ParsePreBuildResult(preBuildResult, objectPopulator);
+            }
+
+            public bool ParserMatches(Parser parser)
+            {
+                return attribute.ParserMatches(parser);
             }
         }
     }

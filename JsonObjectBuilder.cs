@@ -93,9 +93,15 @@ namespace json
                 Object[name] = valueArray.Array;
             }
 
-            public override void SetTypeIdentifier(string typeIdentifier)
+            public override bool SetType(string typeIdentifier, Parser parser)
             {
                 Object.TypeIdentifier = typeIdentifier;
+                return false;
+            }
+
+            public override ParseObject Parse(ParseValueFactory valueFactory)
+            {
+                throw new NotImplementedException();
             }
         }
 
