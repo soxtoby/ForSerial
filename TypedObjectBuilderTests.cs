@@ -276,6 +276,31 @@ namespace json
             }
         }
 
+        [Test]
+        public void PreDeserializeUpgrade()
+        {
+            string json = JsonStringBuilder.GetResult(ObjectParser.Parse(new PreDeserializeUpgradeClass { One = 1, Two = 2 }, new TypedJsonStringBuilder()).AsObject());
+            PreDeserializeUpgradeClass obj = TypedObjectBuilder.GetResult<PreDeserializeUpgradeClass>(JsonParser.Parse(Scanner.Scan(json), new TypedObjectBuilder()));
+
+            Assert.AreEqual(2, obj.One);
+            Assert.AreEqual(1, obj.Two);
+        }
+
+        private class PreDeserializeUpgradeClass
+        {
+            public int One { get; set; }
+            public int Two { get; set; }
+
+
+            public void PreDeserialize(JsonObject json)
+            {
+                int one = (int?)json.Get("One") ?? 0;
+                int two = (int?)json.Get("Two") ?? 0;
+                json["One"] = two;
+                json["Two"] = one;
+            }
+        }
+
 
 
         private T Clone<T>(T obj)

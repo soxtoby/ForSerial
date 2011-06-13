@@ -17,7 +17,7 @@ namespace json
             return stringObj.ToString();
         }
 
-        public ParseObject CreateObject()
+        public virtual ParseObject CreateObject()
         {
             return new JsonStringObject();
         }
@@ -47,7 +47,7 @@ namespace json
             return JsonStringNull.Value;
         }
 
-        private class JsonStringObject : ParseObjectBase
+        protected class JsonStringObject : ParseObjectBase
         {
             private StringBuilder json = new StringBuilder();
             private bool isFirstProperty = true;
@@ -183,14 +183,6 @@ namespace json
             }
         }
 
-        private class TypedJsonObject : JsonStringObject
-        {
-            public override void SetTypeIdentifier(string typeIdentifier)
-            {
-                AddString("_type", typeIdentifier);
-            }
-        }
-
         private class JsonStringNumber : ParseNumber
         {
             public JsonStringNumber(double value) : base(value)
@@ -269,6 +261,22 @@ namespace json
         {
             public InvalidResultObject() : base("Invalid ParseObject type. Object must be constructed using a JsonStringBuilder.")
             {
+            }
+        }
+    }
+
+    public class TypedJsonStringBuilder : JsonStringBuilder
+    {
+        public override ParseObject CreateObject()
+        {
+            return new TypedJsonStringObject();
+        }
+
+        private class TypedJsonStringObject : JsonStringObject
+        {
+            public override void SetTypeIdentifier(string typeIdentifier)
+            {
+                AddString("_type", typeIdentifier);
             }
         }
     }

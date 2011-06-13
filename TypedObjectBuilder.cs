@@ -146,6 +146,8 @@ namespace json
                 if (objectValue == null)
                     throw new UnsupportedParseObject();
 
+                AssertObjectInitialized();
+
                 PropertyDefinition property = typeDef.Properties.Get(name);
 
                 if (property != null)
@@ -163,6 +165,8 @@ namespace json
 
                 if (array == null)
                     throw new UnsupportedParseArray();
+
+                AssertObjectInitialized();
 
                 PropertyDefinition property = typeDef.Properties.Get(name);
 
@@ -190,11 +194,19 @@ namespace json
 
             private void SetProperty(string name, object value)
             {
+                AssertObjectInitialized();
+
                 PropertyDefinition property = typeDef.Properties.Get(name);
                 if (property != null)
                 {
                     property.SetOn(Object, value);
                 }
+            }
+
+            private void AssertObjectInitialized()
+            {
+                if (typeDef == null)
+                    throw new ObjectNotInitialized();
             }
         }
 

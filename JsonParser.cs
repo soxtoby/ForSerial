@@ -90,11 +90,14 @@ namespace json
             {
                 do
                 {
-                    string name = ParseName();
+                    string name = ParseString();
 
                     ExpectSymbol(":");
 
-                    ParseValue().AddToObject(obj, name);
+                    if (name == "_type")
+                        obj.SetTypeIdentifier(ParseString());
+                    else
+                        ParseValue().AddToObject(obj, name);
 
                 } while (MoveNextIfSymbol(","));
             }
@@ -104,7 +107,7 @@ namespace json
             return obj;
         }
 
-        private string ParseName()
+        private string ParseString()
         {
             if (CurrentToken.TokenType != TokenType.String)
                 throw new ParseException("Expected name.", CurrentToken);
