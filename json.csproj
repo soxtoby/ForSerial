@@ -58,6 +58,7 @@
     <Compile Include="TypedObjectBuilderTests.cs" />
     <Compile Include="PreBuildAttribute.cs" />
     <Compile Include="PreDeserializeJsonAttribute.cs" />
+    <Compile Include="JsonStringBuilderTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

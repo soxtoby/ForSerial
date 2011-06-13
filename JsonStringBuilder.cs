@@ -1,5 +1,6 @@
 using System.Text;
 using System;
+using System.Text.RegularExpressions;
 
 namespace json
 {
@@ -202,10 +203,17 @@ namespace json
             }
         }
 
+        private static readonly Regex charactersToEscape = new Regex(@"[""\\]", RegexOptions.Compiled); // TODO escape control characters as well
+
         private class JsonStringString : ParseString
         {
-            public JsonStringString(string value) : base(value)
+            public JsonStringString(string value) : base(EscapeForJson(value))
             {
+            }
+
+            private static string EscapeForJson(string value)
+            {
+                return charactersToEscape.Replace(value, @"\$0");
             }
 
             public override ParseObject AsObject()
