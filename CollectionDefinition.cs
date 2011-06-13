@@ -7,7 +7,7 @@ namespace json
 {
     public class CollectionDefinition
     {
-        private Type itemType;
+        public Type ItemType { get; set; }
         private TypeCode itemTypeCode;
         private MethodInfo adder;
 
@@ -15,12 +15,12 @@ namespace json
 
         public CollectionDefinition(Type collectionType)
         {
-            itemType = GetGenericInterfaceType(collectionType, typeof(ICollection<>));
+            ItemType = GetGenericInterfaceType(collectionType, typeof(ICollection<>));
 
-            if (itemType != null)
+            if (ItemType != null)
             {
-                itemTypeCode = Type.GetTypeCode(itemType);
-                adder = collectionType.GetMethod("Add", new[] { itemType });
+                itemTypeCode = Type.GetTypeCode(ItemType);
+                adder = collectionType.GetMethod("Add", new[] { ItemType });
             }
         }
 

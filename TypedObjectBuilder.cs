@@ -21,7 +21,7 @@ namespace json
                 CollectionDefinition collectionDef = CollectionDefinition.GetCollectionDefinition(typeof(T));
                 if (collectionDef.IsCollection)
                 {
-                    return (T)PopulateCollection(typeof(T), array, () => Activator.CreateInstance(typeof(T)));
+                    return (T)PopulateCollection(typeof(T), array.Array, () => Activator.CreateInstance(typeof(T)));
                 }
             }
 
@@ -32,24 +32,42 @@ namespace json
             return (T)obj.Object;
         }
 
-        private static object PopulateCollection(Type collectionType, TypedObjectArray array, Func<object> getCollection)
+        private static object PopulateCollection(Type collectionType, IEnumerable<object> items, Func<object> getCollection)
         {
             CollectionDefinition collectionDef = CollectionDefinition.GetCollectionDefinition(collectionType);
             
-            if (collectionDef != null && collectionDef.IsCollection)
+            if (collectionDef.IsCollection)
             {
                 object collection = getCollection();
                 
                 if (collection != null)
                 {
-                    foreach (object item in array.Array)
-                        collectionDef.AddToCollection(collection, item);
+                    foreach (object item in items)
+                    {
+                        object itemToAdd = TypeInnerCollection(collectionDef.ItemType, item);
+                        collectionDef.AddToCollection(collection, itemToAdd);
+                    }
                 }
-                
+
                 return collection;
             }
 
             return null;
+        }
+
+        private static object TypeInnerCollection(Type itemType, object item)
+        {
+            CollectionDefinition collectionDef = CollectionDefinition.GetCollectionDefinition(itemType);
+            if (collectionDef.IsCollection)
+            {
+                List<object> innerCollection = item as List<object>;
+
+                if (innerCollection == null)
+                    throw new ExpectedCollection(item.GetType());
+
+                return PopulateCollection(itemType, innerCollection, () => Activator.CreateInstance(itemType));
+            }
+            return item;
         }
 
         public ParseObject CreateObject()
@@ -159,7 +177,7 @@ namespace json
 
             private void SetArrayProperty(PropertyDefinition property, TypedObjectArray array)
             {
-                object collection = PopulateCollection(property.Type, array, () => Activator.CreateInstance(property.Type));
+                object collection = PopulateCollection(property.Type, array.Array, () => Activator.CreateInstance(property.Type));
 
                 if (collection != null)
                     property.SetOn(Object, collection);
@@ -167,7 +185,7 @@ namespace json
 
             private void PopulateArrayProperty(PropertyDefinition property, TypedObjectArray array)
             {
-                PopulateCollection(property.Type, array, () => property.GetFrom(Object));
+                PopulateCollection(property.Type, array.Array, () => property.GetFrom(Object));
             }
 
             private void SetProperty(string name, object value)
@@ -316,6 +334,11 @@ namespace json
         internal class InvalidResultObject : Exception
         {
             public InvalidResultObject() : base("Invalid ParseObject type. Object must be constructed using a TypedObjectBuilder.") { }
+        }
+
+        internal class ExpectedCollection : Exception
+        {
+            public ExpectedCollection(Type actual) : base("Expected inner collection but found {0}.".FormatWith(actual.FullName)) { }
         }
     }
 }

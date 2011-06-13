@@ -163,7 +163,7 @@ namespace json
             NestedArrayPropertyClass clone = Clone(obj);
 
             CollectionAssert.AreEqual(new[] { 1, 2, 3 }, clone.NestedArray[0]);
-            CollectionAssert.AreEqual(new[] { 3, 4, 5 }, clone.NestedArray[1]);
+            CollectionAssert.AreEqual(new[] { 4, 5, 6 }, clone.NestedArray[1]);
         }
 
         private class NestedArrayPropertyClass
