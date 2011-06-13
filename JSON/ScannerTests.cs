@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
-namespace json
+namespace json.Json
 {
     [TestFixture]
     public class ScannerTests

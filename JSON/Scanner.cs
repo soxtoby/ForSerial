@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace json
+namespace json.Json
 {
     public class Scanner
     {

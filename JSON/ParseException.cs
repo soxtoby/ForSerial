@@ -2,7 +2,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
-namespace json
+namespace json.Json
 {
     /// <summary>
     /// CVSBAD Document me :)

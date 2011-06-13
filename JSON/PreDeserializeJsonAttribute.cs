@@ -1,4 +1,6 @@
-namespace json
+using json.Objects;
+
+namespace json.Json
 {
     public class PreDeserializeJsonAttribute : PreBuildAttribute
     {

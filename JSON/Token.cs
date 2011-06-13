@@ -1,6 +1,6 @@
 using System;
 
-namespace json
+namespace json.Json
 {
     public enum TokenType
     {

@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.Linq;
+using json.Json;
 
-namespace json
+namespace json.Objects
 {
     [TestFixture]
     public class TypedObjectBuilderTests
@@ -303,13 +304,14 @@ namespace json
                 return "{\"One\":2,\"Two\":1}";
             }
 
-            public void PreDeserialize(JsonObject json)
-            {
-                int one = (int?)json.Get("One") ?? 0;
-                int two = (int?)json.Get("Two") ?? 0;
-                json["One"] = two;
-                json["Two"] = one;
-            }
+            // This is what I'd like to use once I've written a JsonObjectParser
+//            public void PreDeserialize(JsonObject json)
+//            {
+//                int one = (int?)json.Get("One") ?? 0;
+//                int two = (int?)json.Get("Two") ?? 0;
+//                json["One"] = two;
+//                json["Two"] = one;
+//            }
         }
 
 

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace json
+namespace json.Json
 {
     internal class JsonParser : Parser
     {

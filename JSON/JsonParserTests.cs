@@ -1,7 +1,8 @@
 using System.Collections;
 using NUnit.Framework;
+using json.JsonObjects;
 
-namespace json
+namespace json.Json
 {
     [TestFixture]
     public class JsonParserTests

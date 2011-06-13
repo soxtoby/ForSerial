@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace json
+namespace json.Objects
 {
     public class TypedObjectBuilder : ParseValueFactory
     {

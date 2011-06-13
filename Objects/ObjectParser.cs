@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace json
+namespace json.Objects
 {
     public class ObjectParser : Parser
     {

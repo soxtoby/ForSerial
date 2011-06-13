@@ -2,7 +2,7 @@ using System.Text;
 using System;
 using System.Text.RegularExpressions;
 
-namespace json
+namespace json.Json
 {
     public class JsonStringBuilder : ParseValueFactory
     {

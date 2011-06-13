@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace json
+namespace json.Json
 {
     public class TokenReader
     {

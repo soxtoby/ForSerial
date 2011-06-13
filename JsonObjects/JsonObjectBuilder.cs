@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-namespace json
+namespace json.JsonObjects
 {
     public class JsonObjectBuilder : ParseValueFactory
     {

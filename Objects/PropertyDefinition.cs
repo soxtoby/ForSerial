@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace json
+namespace json.Objects
 {
     public class PropertyDefinition
     {

@@ -1,7 +1,7 @@
 using System;
 using NUnit.Framework;
 
-namespace json
+namespace json.Json
 {
     [TestFixture()]
     public class JsonStringBuilderTests
