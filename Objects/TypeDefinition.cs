@@ -9,7 +9,7 @@ namespace json.Objects
     {
         public Type Type { get; private set; }
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
-        private List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
+        private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
 
         private TypeDefinition(Type type)
         {
@@ -20,7 +20,7 @@ namespace json.Objects
         }
 
         // FIXME Make this thread-safe - use a ConcurrentDictionary. This version of Mono doesn't appear to have it :(
-        private static Dictionary<string, TypeDefinition> knownTypes = new Dictionary<string, TypeDefinition>();
+        private static readonly Dictionary<string, TypeDefinition> knownTypes = new Dictionary<string, TypeDefinition>();
 
         public static TypeDefinition GetTypeDefinition(Type type)
         {
@@ -80,8 +80,8 @@ namespace json.Objects
 
         private class PreBuildInfo
         {
-            private PreBuildAttribute attribute;
-            private MethodInfo method;
+            private readonly PreBuildAttribute attribute;
+            private readonly MethodInfo method;
 
             public PreBuildInfo(PreBuildAttribute attribute, MethodInfo method)
             {
@@ -94,9 +94,9 @@ namespace json.Objects
                 ParseValueFactory contextBuilder = attribute.GetBuilder();
                 ParseObject parsedContext = parser.ParseSubObject(contextBuilder);
                 object context = attribute.GetContextValue(parsedContext);
-                
+
                 object preBuildResult = method.Invoke(target, new[] { context });
-                
+
                 attribute.ParsePreBuildResult(preBuildResult, objectPopulator);
             }
 

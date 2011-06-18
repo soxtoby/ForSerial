@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
+using System.Text;
 
 namespace json
 {
@@ -105,7 +105,6 @@ namespace json
         public static IEnumerable<Type> GetParameterTypes(this MethodInfo method)
         {
             return method.GetParameters()
-                .Cast<ParameterInfo>()
                 .Select(p => p.ParameterType);
         }
     }

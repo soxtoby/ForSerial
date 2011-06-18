@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Text;
 
@@ -13,7 +12,7 @@ namespace json.Json
             CurrentPosition = 0;
         }
 
-        TextReader _reader;
+        readonly TextReader _reader;
         char _nextChar;
 
         internal int CurrentLine { get; set; }
@@ -22,7 +21,8 @@ namespace json.Json
         /// <summary>
         /// The next character to be read.
         /// </summary>
-        internal char NextChar {
+        internal char NextChar
+        {
             get
             {
                 if (_nextChar == char.MinValue)
@@ -42,7 +42,7 @@ namespace json.Json
         {
             _nextChar = char.MinValue;
             LastChar = (char)_reader.Read();
-            
+
             if (LastChar == '\n')
             {
                 CurrentLine++;
@@ -57,11 +57,11 @@ namespace json.Json
             {
                 CurrentPosition++;
             }
-            
+
             return LastChar;
         }
 
-        StringBuilder _tokenValue = new StringBuilder();
+        readonly StringBuilder _tokenValue = new StringBuilder();
         int _tokenLine;
         int _tokenPosition;
 
@@ -93,7 +93,8 @@ namespace json.Json
         /// <summary>
         /// True if the next character to be read is past the end of the file.
         /// </summary>
-        internal bool EndOfFile {
+        internal bool EndOfFile
+        {
             get { return _reader.Peek() == -1; }
         }
     }

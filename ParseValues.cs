@@ -25,7 +25,6 @@ namespace json
         void AddString(string name, string value);
         void AddObject(string name, ParseObject value);
         void AddArray(string name, ParseArray value);
-        ParseObject Parse(ParseValueFactory valueFactory);
     }
 
     public interface Parser
@@ -35,8 +34,6 @@ namespace json
 
     public abstract class ParseObjectBase : ParseObject
     {
-        protected ParseObjectBase() { }
-
         public void AddToObject(ParseObject obj, string name)
         {
             obj.AddObject(name, this);
@@ -54,19 +51,17 @@ namespace json
 
         public virtual bool SetType(string typeIdentifier, Parser parser) { return false; }
 
-        public abstract void AddNull (string name);
+        public abstract void AddNull(string name);
 
-        public abstract void AddBoolean (string name, bool value);
+        public abstract void AddBoolean(string name, bool value);
 
-        public abstract void AddNumber (string name, double value);
+        public abstract void AddNumber(string name, double value);
 
-        public abstract void AddString (string name, string value);
+        public abstract void AddString(string name, string value);
 
-        public abstract void AddObject (string name, ParseObject value);
+        public abstract void AddObject(string name, ParseObject value);
 
-        public abstract void AddArray (string name, ParseArray value);
-
-        public abstract ParseObject Parse(ParseValueFactory valueFactory);
+        public abstract void AddArray(string name, ParseArray value);
     }
 
     public interface ParseArray : ParseValue
@@ -81,8 +76,6 @@ namespace json
 
     public abstract class ParseArrayBase : ParseArray
     {
-        protected ParseArrayBase() { }
-
         public void AddToObject(ParseObject obj, string name)
         {
             obj.AddArray(name, this);
@@ -93,26 +86,26 @@ namespace json
             array.AddArray(this);
         }
 
-        public abstract void AddNull ();
+        public abstract void AddNull();
 
-        public abstract void AddBoolean (bool value);
+        public abstract void AddBoolean(bool value);
 
-        public abstract void AddNumber (double value);
+        public abstract void AddNumber(double value);
 
-        public abstract void AddString (string value);
+        public abstract void AddString(string value);
 
-        public abstract void AddObject (ParseObject value);
+        public abstract void AddObject(ParseObject value);
 
-        public abstract void AddArray (ParseArray value);
+        public abstract void AddArray(ParseArray value);
 
-        public abstract ParseObject AsObject ();
+        public abstract ParseObject AsObject();
     }
 
     public abstract class ParseNumber : ParseValue
     {
         protected readonly double value;
 
-        public ParseNumber(double value)
+        protected ParseNumber(double value)
         {
             this.value = value;
         }
@@ -134,7 +127,7 @@ namespace json
     {
         protected readonly string value;
 
-        public ParseString(string value)
+        protected ParseString(string value)
         {
             this.value = value;
         }
@@ -176,8 +169,6 @@ namespace json
 
     public abstract class ParseNull : ParseValue
     {
-        protected ParseNull() { }
-
         public void AddToObject(ParseObject obj, string name)
         {
             obj.AddNull(name);

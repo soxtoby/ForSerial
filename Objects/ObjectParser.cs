@@ -5,7 +5,7 @@ namespace json.Objects
 {
     public class ObjectParser : Parser
     {
-        private ParseValueFactory valueFactory;
+        private readonly ParseValueFactory valueFactory;
         private object currentObject;
 
         private ObjectParser(ParseValueFactory valueFactory)
@@ -30,7 +30,7 @@ namespace json.Objects
             if (input == null)
                 return valueFactory.CreateNull();
 
-            switch (Type.GetTypeCode( input.GetType()))
+            switch (Type.GetTypeCode(input.GetType()))
             {
                 case TypeCode.Object:
                     IEnumerable enumerable = input as IEnumerable;
@@ -40,7 +40,7 @@ namespace json.Objects
 
                 case TypeCode.Boolean:
                     return valueFactory.CreateBoolean((bool)input);
-                
+
                 case TypeCode.Byte:
                 case TypeCode.Decimal:
                 case TypeCode.Double:
@@ -58,15 +58,12 @@ namespace json.Objects
                     return valueFactory.CreateString((string)input);
 
                 default:
-                    throw new ObjectParserException("Unknown TypeCode.", input);
+                    throw new UnknownTypeCode(input);
             }
         }
 
         private ParseObject ParseObject(object obj)
         {
-            if (!(obj is Object))
-                throw new ObjectParserException("Expected Object.", obj);
-
             ParseObject output = valueFactory.CreateObject();
 
             TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(obj.GetType());
@@ -94,10 +91,10 @@ namespace json.Objects
             return array;
         }
 
-        public class ObjectParserException : Exception
+        public class UnknownTypeCode : Exception
         {
-            public ObjectParserException(string message, object obj)
-                : base(message + " Type: " + obj.GetType().FullName)
+            public UnknownTypeCode(object obj)
+                : base("Type {0} has unknown TypeCode.".FormatWith(obj.GetType().FullName))
             { }
         }
     }

@@ -27,11 +27,11 @@ namespace json.Objects
         private static object PopulateCollection(Type collectionType, IEnumerable<object> items, Func<object> getCollection)
         {
             CollectionDefinition collectionDef = CollectionDefinition.GetCollectionDefinition(collectionType);
-            
+
             if (collectionDef.IsCollection)
             {
                 object collection = getCollection();
-                
+
                 if (collection != null)
                 {
                     foreach (object item in items)
@@ -116,7 +116,7 @@ namespace json.Objects
 
             private class TypedObjectSubBuilder : TypedObjectBuilder
             {
-                private TypedObjectObject baseObject;
+                private readonly TypedObjectObject baseObject;
                 private bool isBase = true;
 
                 public TypedObjectSubBuilder(TypedObjectObject baseObject)
@@ -222,11 +222,6 @@ namespace json.Objects
                 if (typeDef == null)
                     throw new ObjectNotInitialized();
             }
-
-            public override ParseObject Parse(ParseValueFactory valueFactory)
-            {
-                return ObjectParser.Parse(Object, valueFactory).AsObject();
-            }
         }
 
         private class TypedObjectArray : ParseArrayBase
@@ -289,7 +284,8 @@ namespace json.Objects
             private TypedObjectNull() { }
 
             private static TypedObjectNull value;
-            public static TypedObjectNull Value {
+            public static TypedObjectNull Value
+            {
                 get { return value = value ?? new TypedObjectNull(); }
             }
 
@@ -304,12 +300,14 @@ namespace json.Objects
             private TypedObjectBoolean(bool value) : base(value) { }
 
             private static TypedObjectBoolean trueValue;
-            public static TypedObjectBoolean True {
+            public static TypedObjectBoolean True
+            {
                 get { return trueValue = trueValue ?? new TypedObjectBoolean(true); }
             }
 
             private static TypedObjectBoolean falseValue;
-            public static TypedObjectBoolean False {
+            public static TypedObjectBoolean False
+            {
                 get { return falseValue = falseValue ?? new TypedObjectBoolean(false); }
             }
 

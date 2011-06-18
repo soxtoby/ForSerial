@@ -1,5 +1,5 @@
-using System.Text;
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace json.Json
@@ -50,7 +50,7 @@ namespace json.Json
 
         protected class JsonStringObject : ParseObjectBase
         {
-            private StringBuilder json = new StringBuilder();
+            private readonly StringBuilder json = new StringBuilder();
             private bool isFirstProperty = true;
 
             public JsonStringObject()
@@ -114,16 +114,11 @@ namespace json.Json
             {
                 return json.ToString() + "}";
             }
-
-            public override ParseObject Parse(ParseValueFactory valueFactory)
-            {
-                return JsonParser.Parse(ToString(), valueFactory);
-            }
         }
 
         private class JsonStringArray : ParseArrayBase
         {
-            private StringBuilder json = new StringBuilder();
+            private readonly StringBuilder json = new StringBuilder();
             private bool isFirstItem = true;
 
             public JsonStringArray()
@@ -185,13 +180,14 @@ namespace json.Json
 
             public override string ToString()
             {
-                return json.ToString() + "]";
+                return json + "]";
             }
         }
 
         private class JsonStringNumber : ParseNumber
         {
-            public JsonStringNumber(double value) : base(value)
+            public JsonStringNumber(double value)
+                : base(value)
             {
             }
 
@@ -207,7 +203,8 @@ namespace json.Json
 
         private class JsonStringString : ParseString
         {
-            public JsonStringString(string value) : base(EscapeForJson(value))
+            public JsonStringString(string value)
+                : base(EscapeForJson(value))
             {
             }
 
@@ -226,7 +223,8 @@ namespace json.Json
 
         private class JsonStringBoolean : ParseBoolean
         {
-            private JsonStringBoolean(bool value) : base(value)
+            private JsonStringBoolean(bool value)
+                : base(value)
             {
             }
 
@@ -272,7 +270,8 @@ namespace json.Json
 
         private class InvalidResultObject : Exception
         {
-            public InvalidResultObject() : base("Invalid ParseObject type. Object must be constructed using a JsonStringBuilder.")
+            public InvalidResultObject()
+                : base("Invalid ParseObject type. Object must be constructed using a JsonStringBuilder.")
             {
             }
         }

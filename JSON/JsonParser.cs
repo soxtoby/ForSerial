@@ -5,7 +5,7 @@ namespace json.Json
     internal class JsonParser : Parser
     {
         private IEnumerator<Token> tokenEnumerator;
-        private ParseValueFactory valueFactory;
+        private readonly ParseValueFactory valueFactory;
 
         private JsonParser(ParseValueFactory valueFactory)
         {
@@ -43,10 +43,10 @@ namespace json.Json
             using (tokenEnumerator = tokens.GetEnumerator())
             {
                 NextToken();
-    
+
                 if (CurrentToken.TokenType == TokenType.EOF)
                     return null;
-    
+
                 return ParseObject();
             }
         }

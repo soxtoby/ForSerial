@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -6,7 +5,7 @@ namespace json.Json
 {
     public class Scanner
     {
-        private TokenReader reader;
+        private readonly TokenReader reader;
 
         private Scanner(TextReader reader)
         {
@@ -127,7 +126,7 @@ namespace json.Json
             public UnexpectedEndOfFile(int line, int position) : base("Unexpected end of file.", string.Empty, line, position) { }
         }
 
-        public class UnexpectedCharacter: ParseException
+        public class UnexpectedCharacter : ParseException
         {
             public UnexpectedCharacter(char character, int line, int position) : base("Unexpected character.", character.ToString(), line, position) { }
         }

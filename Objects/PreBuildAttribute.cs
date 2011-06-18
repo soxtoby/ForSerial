@@ -5,8 +5,8 @@ namespace json.Objects
 {
     public abstract class PreBuildAttribute : Attribute
     {
-        private Type parserType;
-        private Type preBuildContextType;
+        private readonly Type parserType;
+        private readonly Type preBuildContextType;
 
         protected PreBuildAttribute(Type parserType, Type preBuildContextType)
         {

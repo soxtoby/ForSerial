@@ -9,9 +9,9 @@ namespace json.Objects
         public Type Type { get; private set; }
         public bool IsSerializable { get; private set; }
 
-        private MethodInfo getter;
-        private MethodInfo setter;
-        private TypeCode typeCode;
+        private readonly MethodInfo getter;
+        private readonly MethodInfo setter;
+        private readonly TypeCode typeCode;
 
         public bool CanGet { get { return getter != null; } }
         public bool CanSet { get { return setter != null; } }
@@ -29,7 +29,7 @@ namespace json.Objects
 
         public object GetFrom(object obj)
         {
-            return getter.Invoke(obj, new object[] {  });
+            return getter.Invoke(obj, new object[] { });
         }
 
         public void SetOn(object obj, object value)

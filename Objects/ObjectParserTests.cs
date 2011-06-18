@@ -1,6 +1,6 @@
 using System;
-using NUnit.Framework;
 using json.Json;
+using NUnit.Framework;
 
 namespace json.Objects
 {
@@ -46,7 +46,7 @@ namespace json.Objects
         [Test]
         public void NestedEmptyObject()
         {
-            Assert.AreEqual("{\"foo\":{}}", ParseToJson(new { foo = new {  } }));
+            Assert.AreEqual("{\"foo\":{}}", ParseToJson(new { foo = new { } }));
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace json.Objects
         [Test]
         public void EmptyArray()
         {
-            Assert.AreEqual("{\"foo\":[]}", ParseToJson(new { foo = new object[] {  } }));
+            Assert.AreEqual("{\"foo\":[]}", ParseToJson(new { foo = new object[] { } }));
         }
 
         [Test]
@@ -82,19 +82,19 @@ namespace json.Objects
         [Test]
         public void ObjectArray()
         {
-            Assert.AreEqual("{\"foo\":[{\"bar\":5},{}]}", ParseToJson(new { foo = new object[] { new { bar = 5 }, new {  } } }));
+            Assert.AreEqual("{\"foo\":[{\"bar\":5},{}]}", ParseToJson(new { foo = new object[] { new { bar = 5 }, new { } } }));
         }
 
         [Test]
         public void NestedArray()
         {
-            Assert.AreEqual("{\"foo\":[[1,2],[]]}", ParseToJson(new { foo = new int[][] { new[] { 1, 2 }, new int[] {  } } }));
+            Assert.AreEqual("{\"foo\":[[1,2],[]]}", ParseToJson(new { foo = new int[][] { new[] { 1, 2 }, new int[] { } } }));
         }
 
         [Test]
         public void MixedArray()
         {
-            Assert.AreEqual("{\"foo\":[1,\"two\",{},[]]}", ParseToJson(new { foo = new object[] { 1, "two", new {  }, new object[] {  } } }));
+            Assert.AreEqual("{\"foo\":[1,\"two\",{},[]]}", ParseToJson(new { foo = new object[] { 1, "two", new { }, new object[] { } } }));
         }
 
         [Test]
@@ -112,18 +112,18 @@ namespace json.Objects
         [Test]
         public void Array_IsWrappedInObject()
         {
-            Assert.AreEqual("{\"items\":[]}", ParseToJson(new object[] {  }));
+            Assert.AreEqual("{\"items\":[]}", ParseToJson(new object[] { }));
         }
 
         [Test]
-        [ExpectedException(typeof(ObjectParser.ObjectParserException))]
+        [ExpectedException(typeof(ObjectParser.UnknownTypeCode))]
         public void UnknownTypeCode()
         {
             ParseToJson(new { DBNull.Value });
         }
 
 
-        private string ParseToJson(object obj)
+        private static string ParseToJson(object obj)
         {
             ParseObject json = ObjectParser.Parse(obj, new JsonStringBuilder()).AsObject();
             return JsonStringBuilder.GetResult(json);

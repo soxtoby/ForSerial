@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace json.JsonObjects
 {
@@ -81,7 +80,7 @@ namespace json.JsonObjects
             {
                 JsonObjectObject valueObject = value as JsonObjectObject;
                 if (valueObject == null)
-                    throw new JsonObjectBuilder.UnsupportedParseObject();
+                    throw new UnsupportedParseObject();
                 Object[name] = valueObject.Object;
             }
 
@@ -89,7 +88,7 @@ namespace json.JsonObjects
             {
                 JsonObjectArray valueArray = value as JsonObjectArray;
                 if (valueArray == null)
-                    throw new JsonObjectBuilder.UnsupportedParseArray();
+                    throw new UnsupportedParseArray();
                 Object[name] = valueArray.Array;
             }
 
@@ -97,11 +96,6 @@ namespace json.JsonObjects
             {
                 Object.TypeIdentifier = typeIdentifier;
                 return false;
-            }
-
-            public override ParseObject Parse(ParseValueFactory valueFactory)
-            {
-                throw new NotImplementedException();
             }
         }
 
@@ -138,7 +132,7 @@ namespace json.JsonObjects
             {
                 JsonObjectObject valueObject = value as JsonObjectObject;
                 if (valueObject == null)
-                    throw new JsonObjectBuilder.UnsupportedParseObject();
+                    throw new UnsupportedParseObject();
                 Array.Add(valueObject.Object);
             }
 
@@ -146,7 +140,7 @@ namespace json.JsonObjects
             {
                 JsonObjectArray valueArray = value as JsonObjectArray;
                 if (valueArray == null)
-                    throw new JsonObjectBuilder.UnsupportedParseArray();
+                    throw new UnsupportedParseArray();
                 Array.Add(valueArray.Array);
             }
 

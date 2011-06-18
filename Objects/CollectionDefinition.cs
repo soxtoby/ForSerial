@@ -8,8 +8,8 @@ namespace json.Objects
     public class CollectionDefinition
     {
         public Type ItemType { get; set; }
-        private TypeCode itemTypeCode;
-        private MethodInfo adder;
+        private readonly TypeCode itemTypeCode;
+        private readonly MethodInfo adder;
 
         public bool IsCollection { get { return adder != null; } }
 
@@ -43,7 +43,7 @@ namespace json.Objects
         }
 
         // FIXME use a ConcurrentDictionary
-        private static Dictionary<string, CollectionDefinition> knownCollections = new Dictionary<string, CollectionDefinition>();
+        private static readonly Dictionary<string, CollectionDefinition> knownCollections = new Dictionary<string, CollectionDefinition>();
 
         public static CollectionDefinition GetCollectionDefinition(Type collectionType)
         {

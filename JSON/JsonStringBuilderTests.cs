@@ -1,12 +1,11 @@
-using System;
 using NUnit.Framework;
 
 namespace json.Json
 {
-    [TestFixture()]
+    [TestFixture]
     public class JsonStringBuilderTests
     {
-        [Test()]
+        [Test]
         public void StringIsEscaped()
         {
             ParseString parseString = new JsonStringBuilder().CreateString("\"foo\\bar\"");
@@ -52,11 +51,6 @@ namespace json.Json
             }
 
             public void AddArray(string name, ParseArray value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public ParseObject Parse(ParseValueFactory valueFactory)
             {
                 throw new System.NotImplementedException();
             }

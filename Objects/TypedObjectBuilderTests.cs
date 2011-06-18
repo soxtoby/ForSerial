@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using NUnit.Framework;
 using System.Linq;
 using json.Json;
+using NUnit.Framework;
 
 namespace json.Objects
 {
@@ -76,7 +76,7 @@ namespace json.Objects
         [Test]
         public void ObjectProperty()
         {
-            Assert.AreEqual(5, Clone(new ObjectPropertyClass { Object = new IntPropertyClass { Integer = 5} }).Object.Integer);
+            Assert.AreEqual(5, Clone(new ObjectPropertyClass { Object = new IntPropertyClass { Integer = 5 } }).Object.Integer);
         }
 
         private class ObjectPropertyClass
@@ -142,7 +142,7 @@ namespace json.Objects
                 }
             };
 
-            CollectionAssert.AreEqual(new[] { 1, 2, 3}, Clone(obj).Array.Select(i => i.Integer).ToList());
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, Clone(obj).Array.Select(i => i.Integer).ToList());
         }
 
         private class ObjectArrayPropertyClass
@@ -217,11 +217,6 @@ namespace json.Objects
             }
 
             public override void AddArray(string name, ParseArray value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override ParseObject Parse(ParseValueFactory valueFactory)
             {
                 throw new System.NotImplementedException();
             }
@@ -305,18 +300,18 @@ namespace json.Objects
             }
 
             // This is what I'd like to use once I've written a JsonObjectParser
-//            public void PreDeserialize(JsonObject json)
-//            {
-//                int one = (int?)json.Get("One") ?? 0;
-//                int two = (int?)json.Get("Two") ?? 0;
-//                json["One"] = two;
-//                json["Two"] = one;
-//            }
+            //            public void PreDeserialize(JsonObject json)
+            //            {
+            //                int one = (int?)json.Get("One") ?? 0;
+            //                int two = (int?)json.Get("Two") ?? 0;
+            //                json["One"] = two;
+            //                json["Two"] = one;
+            //            }
         }
 
 
 
-        private T Clone<T>(T obj)
+        private static T Clone<T>(T obj)
         {
             ParseValue cloneValue = ObjectParser.Parse(obj, new TypedObjectBuilder());
             return TypedObjectBuilder.GetResult<T>(cloneValue);

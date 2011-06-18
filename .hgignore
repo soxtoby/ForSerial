@@ -2,3 +2,9 @@ glob:bin/*
 glob:test-results/*
 glob:*.pidb
 glob:*.userprefs
+syntax: glob
+_ReSharper*
+*.user
+*.suo
+obj/*
+*.docstates
