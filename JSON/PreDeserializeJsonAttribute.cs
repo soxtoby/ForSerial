@@ -8,7 +8,7 @@ namespace json.Json
 
         public override ParseValueFactory GetBuilder()
         {
-            return new JsonStringBuilder();
+            return JsonStringBuilder.Instance;
         }
 
         public override object GetContextValue(ParseObject parsedContext)

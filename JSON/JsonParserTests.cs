@@ -10,13 +10,13 @@ namespace json.Json
         [Test]
         public void NoJson()
         {
-            Assert.IsNull(Parse(string.Empty));
+            Assert.IsNull(ParseJson(string.Empty));
         }
 
         [Test]
         public void EmptyObject()
         {
-            JsonObject obj = Parse("{}");
+            JsonObject obj = ParseJson("{}");
             Assert.IsEmpty(obj);
         }
 
@@ -42,7 +42,7 @@ namespace json.Json
         [Test]
         public void NullProperty()
         {
-            Assert.IsNull(Parse("{ \"foo\": null }")["foo"]);
+            Assert.IsNull(ParseJson("{ \"foo\": null }")["foo"]);
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace json.Json
         [Test]
         public void ObjectThenNumberProperty()
         {
-            JsonObject obj = Parse("{ \"foo\": { }, \"bar\": 4 }");
+            JsonObject obj = ParseJson("{ \"foo\": { }, \"bar\": 4 }");
             Assert.IsInstanceOfType(typeof(JsonObject), obj["foo"]);
             Assert.AreEqual(4, obj["bar"]);
         }
@@ -94,77 +94,76 @@ namespace json.Json
         [ExpectedException(typeof(ParseException))]
         public void NoOpenBrace_ThrowsParseException()
         {
-            Parse("5");
+            ParseJson("5");
         }
 
         [Test]
         [ExpectedException(typeof(ParseException))]
         public void InvalidName_ThrowsParseException()
         {
-            Parse("{ foo: 0 }");
+            ParseJson("{ foo: 0 }");
         }
 
         [Test]
         [ExpectedException(typeof(ParseException))]
         public void NoColon_ThrowsParseException()
         {
-            Parse("{ \"foo\" 0 }");
+            ParseJson("{ \"foo\" 0 }");
         }
 
         [Test]
         [ExpectedException(typeof(ParseException))]
         public void InvalidWordValue_ThrowsParseException()
         {
-            Parse("{ \"foo\": bar }");
+            ParseJson("{ \"foo\": bar }");
         }
 
         [Test]
         [ExpectedException(typeof(ParseException))]
         public void InvalidSymbolValue_ThrowsParseException()
         {
-            Parse("{ \"foo\": ] }");
+            ParseJson("{ \"foo\": ] }");
         }
 
         [Test]
         [ExpectedException(typeof(ParseException))]
         public void MissingClosingBrace_ThrowsParseException()
         {
-            Parse("{ \"foo\": { }");
+            ParseJson("{ \"foo\": { }");
         }
 
         [Test]
         [ExpectedException(typeof(ParseException))]
         public void TrailingCommaInObject_ThrowsParseException()
         {
-            Parse("{ \"foo\": 5, }");
+            ParseJson("{ \"foo\": 5, }");
         }
 
         [Test]
         [ExpectedException(typeof(ParseException))]
         public void MissingClosingBracket_ThrowsParseException()
         {
-            Parse("{ \"foo\": [ 5 }");
+            ParseJson("{ \"foo\": [ 5 }");
         }
 
         [Test]
         [ExpectedException(typeof(ParseException))]
         public void TrailingCommaInArray_ThrowsParseException()
         {
-            Parse("{ \"foo\": [ 5, ] }");
+            ParseJson("{ \"foo\": [ 5, ] }");
         }
 
 
         private T ParseFooProperty<T>(string json)
         {
-            JsonObject obj = Parse(json);
-            Assert.IsInstanceOfType(typeof(T), obj["foo"]);
+            JsonObject obj = ParseJson(json);
+            Assert.IsInstanceOf<T>(obj["foo"]);
             return (T)obj["foo"];
         }
 
-        private JsonObject Parse(string json)
+        private static JsonObject ParseJson(string json)
         {
-            ParseObject obj = JsonParser.Parse(Scanner.Scan(json), new JsonObjectBuilder());
-            return JsonObjectBuilder.GetResult(obj);
+            return Parse.From.Json(json).ToJsonObject();
         }
     }
 }

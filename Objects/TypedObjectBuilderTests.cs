@@ -17,8 +17,8 @@ namespace json.Objects
         [Test]
         public void Boolean()
         {
-            Assert.IsTrue((bool)Clone(true));
-            Assert.IsFalse((bool)Clone(false));
+            Assert.IsTrue(Clone(true));
+            Assert.IsFalse(Clone(false));
         }
 
         [Test]
@@ -122,7 +122,7 @@ namespace json.Objects
 
         private class GettableListPropertyClass
         {
-            private List<int> list = new List<int>();
+            private readonly List<int> list = new List<int>();
             public List<int> Array
             {
                 get { return list; }
@@ -176,7 +176,7 @@ namespace json.Objects
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseObject))]
         public void AddUnsupportedParseObjectToObject_ThrowsException()
         {
-            ParseObject obj = new TypedObjectBuilder().CreateObject();
+            ParseObject obj = TypedObjectBuilder.Instance.CreateObject();
             obj.SetType(typeof(IntPropertyClass).AssemblyQualifiedName, null);
             obj.AddObject("Integer", new TestParseObject());
         }
@@ -185,7 +185,7 @@ namespace json.Objects
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseObject))]
         public void AddUnsupportedParseObjectToArray_ThrowsException()
         {
-            ParseArray array = new TypedObjectBuilder().CreateArray();
+            ParseArray array = TypedObjectBuilder.Instance.CreateArray();
             array.AddObject(new TestParseObject());
         }
 
@@ -226,7 +226,7 @@ namespace json.Objects
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseArray))]
         public void AddUnsupportedParseArrayToObject_ThrowsException()
         {
-            ParseObject obj = new TypedObjectBuilder().CreateObject();
+            ParseObject obj = TypedObjectBuilder.Instance.CreateObject();
             obj.SetType(typeof(SettableListPropertyClass).AssemblyQualifiedName, null);
             obj.AddArray("Array", new TestParseArray());
         }
@@ -235,7 +235,7 @@ namespace json.Objects
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseArray))]
         public void AddUnsupportedParseArrayToArray_ThrowsException()
         {
-            ParseArray array = new TypedObjectBuilder().CreateArray();
+            ParseArray array = TypedObjectBuilder.Instance.CreateArray();
             array.AddArray(new TestParseArray());
         }
 
@@ -280,8 +280,8 @@ namespace json.Objects
         [Test]
         public void PreDeserializeUpgrade()
         {
-            string json = JsonStringBuilder.GetResult(ObjectParser.Parse(new PreDeserializeUpgradeClass { One = 1, Two = 2 }, new TypedJsonStringBuilder()).AsObject());
-            PreDeserializeUpgradeClass obj = TypedObjectBuilder.GetResult<PreDeserializeUpgradeClass>(JsonParser.Parse(Scanner.Scan(json), new TypedObjectBuilder()));
+            string json = Parse.From.Object(new PreDeserializeUpgradeClass { One = 1, Two = 2 }).ToTypedJson();
+            PreDeserializeUpgradeClass obj = Parse.From.Json(json).ToObject<PreDeserializeUpgradeClass>();
 
             Assert.AreEqual(2, obj.One);
             Assert.AreEqual(1, obj.Two);
@@ -313,8 +313,7 @@ namespace json.Objects
 
         private static T Clone<T>(T obj)
         {
-            ParseValue cloneValue = ObjectParser.Parse(obj, new TypedObjectBuilder());
-            return TypedObjectBuilder.GetResult<T>(cloneValue);
+            return Parse.From.Object(obj).ToObject<T>();
         }
     }
 }

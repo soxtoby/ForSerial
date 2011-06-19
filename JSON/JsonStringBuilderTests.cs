@@ -8,7 +8,7 @@ namespace json.Json
         [Test]
         public void StringIsEscaped()
         {
-            ParseString parseString = new JsonStringBuilder().CreateString("\"foo\\bar\"");
+            ParseString parseString = JsonStringBuilder.Instance.CreateString("\"foo\\bar\"");
             TestObject obj = new TestObject();
             parseString.AddToObject(obj, null);
             Assert.AreEqual(@"\""foo\\bar\""", obj.StringValue);

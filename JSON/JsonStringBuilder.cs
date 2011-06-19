@@ -6,6 +6,14 @@ namespace json.Json
 {
     public class JsonStringBuilder : ParseValueFactory
     {
+        protected JsonStringBuilder() { }
+
+        private static JsonStringBuilder instance;
+        public static JsonStringBuilder Instance
+        {
+            get { return instance ?? (instance = new JsonStringBuilder()); }
+        }
+
         public static string GetResult(ParseObject obj)
         {
             if (obj == null)
@@ -279,6 +287,14 @@ namespace json.Json
 
     public class TypedJsonStringBuilder : JsonStringBuilder
     {
+        private TypedJsonStringBuilder() { }
+
+        private static TypedJsonStringBuilder instance;
+        public new static TypedJsonStringBuilder Instance
+        {
+            get { return instance ?? (instance = new TypedJsonStringBuilder()); }
+        }
+
         public override ParseObject CreateObject()
         {
             return new TypedJsonStringObject();

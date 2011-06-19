@@ -5,6 +5,14 @@ namespace json.JsonObjects
 {
     public class JsonObjectBuilder : ParseValueFactory
     {
+        private JsonObjectBuilder() { }
+
+        private static JsonObjectBuilder instance;
+        public static JsonObjectBuilder Instance
+        {
+            get { return instance ?? (instance = new JsonObjectBuilder()); }
+        }
+
         public static JsonObject GetResult(ParseObject obj)
         {
             if (obj == null)

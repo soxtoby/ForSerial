@@ -5,6 +5,14 @@ namespace json.Objects
 {
     public class TypedObjectBuilder : ParseValueFactory
     {
+        private TypedObjectBuilder() { }
+
+        private static TypedObjectBuilder instance;
+        public static TypedObjectBuilder Instance
+        {
+            get { return instance ?? (instance = new TypedObjectBuilder()); }
+        }
+
         public static T GetResult<T>(ParseValue value)
         {
             TypedObjectArray array = value as TypedObjectArray;
