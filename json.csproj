@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GeneralExtensions.cs" />
+    <Compile Include="JsonObjects\JsonObjectParser.cs" />
     <Compile Include="Parse.cs" />
     <Compile Include="ParseValues.cs" />
     <Compile Include="Objects\CollectionDefinition.cs" />

@@ -45,6 +45,11 @@ namespace json
             return ParseExtensionPoint.Create(b => JsonParser.Parse(json, b));
         }
 
+        public static ParseExtensionPoint JsonObject(this Parse parse, JsonObject obj)
+        {
+            return ParseExtensionPoint.Create(b => JsonObjectParser.Parse(obj, b));
+        }
+
         public static ParseExtensionPoint Object(this Parse parse, object obj)
         {
             return ParseExtensionPoint.Create(b => ObjectParser.Parse(obj, b));
