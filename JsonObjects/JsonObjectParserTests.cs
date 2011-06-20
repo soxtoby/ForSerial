@@ -77,7 +77,7 @@ namespace json.JsonObjects
         {
             JsonObject obj = new JsonObject { { "foo", new JsonObject { { "_type", "bar" }, { "baz", "qux" } } } };
             ParseSubObjectValueFactory valueFactory = new ParseSubObjectValueFactory();
-            Parse.From.JsonObject(obj).Parse(valueFactory);
+            Parse.From.JsonObject(obj).WithBuilder(valueFactory);
 
             Assert.AreEqual(@"{""baz"":""qux""}", valueFactory.SubObjectJson);
         }

@@ -32,7 +32,7 @@ namespace json
             return new ParseExtensionPoint(parseMethod);
         }
 
-        public ParseValue Parse(ParseValueFactory valueFactory)
+        public ParseValue WithBuilder(ParseValueFactory valueFactory)
         {
             return parse(valueFactory);
         }
@@ -57,26 +57,26 @@ namespace json
 
         public static JsonObject ToJsonObject(this ParseExtensionPoint parser)
         {
-            ParseValue result = parser.Parse(JsonObjectBuilder.Instance);
+            ParseValue result = parser.WithBuilder(JsonObjectBuilder.Instance);
             ParseObject parseObject = result == null ? null : result.AsObject();
             return JsonObjectBuilder.GetResult(parseObject);
         }
 
         public static T ToObject<T>(this ParseExtensionPoint parser)
         {
-            ParseValue result = parser.Parse(TypedObjectBuilder.Instance);
+            ParseValue result = parser.WithBuilder(TypedObjectBuilder.Instance);
             return TypedObjectBuilder.GetResult<T>(result);
         }
 
         public static string ToJson(this ParseExtensionPoint parser)
         {
-            ParseValue result = parser.Parse(JsonStringBuilder.Instance);
+            ParseValue result = parser.WithBuilder(JsonStringBuilder.Instance);
             return JsonStringBuilder.GetResult(result.AsObject());
         }
 
         public static string ToTypedJson(this ParseExtensionPoint parser)
         {
-            ParseValue result = parser.Parse(TypedJsonStringBuilder.Instance);
+            ParseValue result = parser.WithBuilder(TypedJsonStringBuilder.Instance);
             return JsonStringBuilder.GetResult(result.AsObject());
         }
     }

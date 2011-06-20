@@ -23,9 +23,9 @@ namespace json.Json
             return parser.ParseTokens(tokens);
         }
 
-        public ParseObject ParseSubObject(ParseValueFactory valueFactory)
+        public ParseObject ParseSubObject(ParseValueFactory subParseValueFactory)
         {
-            return Parse(GetSubObjectTokens(), valueFactory);
+            return Parse(GetSubObjectTokens(), subParseValueFactory);
         }
 
         private IEnumerable<Token> GetSubObjectTokens()

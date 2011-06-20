@@ -29,7 +29,7 @@ namespace json
 
     public interface Parser
     {
-        ParseObject ParseSubObject(ParseValueFactory valueFactory);
+        ParseObject ParseSubObject(ParseValueFactory subParseValueFactory);
     }
 
     public abstract class ParseObjectBase : ParseObject

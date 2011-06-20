@@ -7,6 +7,7 @@ namespace json.JsonObjects
     {
         private const string TypeKey = "_type";
         private readonly ParseValueFactory valueFactory;
+        private JsonObject currentObject;
 
         private JsonObjectParser(ParseValueFactory valueFactory)
         {
@@ -19,9 +20,9 @@ namespace json.JsonObjects
             return parser.ParseObject(obj);
         }
 
-        public ParseObject ParseSubObject(ParseValueFactory valueFactory)
+        public ParseObject ParseSubObject(ParseValueFactory subParseValueFactory)
         {
-            throw new NotImplementedException();
+            return Parse(currentObject, subParseValueFactory);
         }
 
         private ParseValue ParseValue(object input)
@@ -67,6 +68,8 @@ namespace json.JsonObjects
 
         private ParseObject ParseObject(JsonObject obj)
         {
+            currentObject = obj;
+
             ParseObject parseObject = valueFactory.CreateObject();
 
             foreach (var property in obj)

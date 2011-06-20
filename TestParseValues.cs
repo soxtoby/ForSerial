@@ -4,32 +4,26 @@ namespace json
     {
         public override void AddNull(string name)
         {
-            throw new System.NotImplementedException();
         }
 
         public override void AddBoolean(string name, bool value)
         {
-            throw new System.NotImplementedException();
         }
 
         public override void AddNumber(string name, double value)
         {
-            throw new System.NotImplementedException();
         }
 
         public override void AddString(string name, string value)
         {
-            throw new System.NotImplementedException();
         }
 
         public override void AddObject(string name, ParseObject value)
         {
-            throw new System.NotImplementedException();
         }
 
         public override void AddArray(string name, ParseArray value)
         {
-            throw new System.NotImplementedException();
         }
     }
 
@@ -71,6 +65,18 @@ namespace json
         }
     }
 
+    internal class TestParseString : ParseString
+    {
+        public TestParseString(string value) : base(value) { }
+
+        public override ParseObject AsObject()
+        {
+            TestParseObject obj = new TestParseObject();
+            obj.AddString("value", value);
+            return obj;
+        }
+    }
+
     internal class TestValueFactory : ParseValueFactory
     {
         public virtual ParseObject CreateObject()
@@ -90,7 +96,7 @@ namespace json
 
         public virtual ParseString CreateString(string value)
         {
-            throw new System.NotImplementedException();
+            return new TestParseString(value);
         }
 
         public virtual ParseBoolean CreateBoolean(bool value)

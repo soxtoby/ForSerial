@@ -20,9 +20,9 @@ namespace json.Objects
             return parser.ParseValue(obj);
         }
 
-        public ParseObject ParseSubObject(ParseValueFactory valueFactory)
+        public ParseObject ParseSubObject(ParseValueFactory subParseValueFactory)
         {
-            return Parse(currentObject, valueFactory).AsObject();
+            return Parse(currentObject, subParseValueFactory).AsObject();
         }
 
         private ParseValue ParseValue(object input)
