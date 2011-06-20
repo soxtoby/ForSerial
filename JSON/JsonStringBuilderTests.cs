@@ -9,66 +9,40 @@ namespace json.Json
         public void StringIsEscaped()
         {
             ParseString parseString = JsonStringBuilder.Instance.CreateString("\"foo\\bar\"");
-            TestObject obj = new TestObject();
+            StringValueObject obj = new StringValueObject();
             parseString.AddToObject(obj, null);
             Assert.AreEqual(@"\""foo\\bar\""", obj.StringValue);
         }
 
-        private class TestObject : ParseObject
+        private class StringValueObject : TestParseObject
         {
-            public string TypeIdentifier { get; private set; }
             public string StringValue { get; private set; }
 
-            public bool SetType(string typeIdentifier, Parser parser)
-            {
-                TypeIdentifier = typeIdentifier;
-                return false;
-            }
-
-            public void AddNull(string name)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public void AddBoolean(string name, bool value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public void AddNumber(string name, double value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public void AddString(string name, string value)
+            public override void AddString(string name, string value)
             {
                 StringValue = value;
             }
+        }
 
-            public void AddObject(string name, ParseObject value)
-            {
-                throw new System.NotImplementedException();
-            }
+        [Test]
+        public void Number_IsWrappedInObject()
+        {
+            ParseNumber number = JsonStringBuilder.Instance.CreateNumber(5);
+            Assert.AreEqual("{\"value\":5}", JsonStringBuilder.GetResult(number.AsObject()));
+        }
 
-            public void AddArray(string name, ParseArray value)
-            {
-                throw new System.NotImplementedException();
-            }
+        [Test]
+        public void String_IsWrappedInObject()
+        {
+            ParseString str = JsonStringBuilder.Instance.CreateString("foo");
+            Assert.AreEqual("{\"value\":\"foo\"}", JsonStringBuilder.GetResult(str.AsObject()));
+        }
 
-            public void AddToObject(ParseObject obj, string name)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public void AddToArray(ParseArray array)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public ParseObject AsObject()
-            {
-                throw new System.NotImplementedException();
-            }
+        [Test]
+        public void Array_IsWrappedInObject()
+        {
+            ParseArray array = JsonStringBuilder.Instance.CreateArray();
+            Assert.AreEqual("{\"items\":[]}", JsonStringBuilder.GetResult(array.AsObject()));
         }
     }
 }

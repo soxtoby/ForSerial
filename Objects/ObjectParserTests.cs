@@ -88,7 +88,7 @@ namespace json.Objects
         [Test]
         public void NestedArray()
         {
-            Assert.AreEqual("{\"foo\":[[1,2],[]]}", ParseToJson(new { foo = new int[][] { new[] { 1, 2 }, new int[] { } } }));
+            Assert.AreEqual("{\"foo\":[[1,2],[]]}", ParseToJson(new { foo = new[] { new[] { 1, 2 }, new int[] { } } }));
         }
 
         [Test]
@@ -98,21 +98,38 @@ namespace json.Objects
         }
 
         [Test]
-        public void Number_IsWrappedInObject()
+        public void ParseSubObject()
         {
-            Assert.AreEqual("{\"value\":5}", ParseToJson(5));
+            ParseSubObjectValueFactory valueFactory = new ParseSubObjectValueFactory();
+            Parse.From.Object(new { foo = new { bar = "baz" } }).WithBuilder(valueFactory);
+
+            Assert.AreEqual(@"{""bar"":""baz""}", valueFactory.SubObjectJson);
         }
 
-        [Test]
-        public void String_IsWrappedInObject()
+        private class ParseSubObjectValueFactory : TestValueFactory
         {
-            Assert.AreEqual("{\"value\":\"foo\"}", ParseToJson("foo"));
+            public string SubObjectJson { get; set; }
+
+            public override ParseObject CreateObject()
+            {
+                return new ParseSubObjectObject(this);
+            }
         }
 
-        [Test]
-        public void Array_IsWrappedInObject()
+        private class ParseSubObjectObject : TestParseObject
         {
-            Assert.AreEqual("{\"items\":[]}", ParseToJson(new object[] { }));
+            private readonly ParseSubObjectValueFactory parentFactory;
+
+            public ParseSubObjectObject(ParseSubObjectValueFactory parentFactory)
+            {
+                this.parentFactory = parentFactory;
+            }
+
+            public override bool SetType(string typeIdentifier, Parser parser)
+            {
+                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(parser.ParseSubObject(JsonStringBuilder.Instance));
+                return true;
+            }
         }
 
         [Test]

@@ -1,6 +1,6 @@
 using System.Collections;
-using NUnit.Framework;
 using json.JsonObjects;
+using NUnit.Framework;
 
 namespace json.Json
 {
@@ -55,7 +55,7 @@ namespace json.Json
         public void ObjectThenNumberProperty()
         {
             JsonObject obj = ParseJson("{ \"foo\": { }, \"bar\": 4 }");
-            Assert.IsInstanceOfType(typeof(JsonObject), obj["foo"]);
+            Assert.IsInstanceOf<JsonObject>(obj["foo"]);
             Assert.AreEqual(4, obj["bar"]);
         }
 
@@ -88,6 +88,41 @@ namespace json.Json
         public void MixedTypeArrayProperty()
         {
             CollectionAssert.AreEqual(new object[] { 1, "two", null }, ParseFooProperty<ICollection>("{ \"foo\": [ 1, \"two\", null ] }"));
+        }
+
+        [Test]
+        public void ParseSubObject()
+        {
+            ParseSubObjectValueFactory valueFactory = new ParseSubObjectValueFactory();
+            Parse.From.Json(@"{""foo"":{""_type"":""bar"",""baz"":""qux""}}").WithBuilder(valueFactory);
+
+            Assert.AreEqual(@"{""baz"":""qux""}", valueFactory.SubObjectJson);
+        }
+
+        private class ParseSubObjectValueFactory : TestValueFactory
+        {
+            public override ParseObject CreateObject()
+            {
+                return new ParseSubObjectObject(this);
+            }
+
+            public string SubObjectJson { get; set; }
+        }
+
+        private class ParseSubObjectObject : TestParseObject
+        {
+            private readonly ParseSubObjectValueFactory parentFactory;
+
+            public ParseSubObjectObject(ParseSubObjectValueFactory parentFactory)
+            {
+                this.parentFactory = parentFactory;
+            }
+
+            public override bool SetType(string typeIdentifier, Parser parser)
+            {
+                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(parser.ParseSubObject(JsonStringBuilder.Instance));
+                return true;
+            }
         }
 
         [Test]
