@@ -189,39 +189,6 @@ namespace json.Objects
             array.AddObject(new TestParseObject());
         }
 
-        private class TestParseObject : ParseObjectBase
-        {
-            public override void AddNull(string name)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override void AddBoolean(string name, bool value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override void AddNumber(string name, double value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override void AddString(string name, string value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override void AddObject(string name, ParseObject value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override void AddArray(string name, ParseArray value)
-            {
-                throw new System.NotImplementedException();
-            }
-        }
-
         [Test]
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseArray))]
         public void AddUnsupportedParseArrayToObject_ThrowsException()
@@ -237,44 +204,6 @@ namespace json.Objects
         {
             ParseArray array = TypedObjectBuilder.Instance.CreateArray();
             array.AddArray(new TestParseArray());
-        }
-
-        private class TestParseArray : ParseArrayBase
-        {
-            public override void AddNull()
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override void AddBoolean(bool value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override void AddNumber(double value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override void AddString(string value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override void AddObject(ParseObject value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override void AddArray(ParseArray value)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override ParseObject AsObject()
-            {
-                throw new System.NotImplementedException();
-            }
         }
 
         [Test]
@@ -308,8 +237,6 @@ namespace json.Objects
             //                json["Two"] = one;
             //            }
         }
-
-
 
         private static T Clone<T>(T obj)
         {

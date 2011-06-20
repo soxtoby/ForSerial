@@ -67,6 +67,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GeneralExtensions.cs" />
     <Compile Include="JsonObjects\JsonObjectParser.cs" />
+    <Compile Include="JsonObjects\JsonObjectParserTests.cs" />
     <Compile Include="Parse.cs" />
     <Compile Include="ParseValues.cs" />
     <Compile Include="Objects\CollectionDefinition.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="JSON\Token.cs" />
     <Compile Include="JSON\TokenReader.cs" />
     <Compile Include="JsonObjects\JsonObjectBuilder.cs" />
+    <Compile Include="TestParseValues.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

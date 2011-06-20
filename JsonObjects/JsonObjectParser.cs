@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
-using NUnit.Framework;
 
 namespace json.JsonObjects
 {
     public class JsonObjectParser : Parser
     {
-        private const string typeKey = "_type";
+        private const string TypeKey = "_type";
         private readonly ParseValueFactory valueFactory;
 
         private JsonObjectParser(ParseValueFactory valueFactory)
@@ -72,8 +71,8 @@ namespace json.JsonObjects
 
             foreach (var property in obj)
             {
-                if (property.Key == typeKey)
-                    parseObject.SetType((string)obj[typeKey], this);
+                if (property.Key == TypeKey)
+                    parseObject.SetType((string)obj[TypeKey], this);
                 else
                     ParseValue(property.Value).AddToObject(parseObject, property.Key);
             }
@@ -101,80 +100,6 @@ namespace json.JsonObjects
             public UnknownTypeCode(object obj)
                 : base("Type {0} has unknown TypeCode.".FormatWith(obj.GetType().FullName))
             { }
-        }
-    }
-
-    [TestFixture]
-    public class JsonObjectParserTests
-    {
-        [Test]
-        public void EmptyObject()
-        {
-            Assert.AreEqual("{}", ParseJsonObject(new JsonObject()));
-        }
-
-        [Test]
-        public void NullProperty()
-        {
-            Assert.AreEqual(@"{""foo"":null}", ParseJsonObject(new JsonObject { { "foo", null } }));
-        }
-
-        [Test]
-        public void BooleanProperty()
-        {
-            Assert.AreEqual(@"{""foo"":true}", ParseJsonObject(new JsonObject { { "foo", true } }));
-            Assert.AreEqual(@"{""foo"":false}", ParseJsonObject(new JsonObject { { "foo", false } }));
-        }
-
-        [Test]
-        public void StringProperty()
-        {
-            Assert.AreEqual(@"{""foo"":""bar""}", ParseJsonObject(new JsonObject { { "foo", "bar" } }));
-        }
-
-        [Test]
-        public void NumberProperty()
-        {
-            Assert.AreEqual(@"{""foo"":5}", ParseJsonObject(new JsonObject { { "foo", 5 } }));
-        }
-
-        [Test]
-        public void EmptyObjectProperty()
-        {
-            Assert.AreEqual(@"{""foo"":{}}", ParseJsonObject(new JsonObject { { "foo", new JsonObject() } }));
-        }
-
-        [Test]
-        public void NonEmptyObjectProperty()
-        {
-            Assert.AreEqual(@"{""foo"":{""bar"":5}}", ParseJsonObject(new JsonObject { { "foo", new JsonObject { { "bar", 5 } } } }));
-        }
-
-        [Test]
-        public void NumberArrayProperty()
-        {
-            Assert.AreEqual(@"{""foo"":[1,2,3]}", ParseJsonObject(new JsonObject { { "foo", new[] { 1, 2, 3 } } }));
-        }
-
-        [Test]
-        public void MixedTypeArrayProperty()
-        {
-            Assert.AreEqual(@"{""foo"":[1,""two"",{""three"":4},[5]]}", ParseJsonObject(
-                new JsonObject
-                {
-                    { "foo", new object[]
-                        {
-                            1,
-                            "two",
-                            new JsonObject { {"three", 4 }},
-                            new[] { 5 },
-                        }}
-                }));
-        }
-
-        private static string ParseJsonObject(JsonObject jsonObject)
-        {
-            return Parse.From.JsonObject(jsonObject).ToJson();
         }
     }
 }
