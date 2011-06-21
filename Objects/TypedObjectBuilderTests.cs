@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using json.Json;
+using json.JsonObjects;
 using NUnit.Framework;
 
 namespace json.Objects
@@ -221,21 +221,15 @@ namespace json.Objects
             public int One { get; set; }
             public int Two { get; set; }
 
-            [PreDeserializeJson]
-            public string PreDeserialize(string json)
+            [PreDeserialize]
+            public JsonObject PreDeserialize(JsonObject json)
             {
-                Assert.AreEqual("{\"One\":1,\"Two\":2}", json);
-                return "{\"One\":2,\"Two\":1}";
+                int one = (int)((double?)json.Get("One") ?? 0);
+                int two = (int)((double?)json.Get("Two") ?? 0);
+                json["One"] = two;
+                json["Two"] = one;
+                return json;
             }
-
-            // This is what I'd like to use once I've written a JsonObjectParser
-            //            public void PreDeserialize(JsonObject json)
-            //            {
-            //                int one = (int?)json.Get("One") ?? 0;
-            //                int two = (int?)json.Get("Two") ?? 0;
-            //                json["One"] = two;
-            //                json["Two"] = one;
-            //            }
         }
 
         private static T Clone<T>(T obj)
