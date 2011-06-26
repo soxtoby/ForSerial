@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace json.Objects
 {
@@ -33,36 +34,46 @@ namespace json.Objects
             if (input == null)
                 return valueFactory.CreateNull();
 
-            switch (Type.GetTypeCode(input.GetType()))
+            switch (input.GetType().GetTypeCodeType())
             {
-                case TypeCode.Object:
+                case TypeCodeType.Object:
+                    if (TypeDefinition.GetTypeDefinition(input.GetType()).IsJsonCompatibleDictionary)
+                        return ParseDictionary((IDictionary)input);
                     IEnumerable enumerable = input as IEnumerable;
                     if (enumerable != null)
                         return ParseArray(enumerable);
                     return ParseObject(input);
 
-                case TypeCode.Boolean:
+                case TypeCodeType.Boolean:
                     return valueFactory.CreateBoolean((bool)input);
 
-                case TypeCode.Byte:
-                case TypeCode.Decimal:
-                case TypeCode.Double:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.SByte:
-                case TypeCode.Single:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                    return valueFactory.CreateNumber(Convert.ToDouble(input));
-
-                case TypeCode.String:
+                case TypeCodeType.String:
                     return valueFactory.CreateString((string)input);
+
+                case TypeCodeType.Number:
+                    return valueFactory.CreateNumber(Convert.ToDouble(input));
 
                 default:
                     throw new UnknownTypeCode(input);
             }
+        }
+
+        private ParseObject ParseDictionary(IDictionary dictionary)
+        {
+            ParseObject obj = valueFactory.CreateObject();
+
+            obj.SetType(GetTypeIdentifier(dictionary.GetType()), this);
+
+            foreach (object key in dictionary.Keys)
+            {
+                ParseValue value = ParseValue(dictionary[key]);
+
+                // Convert.ToString is in case the keys are numbers, which are represented
+                // as strings when used as keys, but can be indexed with numbers in JavaScript
+                value.AddToObject(obj, Convert.ToString(key, CultureInfo.InvariantCulture));
+            }
+
+            return obj;
         }
 
         private ParseObject ParseObject(object obj)
@@ -72,7 +83,7 @@ namespace json.Objects
             TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(obj.GetType());
 
             currentObject = obj;
-            output.SetType(typeDef.Type.AssemblyQualifiedName, this);
+            output.SetType(GetTypeIdentifier(typeDef.Type), this);
 
             IEnumerable<PropertyDefinition> propertiesToSerialize = SerializeOneWayTypes
                 ? typeDef.Properties.Values
@@ -85,6 +96,11 @@ namespace json.Objects
             }
 
             return output;
+        }
+
+        private static string GetTypeIdentifier(Type type)
+        {
+            return type.AssemblyQualifiedName;
         }
 
         private bool SerializeOneWayTypes

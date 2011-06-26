@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using json.Objects;
 
 namespace json.JsonObjects
 {
@@ -30,9 +31,9 @@ namespace json.JsonObjects
             if (input == null)
                 return valueFactory.CreateNull();
 
-            switch (Type.GetTypeCode(input.GetType()))
+            switch (input.GetType().GetTypeCodeType())
             {
-                case TypeCode.Object:
+                case TypeCodeType.Object:
                     JsonObject jsonObject = input as JsonObject;
                     IEnumerable enumerable;
                     if (jsonObject != null)
@@ -42,24 +43,14 @@ namespace json.JsonObjects
 
                     throw new InvalidObject(input.GetType());
 
-                case TypeCode.Boolean:
+                case TypeCodeType.Boolean:
                     return valueFactory.CreateBoolean((bool)input);
 
-                case TypeCode.Byte:
-                case TypeCode.Decimal:
-                case TypeCode.Double:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.SByte:
-                case TypeCode.Single:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                    return valueFactory.CreateNumber(Convert.ToDouble(input));
-
-                case TypeCode.String:
+                case TypeCodeType.String:
                     return valueFactory.CreateString((string)input);
+
+                case TypeCodeType.Number:
+                    return valueFactory.CreateNumber(Convert.ToDouble(input));
 
                 default:
                     throw new UnknownTypeCode(input);

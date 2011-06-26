@@ -11,6 +11,7 @@ namespace json.Objects
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
         public bool IsSerializable { get; private set; }
+        public bool IsJsonCompatibleDictionary { get; private set; }
 
         private TypeDefinition(Type type)
         {
@@ -19,6 +20,7 @@ namespace json.Objects
             PopulateProperties();
             PopulatePreBuildMethods();
             IsSerializable = DetermineIfSerializable();
+            IsJsonCompatibleDictionary = DetermineIfJsonCompatibleDictionary();
         }
 
         private bool DetermineIfSerializable()
@@ -27,22 +29,33 @@ namespace json.Objects
                 || Type.GetConstructor(new Type[] { }) != null;
         }
 
+        private bool DetermineIfJsonCompatibleDictionary()
+        {
+            Type keyType = Type.GetGenericInterfaceType(typeof(IDictionary<,>));
+            TypeCodeType typeCodeType = keyType.GetTypeCodeType();
+
+            return typeCodeType == TypeCodeType.String
+                   || typeCodeType == TypeCodeType.Number;
+        }
+
         // FIXME Make this thread-safe - use a ConcurrentDictionary. This version of Mono doesn't appear to have it :(
-        private static readonly Dictionary<string, TypeDefinition> knownTypes = new Dictionary<string, TypeDefinition>();
+        private static readonly Dictionary<string, TypeDefinition> KnownTypes = new Dictionary<string, TypeDefinition>();
 
         public static TypeDefinition GetTypeDefinition(Type type)
         {
-            if (!knownTypes.ContainsKey(type.AssemblyQualifiedName))
-                knownTypes[type.AssemblyQualifiedName] = new TypeDefinition(type);
+            if (type == null) return null;
 
-            return knownTypes[type.AssemblyQualifiedName];
+            if (!KnownTypes.ContainsKey(type.AssemblyQualifiedName))
+                KnownTypes[type.AssemblyQualifiedName] = new TypeDefinition(type);
+
+            return KnownTypes[type.AssemblyQualifiedName];
         }
 
         public static TypeDefinition GetTypeDefinition(string assemblyQualifiedName)
         {
-            if (!knownTypes.ContainsKey(assemblyQualifiedName))
-                knownTypes[assemblyQualifiedName] = new TypeDefinition(Type.GetType(assemblyQualifiedName));
-            return knownTypes[assemblyQualifiedName];
+            if (!KnownTypes.ContainsKey(assemblyQualifiedName))
+                KnownTypes[assemblyQualifiedName] = new TypeDefinition(Type.GetType(assemblyQualifiedName));
+            return KnownTypes[assemblyQualifiedName];
         }
 
         public IEnumerable<PropertyDefinition> SerializableProperties

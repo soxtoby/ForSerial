@@ -1,34 +1,26 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace json.Objects
 {
     public class CollectionDefinition
     {
-        public Type ItemType { get; set; }
+        public Type ItemType { get; private set; }
         private readonly TypeCode itemTypeCode;
         private readonly MethodInfo adder;
 
         public bool IsCollection { get { return adder != null; } }
 
-        public CollectionDefinition(Type collectionType)
+        private CollectionDefinition(Type collectionType)
         {
-            ItemType = GetGenericInterfaceType(collectionType, typeof(ICollection<>));
+            ItemType = collectionType.GetGenericInterfaceType(typeof(ICollection<>));
 
             if (ItemType != null)
             {
                 itemTypeCode = Type.GetTypeCode(ItemType);
                 adder = collectionType.GetMethod("Add", new[] { ItemType });
             }
-        }
-
-        private static Type GetGenericInterfaceType(Type derivedType, Type genericType)
-        {
-            return derivedType.GetInterfaces()
-                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == genericType)
-                .Select(i => i.GetGenericArguments()[0]).FirstOrDefault();
         }
 
         public void AddToCollection(object collection, object value)

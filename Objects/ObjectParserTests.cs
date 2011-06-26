@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using json.Json;
 using NUnit.Framework;
 
@@ -146,6 +147,13 @@ namespace json.Objects
             }
 
             public int Foo { get; set; }
+        }
+
+        [Test]
+        public void StringObjectDictionary_OutputAsRegularObject()
+        {
+            var json = Parse.From.Object(new Dictionary<string, object> { { "foo", "bar" } }).ToJson();
+            Assert.AreEqual(@"{""foo"":""bar""}", json);
         }
 
         [Test]

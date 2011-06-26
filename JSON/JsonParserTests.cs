@@ -189,7 +189,7 @@ namespace json.Json
         }
 
 
-        private T ParseFooProperty<T>(string json)
+        private static T ParseFooProperty<T>(string json)
         {
             JsonObject obj = ParseJson(json);
             Assert.IsInstanceOf<T>(obj["foo"]);

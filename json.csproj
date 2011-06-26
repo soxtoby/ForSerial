@@ -69,6 +69,7 @@
     <Compile Include="JsonObjects\JsonObjectParser.cs" />
     <Compile Include="JsonObjects\JsonObjectParserTests.cs" />
     <Compile Include="JsonObjects\PreDeserializeAttribute.cs" />
+    <Compile Include="Objects\TypeHelper.cs" />
     <Compile Include="Parse.cs" />
     <Compile Include="ParseValues.cs" />
     <Compile Include="Objects\CollectionDefinition.cs" />
