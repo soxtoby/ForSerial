@@ -1,9 +1,7 @@
-Don't serialize object with no default constructor.
 Make ParseObject a ParseValueFactory so property type can inform value type.
 Let T in TypedObjectBuilder inform base object type.
 Take attributes like Unserialized and XmlIgnore into account.
 Make PartiallyTypedJsonStringBuilder that only adds type information when necessary.
  - Should automatically add type info when source is interface or abstract
  - Add attribute that forces type information.
-Special handling of dictionaries.
 Allow override of type resolution.
