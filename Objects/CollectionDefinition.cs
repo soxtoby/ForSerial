@@ -6,20 +6,18 @@ namespace json.Objects
 {
     public class CollectionDefinition
     {
-        public Type ItemType { get; private set; }
-        private readonly TypeCode itemTypeCode;
+        public TypeDefinition ItemTypeDef { get; private set; }
         private readonly MethodInfo adder;
 
         public bool IsCollection { get { return adder != null; } }
 
         private CollectionDefinition(Type collectionType)
         {
-            ItemType = collectionType.GetGenericInterfaceType(typeof(ICollection<>));
+            ItemTypeDef = TypeDefinition.GetTypeDefinition(collectionType.GetGenericInterfaceType(typeof(ICollection<>)));
 
-            if (ItemType != null)
+            if (ItemTypeDef != null)
             {
-                itemTypeCode = Type.GetTypeCode(ItemType);
-                adder = collectionType.GetMethod("Add", new[] { ItemType });
+                adder = collectionType.GetMethod("Add", new[] { ItemTypeDef.Type });
             }
         }
 
@@ -27,10 +25,7 @@ namespace json.Objects
         {
             if (adder != null)
             {
-                if (itemTypeCode != TypeCode.Object)
-                    value = Convert.ChangeType(value, itemTypeCode);
-
-                adder.Invoke(collection, new[] { value });
+                adder.Invoke(collection, new[] { ItemTypeDef.ConvertToCorrectType(value) });
             }
         }
 

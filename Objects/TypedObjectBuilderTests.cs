@@ -173,6 +173,117 @@ namespace json.Objects
         }
 
         [Test]
+        public void SetDictionaryProperty()
+        {
+            SettableDictionaryPropertyClass foo = Clone(new SettableDictionaryPropertyClass
+                {
+                    Dictionary = new Dictionary<string, int>
+                        {
+                            { "foo", 6 }
+                        }
+                });
+            Assert.IsFalse(foo.GetterHasBeenAccessed);
+            Assert.AreEqual(6, foo.Dictionary["foo"]);
+        }
+
+        private class SettableDictionaryPropertyClass
+        {
+            public bool GetterHasBeenAccessed { get; private set; }
+
+            private Dictionary<string, int> dictionary;
+            public Dictionary<string, int> Dictionary
+            {
+                get
+                {
+                    GetterHasBeenAccessed = true;
+                    return dictionary;
+                }
+                set
+                {
+                    dictionary = value;
+                }
+            }
+        }
+
+        [Test]
+        public void PopulateDictionaryProperty()
+        {
+            var obj = new GettableDictionaryPropertyClass();
+            obj.Dictionary["foo"] = 5;
+
+            Assert.AreEqual(5, Clone(obj).Dictionary["foo"]);
+        }
+
+        private class GettableDictionaryPropertyClass
+        {
+            private readonly Dictionary<string, int> dictionary = new Dictionary<string, int>();
+            public Dictionary<string, int> Dictionary
+            {
+                get { return dictionary; }
+            }
+        }
+
+        [Test]
+        public void ListDictionaryProperty()
+        {
+            var foo = Clone(new ListDictionaryPropertyClass
+                {
+                    Dictionary = new Dictionary<string, List<int>>
+                        {
+                            { "foo", new List<int> { 1, 2, 3 } }
+                        }
+                });
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, foo.Dictionary["foo"]);
+        }
+
+        private class ListDictionaryPropertyClass
+        {
+            public Dictionary<string, List<int>> Dictionary { get; set; }
+        }
+
+        [Test]
+        public void NestedDictionaryProperty()
+        {
+            var foo = Clone(new NestedDictionaryPropertyClass
+                {
+                    Dictionary = new Dictionary<string, Dictionary<string, int>>
+                        {
+                            {
+                                "bar", new Dictionary<string, int>
+                                    {
+                                        { "baz", 7 }
+                                    }
+                            }
+                        }
+                });
+
+            Assert.AreEqual(7, foo.Dictionary["bar"]["baz"]);
+        }
+
+        private class NestedDictionaryPropertyClass
+        {
+            public Dictionary<string, Dictionary<string, int>> Dictionary { get; set; }
+        }
+
+        [Test]
+        public void NumberKeyDictionaryProperty()
+        {
+            var foo = Clone(new NumberKeyDictionaryPropertyClass
+                {
+                    Dictionary = new Dictionary<int, string>
+                        {
+                            { 1, "one" }
+                        }
+                });
+            Assert.AreEqual("one", foo.Dictionary[1]);
+        }
+
+        private class NumberKeyDictionaryPropertyClass
+        {
+            public Dictionary<int, string> Dictionary { get; set; }
+        }
+
+        [Test]
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseObject))]
         public void AddUnsupportedParseObjectToObject_ThrowsException()
         {

@@ -5,13 +5,14 @@ using System.Reflection;
 
 namespace json.Objects
 {
-    internal class TypeDefinition
+    public class TypeDefinition
     {
         public Type Type { get; private set; }
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
         public bool IsSerializable { get; private set; }
         public bool IsJsonCompatibleDictionary { get; private set; }
+        private TypeCode typeCode;
 
         private TypeDefinition(Type type)
         {
@@ -21,6 +22,7 @@ namespace json.Objects
             PopulatePreBuildMethods();
             IsSerializable = DetermineIfSerializable();
             IsJsonCompatibleDictionary = DetermineIfJsonCompatibleDictionary();
+            typeCode = Type.GetTypeCode(type);
         }
 
         private bool DetermineIfSerializable()
@@ -87,24 +89,22 @@ namespace json.Objects
             return new PreBuildInfo(preBuildAttribute, method);
         }
 
-        public bool PreBuild(object target, Parser parser, Func<ParseValueFactory> getObjectPopulator)
+        /// <summary>
+        /// Ensures that if the value is a number, it has the correct type.
+        /// </summary>
+        public object ConvertToCorrectType(object obj)
         {
-            PreBuildInfo preBuildInfo = GetPreBuildInfo(parser);
-
-            if (preBuildInfo == null)
-                return false;
-
-            preBuildInfo.PreBuild(target, parser, getObjectPopulator());
-
-            return true;
+            return typeCode.GetTypeCodeType() == TypeCodeType.Number
+                ? Convert.ChangeType(obj, typeCode)
+                : obj;
         }
 
-        private PreBuildInfo GetPreBuildInfo(Parser parser)
+        internal PreBuildInfo GetPreBuildInfo(Parser parser)
         {
             return parser == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ParserMatches(parser));
         }
 
-        private class PreBuildInfo
+        internal class PreBuildInfo
         {
             private readonly PreBuildAttribute attribute;
             private readonly MethodInfo method;

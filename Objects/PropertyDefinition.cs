@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 
 namespace json.Objects
@@ -6,12 +5,11 @@ namespace json.Objects
     public class PropertyDefinition
     {
         public string Name { get; private set; }
-        public Type Type { get; private set; }
+        public TypeDefinition TypeDef { get; private set; }
         public bool IsSerializable { get; private set; }
 
         private readonly MethodInfo getter;
         private readonly MethodInfo setter;
-        private readonly TypeCode typeCode;
 
         public bool CanGet { get { return getter != null; } }
         public bool CanSet { get { return setter != null; } }
@@ -19,12 +17,11 @@ namespace json.Objects
         public PropertyDefinition(PropertyInfo property)
         {
             Name = property.Name;
-            Type = property.PropertyType;
+            TypeDef = TypeDefinition.GetTypeDefinition(property.PropertyType);
             getter = property.GetGetMethod();
             setter = property.GetSetMethod();
-            typeCode = Type.GetTypeCode(Type);
 
-            IsSerializable = CanGet && TypeDefinition.GetTypeDefinition(Type).IsSerializable;
+            IsSerializable = CanGet && TypeDef.IsSerializable;
         }
 
         public object GetFrom(object obj)
@@ -36,11 +33,7 @@ namespace json.Objects
         {
             if (CanSet)
             {
-                // Ensures the correct number type, of which there are way too many
-                if (typeCode != TypeCode.Object)
-                    value = Convert.ChangeType(value, typeCode);
-
-                setter.Invoke(obj, new[] { value });
+                setter.Invoke(obj, new[] { TypeDef.ConvertToCorrectType(value) });
             }
         }
     }

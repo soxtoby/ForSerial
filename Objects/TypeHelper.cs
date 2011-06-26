@@ -14,7 +14,13 @@ namespace json.Objects
 
         public static TypeCodeType GetTypeCodeType(this Type type)
         {
-            switch (Type.GetTypeCode(type))
+            TypeCode typeCode = Type.GetTypeCode(type);
+            return GetTypeCodeType(typeCode);
+        }
+
+        public static TypeCodeType GetTypeCodeType(this TypeCode typeCode)
+        {
+            switch (typeCode)
             {
                 case TypeCode.Object:
                     return TypeCodeType.Object;
