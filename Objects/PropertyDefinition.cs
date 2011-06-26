@@ -24,7 +24,7 @@ namespace json.Objects
             setter = property.GetSetMethod();
             typeCode = Type.GetTypeCode(Type);
 
-            IsSerializable = CanGet;
+            IsSerializable = CanGet && TypeDefinition.GetTypeDefinition(Type).IsSerializable;
         }
 
         public object GetFrom(object obj)

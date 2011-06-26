@@ -10,6 +10,7 @@ namespace json.Objects
         public Type Type { get; private set; }
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
+        public bool IsSerializable { get; private set; }
 
         private TypeDefinition(Type type)
         {
@@ -17,6 +18,13 @@ namespace json.Objects
             Properties = new Dictionary<string, PropertyDefinition>();
             PopulateProperties();
             PopulatePreBuildMethods();
+            IsSerializable = DetermineIfSerializable();
+        }
+
+        private bool DetermineIfSerializable()
+        {
+            return Type.IsSerializable
+                || Type.GetConstructor(new Type[] { }) != null;
         }
 
         // FIXME Make this thread-safe - use a ConcurrentDictionary. This version of Mono doesn't appear to have it :(
@@ -37,12 +45,17 @@ namespace json.Objects
             return knownTypes[assemblyQualifiedName];
         }
 
+        public IEnumerable<PropertyDefinition> SerializableProperties
+        {
+            get { return Properties.Values.Where(p => p.IsSerializable); }
+        }
+
         private void PopulateProperties()
         {
             IEnumerable<PropertyDefinition> properties =
                 Type.GetProperties().Select(p => new PropertyDefinition(p));
 
-            foreach (PropertyDefinition property in properties.Where(p => p.IsSerializable))
+            foreach (PropertyDefinition property in properties)
             {
                 Properties[property.Name] = property;
             }

@@ -1,21 +1,24 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace json.Objects
 {
     public class ObjectParser : Parser
     {
         private readonly ParseValueFactory valueFactory;
+        private readonly Options options;
         private object currentObject;
 
-        private ObjectParser(ParseValueFactory valueFactory)
+        private ObjectParser(ParseValueFactory valueFactory, Options options)
         {
             this.valueFactory = valueFactory;
+            this.options = options;
         }
 
-        public static ParseValue Parse(object obj, ParseValueFactory valueFactory)
+        public static ParseValue Parse(object obj, ParseValueFactory valueFactory, Options options = Options.Default)
         {
-            ObjectParser parser = new ObjectParser(valueFactory);
+            ObjectParser parser = new ObjectParser(valueFactory, options);
 
             return parser.ParseValue(obj);
         }
@@ -71,13 +74,22 @@ namespace json.Objects
             currentObject = obj;
             output.SetType(typeDef.Type.AssemblyQualifiedName, this);
 
-            foreach (PropertyDefinition property in typeDef.Properties.Values)
+            IEnumerable<PropertyDefinition> propertiesToSerialize = SerializeOneWayTypes
+                ? typeDef.Properties.Values
+                : typeDef.SerializableProperties;
+
+            foreach (PropertyDefinition property in propertiesToSerialize)
             {
                 ParseValue value = ParseValue(property.GetFrom(obj));
                 value.AddToObject(output, property.Name);
             }
 
             return output;
+        }
+
+        private bool SerializeOneWayTypes
+        {
+            get { return (options & Options.SerializeOneWayTypes) != 0; }
         }
 
         private ParseArray ParseArray(IEnumerable input)
@@ -96,6 +108,17 @@ namespace json.Objects
             public UnknownTypeCode(object obj)
                 : base("Type {0} has unknown TypeCode.".FormatWith(obj.GetType().FullName))
             { }
+        }
+
+        [Flags]
+        public enum Options
+        {
+            Default = 0,
+
+            /// <summary>
+            /// Allows serialization of types that cannot be deserialized.
+            /// </summary>
+            SerializeOneWayTypes = 1,
         }
     }
 }

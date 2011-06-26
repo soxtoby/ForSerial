@@ -101,7 +101,7 @@ namespace json.Objects
         public void ParseSubObject()
         {
             ParseSubObjectValueFactory valueFactory = new ParseSubObjectValueFactory();
-            Parse.From.Object(new { foo = new { bar = "baz" } }).WithBuilder(valueFactory);
+            Parse.From.Object(new { foo = new { bar = "baz" } }, ObjectParser.Options.SerializeOneWayTypes).WithBuilder(valueFactory);
 
             Assert.AreEqual(@"{""bar"":""baz""}", valueFactory.SubObjectJson);
         }
@@ -133,6 +133,22 @@ namespace json.Objects
         }
 
         [Test]
+        public void ClassWithNoDefaultConstructor_IsNotSerialized()
+        {
+            Assert.AreEqual("{}", Parse.From.Object(new { foo = new DefaultConstructorChallengedClass(5) }).ToJson());
+        }
+
+        private class DefaultConstructorChallengedClass
+        {
+            public DefaultConstructorChallengedClass(int foo)
+            {
+                Foo = foo;
+            }
+
+            public int Foo { get; set; }
+        }
+
+        [Test]
         [ExpectedException(typeof(ObjectParser.UnknownTypeCode))]
         public void UnknownTypeCode()
         {
@@ -142,7 +158,7 @@ namespace json.Objects
 
         private static string ParseToJson(object obj)
         {
-            return Parse.From.Object(obj).ToJson();
+            return Parse.From.Object(obj, ObjectParser.Options.SerializeOneWayTypes).ToJson();
         }
     }
 }
