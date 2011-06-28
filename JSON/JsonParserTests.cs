@@ -120,7 +120,7 @@ namespace json.Json
 
             public override bool SetType(string typeIdentifier, Parser parser)
             {
-                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(parser.ParseSubObject(JsonStringBuilder.Instance));
+                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(parser.ParseSubObject(JsonStringBuilder.Default));
                 return true;
             }
         }

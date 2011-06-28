@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -6,12 +7,19 @@ namespace json.Json
 {
     public class JsonStringBuilder : ParseValueFactory
     {
-        protected JsonStringBuilder() { }
+        private readonly Options options;
+        private readonly Dictionary<ParseObject, uint> objectReferences = new Dictionary<ParseObject, uint>();
+        private uint currentReferenceId;
 
-        private static JsonStringBuilder instance;
-        public static JsonStringBuilder Instance
+        public JsonStringBuilder(Options options = Options.Default)
         {
-            get { return instance ?? (instance = new JsonStringBuilder()); }
+            this.options = options;
+        }
+
+        private static JsonStringBuilder defaultInstance;
+        public static JsonStringBuilder Default
+        {
+            get { return defaultInstance ?? (defaultInstance = new JsonStringBuilder()); }
         }
 
         public static string GetResult(ParseObject obj)
@@ -28,7 +36,9 @@ namespace json.Json
 
         public virtual ParseObject CreateObject()
         {
-            return new JsonStringObject();
+            JsonStringObject newObject = new JsonStringObject();
+            objectReferences[newObject] = currentReferenceId++;
+            return newObject;
         }
 
         public ParseArray CreateArray()
@@ -54,6 +64,18 @@ namespace json.Json
         public ParseNull CreateNull()
         {
             return JsonStringNull.Value;
+        }
+
+        public ParseObject CreateReference(ParseObject parseObject)
+        {
+            return MaintainObjectReferences
+                ? (ParseObject)new JsonStringObjectReference(objectReferences[parseObject])
+                : new JsonStringObject();
+        }
+
+        private bool MaintainObjectReferences
+        {
+            get { return (options & Options.MaintainObjectReferences) != 0; }
         }
 
         protected class JsonStringObject : ParseObjectBase
@@ -120,7 +142,52 @@ namespace json.Json
 
             public override string ToString()
             {
-                return json.ToString() + "}";
+                return json + "}";
+            }
+        }
+
+        private class JsonStringObjectReference : ParseObjectBase
+        {
+            private readonly uint referenceId;
+
+            public JsonStringObjectReference(uint referenceId)
+            {
+                this.referenceId = referenceId;
+            }
+
+            public override string ToString()
+            {
+                return @"{""_ref"":" + referenceId + "}";
+            }
+
+            public override void AddNull(string name)
+            {
+                throw new CannotAddValueToReference();
+            }
+
+            public override void AddBoolean(string name, bool value)
+            {
+                throw new CannotAddValueToReference();
+            }
+
+            public override void AddNumber(string name, double value)
+            {
+                throw new CannotAddValueToReference();
+            }
+
+            public override void AddString(string name, string value)
+            {
+                throw new CannotAddValueToReference();
+            }
+
+            public override void AddObject(string name, ParseObject value)
+            {
+                throw new CannotAddValueToReference();
+            }
+
+            public override void AddArray(string name, ParseArray value)
+            {
+                throw new CannotAddValueToReference();
             }
         }
 
@@ -207,7 +274,7 @@ namespace json.Json
             }
         }
 
-        private static readonly Regex charactersToEscape = new Regex(@"[""\\]", RegexOptions.Compiled); // TODO escape control characters as well
+        private static readonly Regex CharactersToEscape = new Regex(@"[""\\]", RegexOptions.Compiled); // TODO escape control characters as well
 
         private class JsonStringString : ParseString
         {
@@ -218,7 +285,7 @@ namespace json.Json
 
             private static string EscapeForJson(string value)
             {
-                return charactersToEscape.Replace(value, @"\$0");
+                return CharactersToEscape.Replace(value, @"\$0");
             }
 
             public override ParseObject AsObject()
@@ -283,6 +350,18 @@ namespace json.Json
             {
             }
         }
+
+        private class CannotAddValueToReference : Exception
+        {
+            public CannotAddValueToReference() : base("Parser should not be trying to add properties to a reference object.") { }
+        }
+
+        [Flags]
+        public enum Options
+        {
+            Default = 0,
+            MaintainObjectReferences = 1,
+        }
     }
 
     public class TypedJsonStringBuilder : JsonStringBuilder
@@ -290,7 +369,7 @@ namespace json.Json
         private TypedJsonStringBuilder() { }
 
         private static TypedJsonStringBuilder instance;
-        public new static TypedJsonStringBuilder Instance
+        public static TypedJsonStringBuilder Instance
         {
             get { return instance ?? (instance = new TypedJsonStringBuilder()); }
         }

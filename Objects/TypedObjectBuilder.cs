@@ -106,6 +106,11 @@ namespace json.Objects
             return TypedObjectNull.Value;
         }
 
+        public ParseObject CreateReference(ParseObject parseObject)
+        {
+            return parseObject;
+        }
+
         private class TypedObjectObject : ParseObjectBase
         {
             private TypedObjectParseObject parseObject;

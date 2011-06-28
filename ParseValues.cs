@@ -190,6 +190,7 @@ namespace json
         ParseString CreateString(string value);
         ParseBoolean CreateBoolean(bool value);
         ParseNull CreateNull();
+        ParseObject CreateReference(ParseObject parseObject);
     }
 }
 

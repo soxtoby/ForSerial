@@ -68,9 +68,12 @@ namespace json
             return TypedObjectBuilder.GetResult<T>(result);
         }
 
-        public static string ToJson(this ParseExtensionPoint parser)
+        public static string ToJson(this ParseExtensionPoint parser, JsonStringBuilder.Options options = JsonStringBuilder.Options.Default)
         {
-            ParseValue result = parser.WithBuilder(JsonStringBuilder.Instance);
+            JsonStringBuilder jsonStringBuilder = options == JsonStringBuilder.Options.Default
+                ? JsonStringBuilder.Default
+                : new JsonStringBuilder(options);
+            ParseValue result = parser.WithBuilder(jsonStringBuilder);
             return JsonStringBuilder.GetResult(result.AsObject());
         }
 

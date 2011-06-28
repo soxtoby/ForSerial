@@ -8,7 +8,7 @@ namespace json.Json
         [Test]
         public void StringIsEscaped()
         {
-            ParseString parseString = JsonStringBuilder.Instance.CreateString("\"foo\\bar\"");
+            ParseString parseString = JsonStringBuilder.Default.CreateString("\"foo\\bar\"");
             StringValueObject obj = new StringValueObject();
             parseString.AddToObject(obj, null);
             Assert.AreEqual(@"\""foo\\bar\""", obj.StringValue);
@@ -27,22 +27,38 @@ namespace json.Json
         [Test]
         public void Number_IsWrappedInObject()
         {
-            ParseNumber number = JsonStringBuilder.Instance.CreateNumber(5);
+            ParseNumber number = JsonStringBuilder.Default.CreateNumber(5);
             Assert.AreEqual("{\"value\":5}", JsonStringBuilder.GetResult(number.AsObject()));
         }
 
         [Test]
         public void String_IsWrappedInObject()
         {
-            ParseString str = JsonStringBuilder.Instance.CreateString("foo");
+            ParseString str = JsonStringBuilder.Default.CreateString("foo");
             Assert.AreEqual("{\"value\":\"foo\"}", JsonStringBuilder.GetResult(str.AsObject()));
         }
 
         [Test]
         public void Array_IsWrappedInObject()
         {
-            ParseArray array = JsonStringBuilder.Instance.CreateArray();
+            ParseArray array = JsonStringBuilder.Default.CreateArray();
             Assert.AreEqual("{\"items\":[]}", JsonStringBuilder.GetResult(array.AsObject()));
+        }
+
+        [Test]
+        public void MaintainSingleReference()
+        {
+            string json = Parse.From.Object(new SameReferenceTwice(new { foo = 5 }))
+                .ToJson(JsonStringBuilder.Options.MaintainObjectReferences);
+            Assert.AreEqual(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}", json);
+        }
+
+        [Test]
+        public void MaintainTwoReferences()
+        {
+            string json = Parse.From.Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 }))
+                .ToJson(JsonStringBuilder.Options.MaintainObjectReferences);
+            Assert.AreEqual(@"{""One"":{""foo"":5},""Two"":{""bar"":6},""Three"":{""_ref"":1},""Four"":{""_ref"":2}}", json);
         }
     }
 }

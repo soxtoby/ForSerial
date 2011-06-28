@@ -10,6 +10,7 @@ namespace json.Objects
         private readonly ParseValueFactory valueFactory;
         private readonly Options options;
         private object currentObject;
+        private readonly Dictionary<object, ParseObject> objectReferences = new Dictionary<object, ParseObject>(new ReferenceEqualityComparer<object>());
 
         private ObjectParser(ParseValueFactory valueFactory, Options options)
         {
@@ -78,16 +79,25 @@ namespace json.Objects
 
         private ParseObject ParseObject(object obj)
         {
-            ParseObject output = valueFactory.CreateObject();
+            ParseObject previouslyParsedObject = objectReferences.Get(obj);
+            return previouslyParsedObject == null
+                ? ParseNewObject(obj)
+                : ReferenceObject(previouslyParsedObject);
+        }
+
+        private ParseObject ParseNewObject(object obj)
+        {
+            ParseObject output = objectReferences[obj] = valueFactory.CreateObject();
 
             TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(obj.GetType());
 
             currentObject = obj;
+
             output.SetType(GetTypeIdentifier(typeDef.Type), this);
 
             IEnumerable<PropertyDefinition> propertiesToSerialize = SerializeOneWayTypes
-                ? typeDef.Properties.Values
-                : typeDef.SerializableProperties;
+                                                                        ? typeDef.Properties.Values
+                                                                        : typeDef.SerializableProperties;
 
             foreach (PropertyDefinition property in propertiesToSerialize)
             {
@@ -106,6 +116,11 @@ namespace json.Objects
         private bool SerializeOneWayTypes
         {
             get { return (options & Options.SerializeOneWayTypes) != 0; }
+        }
+
+        private ParseObject ReferenceObject(ParseObject parseObject)
+        {
+            return valueFactory.CreateReference(parseObject);
         }
 
         private ParseArray ParseArray(IEnumerable input)

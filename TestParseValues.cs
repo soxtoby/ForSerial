@@ -1,3 +1,5 @@
+using System;
+
 namespace json
 {
     internal class TestParseObject : ParseObjectBase
@@ -91,7 +93,7 @@ namespace json
 
         public virtual ParseNumber CreateNumber(double value)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public virtual ParseString CreateString(string value)
@@ -101,12 +103,46 @@ namespace json
 
         public virtual ParseBoolean CreateBoolean(bool value)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public virtual ParseNull CreateNull()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
+        }
+
+        public virtual ParseObject CreateReference(ParseObject parseObject)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    internal class SameReferenceTwice
+    {
+        public object One { get; set; }
+        public object Two { get; set; }
+
+        public SameReferenceTwice() { }
+
+        public SameReferenceTwice(object obj)
+        {
+            One = Two = obj;
+        }
+    }
+
+    internal class TwoReferencesTwice
+    {
+        public object One { get; set; }
+        public object Two { get; set; }
+        public object Three { get; set; }
+        public object Four { get; set; }
+
+        public TwoReferencesTwice() { }
+
+        public TwoReferencesTwice(object odd, object even)
+        {
+            One = Three = odd;
+            Two = Four = even;
         }
     }
 }

@@ -55,6 +55,11 @@ namespace json.JsonObjects
             return JsonObjectNull.Value;
         }
 
+        public ParseObject CreateReference(ParseObject parseObject)
+        {
+            return parseObject;
+        }
+
         private class JsonObjectObject : ParseObjectBase
         {
             public JsonObject Object { get; private set; }

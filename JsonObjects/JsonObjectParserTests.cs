@@ -103,7 +103,7 @@ namespace json.JsonObjects
 
             public override bool SetType(string typeIdentifier, Parser parser)
             {
-                ParseObject jsonStringObject = parser.ParseSubObject(JsonStringBuilder.Instance);
+                ParseObject jsonStringObject = parser.ParseSubObject(JsonStringBuilder.Default);
                 parentFactory.SubObjectJson = JsonStringBuilder.GetResult(jsonStringObject);
                 return true;
             }

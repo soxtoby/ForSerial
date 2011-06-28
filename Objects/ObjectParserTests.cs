@@ -128,7 +128,7 @@ namespace json.Objects
 
             public override bool SetType(string typeIdentifier, Parser parser)
             {
-                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(parser.ParseSubObject(JsonStringBuilder.Instance));
+                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(parser.ParseSubObject(JsonStringBuilder.Default));
                 return true;
             }
         }
@@ -163,10 +163,30 @@ namespace json.Objects
             ParseToJson(new { DBNull.Value });
         }
 
-
         private static string ParseToJson(object obj)
         {
             return Parse.From.Object(obj, ObjectParser.Options.SerializeOneWayTypes).ToJson();
+        }
+
+        [Test]
+        public void MaintainReferences()
+        {
+            SameReferenceTwice foo = new SameReferenceTwice(new object());
+            var testBuilder = new WatchForReferenceBuilder();
+            Parse.From.Object(foo).WithBuilder(testBuilder);
+
+            Assert.NotNull(testBuilder.ReferencedObject);
+        }
+
+        private class WatchForReferenceBuilder : TestValueFactory
+        {
+            public ParseObject ReferencedObject { get; private set; }
+
+            public override ParseObject CreateReference(ParseObject parseObject)
+            {
+                ReferencedObject = parseObject;
+                return parseObject;
+            }
         }
     }
 }

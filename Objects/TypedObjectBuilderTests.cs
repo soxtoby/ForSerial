@@ -343,6 +343,16 @@ namespace json.Objects
             }
         }
 
+        [Test]
+        public void MaintainObjectReferences()
+        {
+            IntPropertyClass intProperty = new IntPropertyClass { Integer = 5 };
+            SameReferenceTwice clone = Clone(new SameReferenceTwice(intProperty));
+
+            Assert.AreSame(clone.One, clone.Two);
+            Assert.AreNotSame(intProperty, clone.One);
+        }
+
         private static T Clone<T>(T obj)
         {
             return Parse.From.Object(obj).ToObject<T>();
