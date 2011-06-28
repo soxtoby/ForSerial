@@ -12,17 +12,21 @@ namespace json.Objects
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
         public bool IsSerializable { get; private set; }
         public bool IsJsonCompatibleDictionary { get; private set; }
-        private TypeCode typeCode;
+        private readonly TypeCode typeCode;
 
         private TypeDefinition(Type type)
         {
             Type = type;
             Properties = new Dictionary<string, PropertyDefinition>();
-            PopulateProperties();
-            PopulatePreBuildMethods();
             IsSerializable = DetermineIfSerializable();
             IsJsonCompatibleDictionary = DetermineIfJsonCompatibleDictionary();
             typeCode = Type.GetTypeCode(type);
+        }
+
+        private void Populate()
+        {
+            PopulateProperties();
+            PopulatePreBuildMethods();
         }
 
         private bool DetermineIfSerializable()
@@ -48,16 +52,19 @@ namespace json.Objects
             if (type == null) return null;
 
             if (!KnownTypes.ContainsKey(type.AssemblyQualifiedName))
-                KnownTypes[type.AssemblyQualifiedName] = new TypeDefinition(type);
+            {
+                TypeDefinition typeDef = KnownTypes[type.AssemblyQualifiedName] = new TypeDefinition(type);
+                typeDef.Populate();
+            }
 
             return KnownTypes[type.AssemblyQualifiedName];
         }
 
         public static TypeDefinition GetTypeDefinition(string assemblyQualifiedName)
         {
-            if (!KnownTypes.ContainsKey(assemblyQualifiedName))
-                KnownTypes[assemblyQualifiedName] = new TypeDefinition(Type.GetType(assemblyQualifiedName));
-            return KnownTypes[assemblyQualifiedName];
+            return KnownTypes.ContainsKey(assemblyQualifiedName)
+                ? KnownTypes[assemblyQualifiedName]
+                : GetTypeDefinition(Type.GetType(assemblyQualifiedName));
         }
 
         public IEnumerable<PropertyDefinition> SerializableProperties
