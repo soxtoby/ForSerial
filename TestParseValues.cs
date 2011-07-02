@@ -67,6 +67,16 @@ namespace json
         }
     }
 
+    internal class TestParseNumber : ParseNumber
+    {
+        public TestParseNumber(double value) : base(value) { }
+
+        public override ParseObject AsObject()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     internal class TestParseString : ParseString
     {
         public TestParseString(string value) : base(value) { }
@@ -93,7 +103,7 @@ namespace json
 
         public virtual ParseNumber CreateNumber(double value)
         {
-            throw new NotImplementedException();
+            return new TestParseNumber(value);
         }
 
         public virtual ParseString CreateString(string value)
@@ -143,6 +153,17 @@ namespace json
         {
             One = Three = odd;
             Two = Four = even;
+        }
+    }
+
+    internal class WatchForReferenceBuilder : TestValueFactory
+    {
+        public ParseObject ReferencedObject { get; private set; }
+
+        public override ParseObject CreateReference(ParseObject parseObject)
+        {
+            ReferencedObject = parseObject;
+            return parseObject;
         }
     }
 }

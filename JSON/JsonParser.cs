@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace json.Json
@@ -6,6 +7,7 @@ namespace json.Json
     {
         private IEnumerator<Token> tokenEnumerator;
         private readonly ParseValueFactory valueFactory;
+        private readonly List<ParseObject> objectReferences = new List<ParseObject>();
 
         private JsonParser(ParseValueFactory valueFactory)
         {
@@ -17,7 +19,7 @@ namespace json.Json
             return Parse(Scanner.Scan(json), valueFactory);
         }
 
-        internal static ParseObject Parse(IEnumerable<Token> tokens, ParseValueFactory valueFactory)
+        private static ParseObject Parse(IEnumerable<Token> tokens, ParseValueFactory valueFactory)
         {
             JsonParser parser = new JsonParser(valueFactory);
             return parser.ParseTokens(tokens);
@@ -44,10 +46,9 @@ namespace json.Json
             {
                 NextToken();
 
-                if (CurrentToken.TokenType == TokenType.EOF)
-                    return null;
-
-                return ParseObject();
+                return CurrentToken.TokenType == TokenType.EOF
+                    ? null
+                    : ParseObject();
             }
         }
 
@@ -56,14 +57,10 @@ namespace json.Json
             switch (CurrentToken.TokenType)
             {
                 case TokenType.Numeric:
-                    ParseNumber number = valueFactory.CreateNumber(CurrentToken.NumericValue);
-                    NextToken();
-                    return number;
+                    return ParseNumber();
 
                 case TokenType.String:
-                    ParseString str = valueFactory.CreateString(CurrentToken.StringValue);
-                    NextToken();
-                    return str;
+                    return ParseString();
 
                 case TokenType.Word:
                     switch (CurrentToken.StringValue)
@@ -100,6 +97,26 @@ namespace json.Json
             }
         }
 
+        private ParseValue ParseNumber()
+        {
+            if (CurrentToken.TokenType != TokenType.Numeric)
+                throw new ParseException("Expected number.", CurrentToken);
+
+            ParseNumber number = valueFactory.CreateNumber(CurrentToken.NumericValue);
+            NextToken();
+            return number;
+        }
+
+        private ParseValue ParseString()
+        {
+            if (CurrentToken.TokenType != TokenType.String)
+                throw new ParseException("Expected string.", CurrentToken);
+
+            ParseString str = valueFactory.CreateString(CurrentToken.StringValue);
+            NextToken();
+            return str;
+        }
+
         private ParseObject ParseObject()
         {
             ExpectSymbol("{");
@@ -108,23 +125,24 @@ namespace json.Json
 
             if (!IsSymbol("}"))
             {
+                PropertyParser propertyParser = new FirstPropertyParser(this, obj);
+
                 do
                 {
-                    string name = ParseString();
+                    string name = GetString();
 
                     ExpectSymbol(":");
 
-                    if (name == "_type")
-                    {
-                        if (SetObjectType(obj))
-                            return obj; // Object was pre-built
-                    }
-                    else
-                    {
-                        ParseValue().AddToObject(obj, name);
-                    }
+                    propertyParser.ParsePropertyValue(name);
+
+                    if (propertyParser.ReturnImmediately)
+                        return propertyParser.ParseObject;
+
+                    propertyParser = propertyParser.NextPropertyParser;
 
                 } while (MoveNextIfSymbol(","));
+
+                obj = propertyParser.ParseObject;
             }
 
             ExpectSymbol("}");
@@ -132,19 +150,121 @@ namespace json.Json
             return obj;
         }
 
+        private abstract class PropertyParser
+        {
+            protected readonly JsonParser Parser;
+
+            /// <summary>
+            /// The ParseObject to be returned.
+            /// </summary>
+            public ParseObject ParseObject { get; protected set; }
+
+            /// <summary>
+            /// Set to True if ParseObject should be returned immediately without parsing anymore properties.
+            /// </summary>
+            public bool ReturnImmediately { get; protected set; }
+
+            public PropertyParser NextPropertyParser { get; protected set; }
+
+            protected PropertyParser(JsonParser parser, ParseObject parseObject)
+            {
+                Parser = parser;
+                ParseObject = parseObject;
+            }
+
+            /// <summary>
+            /// Parse the property value for the property with the given name
+            /// and return the next PropertyParser to use.
+            /// </summary>
+            public abstract void ParsePropertyValue(string name);
+        }
+
+        private class FirstPropertyParser : PropertyParser
+        {
+            public FirstPropertyParser(JsonParser parser, ParseObject parseObject)
+                : base(parser, parseObject)
+            { }
+
+            public override void ParsePropertyValue(string name)
+            {
+                switch (name)
+                {
+                    case "_ref":
+                        ParseObject = Parser.ReferenceObject();
+                        NextPropertyParser = new IgnorePropertyParser(Parser, ParseObject);
+                        return; // Don't add reference to objectReferences
+
+                    case "_type":
+                        if (Parser.SetObjectType(ParseObject))
+                            ReturnImmediately = true;   // Object was pre-built
+                        break;
+
+                    default:
+                        NextPropertyParser = new RegularPropertyParser(Parser, ParseObject);
+                        NextPropertyParser.ParsePropertyValue(name);
+                        break;
+                }
+
+                Parser.objectReferences.Add(ParseObject);
+            }
+        }
+
+        private class IgnorePropertyParser : PropertyParser
+        {
+            public IgnorePropertyParser(JsonParser parser, ParseObject parseObject)
+                : base(parser, parseObject)
+            {
+                NextPropertyParser = this;
+            }
+
+            public override void ParsePropertyValue(string name) { }
+        }
+
+        private class RegularPropertyParser : PropertyParser
+        {
+            public RegularPropertyParser(JsonParser parser, ParseObject parseObject)
+                : base(parser, parseObject)
+            {
+                NextPropertyParser = this;
+            }
+
+            public override void ParsePropertyValue(string name)
+            {
+                Parser.ParseValue().AddToObject(ParseObject, name);
+            }
+        }
+
+        private ParseObject ReferenceObject()
+        {
+            int referenceId = Convert.ToInt32(GetNumber());
+            return valueFactory.CreateReference(objectReferences[referenceId]);
+        }
+
         private bool SetObjectType(ParseObject obj)
         {
-            string typeIdentifier = ParseString();
+            string typeIdentifier = GetString();
             MoveNextIfSymbol(",");
             return obj.SetType(typeIdentifier, this);
         }
 
-        private string ParseString()
+        private string GetString()
         {
             if (CurrentToken.TokenType != TokenType.String)
                 throw new ParseException("Expected string.", CurrentToken);
 
             string value = CurrentToken.StringValue;
+
+            NextToken();
+
+            return value;
+        }
+
+        private double GetNumber()
+        {
+            if (CurrentToken.TokenType != TokenType.Numeric)
+                throw new ParseException("Expected number.", CurrentToken);
+
+            double value = CurrentToken.NumericValue;
 
             NextToken();
 

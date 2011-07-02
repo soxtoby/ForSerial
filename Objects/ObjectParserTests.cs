@@ -177,16 +177,5 @@ namespace json.Objects
 
             Assert.NotNull(testBuilder.ReferencedObject);
         }
-
-        private class WatchForReferenceBuilder : TestValueFactory
-        {
-            public ParseObject ReferencedObject { get; private set; }
-
-            public override ParseObject CreateReference(ParseObject parseObject)
-            {
-                ReferencedObject = parseObject;
-                return parseObject;
-            }
-        }
     }
 }

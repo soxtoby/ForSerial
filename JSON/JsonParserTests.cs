@@ -126,6 +126,15 @@ namespace json.Json
         }
 
         [Test]
+        public void MaintainReferences()
+        {
+            var testBuilder = new WatchForReferenceBuilder();
+            Parse.From.Json(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}").WithBuilder(testBuilder);
+
+            Assert.NotNull(testBuilder.ReferencedObject);
+        }
+
+        [Test]
         [ExpectedException(typeof(ParseException))]
         public void NoOpenBrace_ThrowsParseException()
         {
