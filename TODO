@@ -1,5 +1,8 @@
-Make ParseObject a ParseValueFactory so property type can inform value type.
-Let T in TypedObjectBuilder inform base object type.
+Pull ParseValueFactory stack in JsonParser up into abstract base class.
+Use ParseObject/ParseArray's CreateObject/CreateArray in JsonObjectParser & ObjectParser.
+Add tests for all exception cases.
+Add tests parsers use of ParseObject/ParseArray's CreateObject/CreateArray methods.
+
 Take attributes like Unserialized and XmlIgnore into account.
 Make PartiallyTypedJsonStringBuilder that only adds type information when necessary.
  - Should automatically add type info when source is interface or abstract
