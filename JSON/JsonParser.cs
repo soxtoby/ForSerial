@@ -121,11 +121,15 @@ namespace json.Json
         {
             ExpectSymbol("{");
 
-            ParseObject obj = valueFactory.CreateObject();
+            ParseObject obj;
 
-            if (!IsSymbol("}"))
+            if (IsSymbol("}"))
             {
-                PropertyParser propertyParser = new FirstPropertyParser(this, obj);
+                obj = valueFactory.CreateObject();
+            }
+            else
+            {
+                PropertyParser propertyParser = new FirstPropertyParser(this);
 
                 do
                 {
@@ -166,10 +170,9 @@ namespace json.Json
 
             public PropertyParser NextPropertyParser { get; protected set; }
 
-            protected PropertyParser(JsonParser parser, ParseObject parseObject)
+            protected PropertyParser(JsonParser parser)
             {
                 Parser = parser;
-                ParseObject = parseObject;
             }
 
             /// <summary>
@@ -181,28 +184,30 @@ namespace json.Json
 
         private class FirstPropertyParser : PropertyParser
         {
-            public FirstPropertyParser(JsonParser parser, ParseObject parseObject)
-                : base(parser, parseObject)
+            public FirstPropertyParser(JsonParser parser)
+                : base(parser)
             { }
 
             public override void ParsePropertyValue(string name)
             {
-                switch (name)
+                if (name == "_ref")
                 {
-                    case "_ref":
-                        ParseObject = Parser.ReferenceObject();
-                        NextPropertyParser = new IgnorePropertyParser(Parser, ParseObject);
-                        return; // Don't add reference to objectReferences
+                    ParseObject = Parser.ReferenceObject();
+                    NextPropertyParser = new IgnorePropertyParser(Parser, ParseObject);
+                    return;
+                }
 
-                    case "_type":
-                        if (Parser.SetObjectType(ParseObject))
-                            ReturnImmediately = true;   // Object was pre-built
-                        break;
+                ParseObject = Parser.valueFactory.CreateObject();
 
-                    default:
-                        NextPropertyParser = new RegularPropertyParser(Parser, ParseObject);
-                        NextPropertyParser.ParsePropertyValue(name);
-                        break;
+                if (name == "_type")
+                {
+                    if (Parser.SetObjectType(ParseObject))
+                        ReturnImmediately = true; // Object was pre-built
+                }
+                else
+                {
+                    NextPropertyParser = new RegularPropertyParser(Parser, ParseObject);
+                    NextPropertyParser.ParsePropertyValue(name);
                 }
 
                 Parser.objectReferences.Add(ParseObject);
@@ -212,9 +217,10 @@ namespace json.Json
         private class IgnorePropertyParser : PropertyParser
         {
             public IgnorePropertyParser(JsonParser parser, ParseObject parseObject)
-                : base(parser, parseObject)
+                : base(parser)
             {
                 NextPropertyParser = this;
+                ParseObject = parseObject;
             }
 
             public override void ParsePropertyValue(string name) { }
@@ -223,9 +229,10 @@ namespace json.Json
         private class RegularPropertyParser : PropertyParser
         {
             public RegularPropertyParser(JsonParser parser, ParseObject parseObject)
-                : base(parser, parseObject)
+                : base(parser)
             {
                 NextPropertyParser = this;
+                ParseObject = parseObject;
             }
 
             public override void ParsePropertyValue(string name)
