@@ -6,12 +6,15 @@ namespace json.Json
     internal class JsonParser : Parser
     {
         private IEnumerator<Token> tokenEnumerator;
-        private readonly ParseValueFactory valueFactory;
+        private readonly ParseValueFactory baseValueFactory;
+        private readonly Stack<ParseValueFactory> contextValueFactories = new Stack<ParseValueFactory>();
+        private ParseValueFactory ValueFactory { get { return contextValueFactories.Peek(); } }
         private readonly List<ParseObject> objectReferences = new List<ParseObject>();
 
         private JsonParser(ParseValueFactory valueFactory)
         {
-            this.valueFactory = valueFactory;
+            baseValueFactory = valueFactory;
+            contextValueFactories.Push(baseValueFactory);
         }
 
         public static ParseObject Parse(string json, ParseValueFactory valueFactory)
@@ -67,15 +70,15 @@ namespace json.Json
                     {
                         case "true":
                             NextToken();
-                            return valueFactory.CreateBoolean(true);
+                            return ValueFactory.CreateBoolean(true);
 
                         case "false":
                             NextToken();
-                            return valueFactory.CreateBoolean(false);
+                            return ValueFactory.CreateBoolean(false);
 
                         case "null":
                             NextToken();
-                            return valueFactory.CreateNull();
+                            return ValueFactory.CreateNull();
 
                         default:
                             throw new ParseException("Expected value.", CurrentToken);
@@ -102,7 +105,7 @@ namespace json.Json
             if (CurrentToken.TokenType != TokenType.Numeric)
                 throw new ParseException("Expected number.", CurrentToken);
 
-            ParseNumber number = valueFactory.CreateNumber(CurrentToken.NumericValue);
+            ParseNumber number = ValueFactory.CreateNumber(CurrentToken.NumericValue);
             NextToken();
             return number;
         }
@@ -112,7 +115,7 @@ namespace json.Json
             if (CurrentToken.TokenType != TokenType.String)
                 throw new ParseException("Expected string.", CurrentToken);
 
-            ParseString str = valueFactory.CreateString(CurrentToken.StringValue);
+            ParseString str = ValueFactory.CreateString(CurrentToken.StringValue);
             NextToken();
             return str;
         }
@@ -125,7 +128,7 @@ namespace json.Json
 
             if (IsSymbol("}"))
             {
-                obj = valueFactory.CreateObject();
+                obj = ValueFactory.CreateObject();
             }
             else
             {
@@ -197,7 +200,7 @@ namespace json.Json
                     return;
                 }
 
-                ParseObject = Parser.valueFactory.CreateObject();
+                ParseObject = Parser.ValueFactory.CreateObject();
 
                 if (name == "_type")
                 {
@@ -237,14 +240,18 @@ namespace json.Json
 
             public override void ParsePropertyValue(string name)
             {
+                Parser.EnterObjectPropertyContext(ParseObject, name);
+
                 Parser.ParseValue().AddToObject(ParseObject, name);
+
+                Parser.ExitValueFactoryContext();
             }
         }
 
         private ParseObject ReferenceObject()
         {
             int referenceId = Convert.ToInt32(GetNumber());
-            return valueFactory.CreateReference(objectReferences[referenceId]);
+            return ValueFactory.CreateReference(objectReferences[referenceId]);
         }
 
         private bool SetObjectType(ParseObject obj)
@@ -282,14 +289,18 @@ namespace json.Json
         {
             ExpectSymbol("[");
 
-            ParseArray array = valueFactory.CreateArray();
+            ParseArray array = ValueFactory.CreateArray();
 
             if (!IsSymbol("]"))
             {
+                EnterArrayContext(array);
+
                 do
                 {
                     ParseValue().AddToArray(array);
                 } while (MoveNextIfSymbol(","));
+
+                ExitValueFactoryContext();
             }
 
             ExpectSymbol("]");
@@ -328,6 +339,21 @@ namespace json.Json
         private void NextToken()
         {
             tokenEnumerator.MoveNext();
+        }
+
+        private void EnterObjectPropertyContext(ParseObject propertyOwner, string propertyName)
+        {
+            contextValueFactories.Push(new PropertyValueFactory(baseValueFactory, propertyOwner, propertyName));
+        }
+
+        private void EnterArrayContext(ParseArray array)
+        {
+            contextValueFactories.Push(new ArrayValueFactory(baseValueFactory, array));
+        }
+
+        private void ExitValueFactoryContext()
+        {
+            contextValueFactories.Pop();
         }
     }
 }

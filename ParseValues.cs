@@ -25,6 +25,8 @@ namespace json
         void AddString(string name, string value);
         void AddObject(string name, ParseObject value);
         void AddArray(string name, ParseArray value);
+        ParseObject CreateObject(string name, ParseValueFactory valueFactory);
+        ParseArray CreateArray(string name, ParseValueFactory valueFactory);
     }
 
     public interface Parser
@@ -62,6 +64,16 @@ namespace json
         public abstract void AddObject(string name, ParseObject value);
 
         public abstract void AddArray(string name, ParseArray value);
+
+        public virtual ParseObject CreateObject(string name, ParseValueFactory valueFactory)
+        {
+            return valueFactory.CreateObject();
+        }
+
+        public virtual ParseArray CreateArray(string name, ParseValueFactory valueFactory)
+        {
+            return valueFactory.CreateArray();
+        }
     }
 
     public interface ParseArray : ParseValue
@@ -72,6 +84,8 @@ namespace json
         void AddString(string value);
         void AddObject(ParseObject value);
         void AddArray(ParseArray value);
+        ParseObject CreateObject(ParseValueFactory valueFactory);
+        ParseArray CreateArray(ParseValueFactory valueFactory);
     }
 
     public abstract class ParseArrayBase : ParseArray
@@ -86,6 +100,8 @@ namespace json
             array.AddArray(this);
         }
 
+        public abstract ParseObject AsObject();
+
         public abstract void AddNull();
 
         public abstract void AddBoolean(bool value);
@@ -98,7 +114,15 @@ namespace json
 
         public abstract void AddArray(ParseArray value);
 
-        public abstract ParseObject AsObject();
+        public virtual ParseObject CreateObject(ParseValueFactory valueFactory)
+        {
+            return valueFactory.CreateObject();
+        }
+
+        public virtual ParseArray CreateArray(ParseValueFactory valueFactory)
+        {
+            return valueFactory.CreateArray();
+        }
     }
 
     public abstract class ParseNumber : ParseValue
@@ -191,6 +215,97 @@ namespace json
         ParseBoolean CreateBoolean(bool value);
         ParseNull CreateNull();
         ParseObject CreateReference(ParseObject parseObject);
+    }
+
+    public abstract class ContextValueFactory : ParseValueFactory
+    {
+        protected readonly ParseValueFactory baseFactory;
+
+        protected ContextValueFactory(ParseValueFactory baseFactory)
+        {
+            this.baseFactory = baseFactory;
+        }
+
+        public virtual ParseObject CreateObject()
+        {
+            return baseFactory.CreateObject();
+        }
+
+        public virtual ParseArray CreateArray()
+        {
+            return baseFactory.CreateArray();
+        }
+
+        public ParseNumber CreateNumber(double value)
+        {
+            return baseFactory.CreateNumber(value);
+        }
+
+        public ParseString CreateString(string value)
+        {
+            return baseFactory.CreateString(value);
+        }
+
+        public ParseBoolean CreateBoolean(bool value)
+        {
+            return baseFactory.CreateBoolean(value);
+        }
+
+        public ParseNull CreateNull()
+        {
+            return baseFactory.CreateNull();
+        }
+
+        public ParseObject CreateReference(ParseObject parseObject)
+        {
+            return baseFactory.CreateReference(parseObject);
+        }
+    }
+
+    public class PropertyValueFactory : ContextValueFactory
+    {
+        private readonly ParseValueFactory baseFactory;
+        private readonly ParseObject propertyOwner;
+        private readonly string propertyName;
+
+        public PropertyValueFactory(ParseValueFactory baseFactory, ParseObject propertyOwner, string propertyName)
+            : base(baseFactory)
+        {
+            this.baseFactory = baseFactory;
+            this.propertyOwner = propertyOwner;
+            this.propertyName = propertyName;
+        }
+
+        public override ParseObject CreateObject()
+        {
+            return propertyOwner.CreateObject(propertyName, baseFactory);
+        }
+
+        public override ParseArray CreateArray()
+        {
+            return propertyOwner.CreateArray(propertyName, baseFactory);
+        }
+    }
+
+    public class ArrayValueFactory : ContextValueFactory
+    {
+        private readonly ParseArray array;
+
+        public ArrayValueFactory(ParseValueFactory baseFactory, ParseArray array)
+            : base(baseFactory)
+        {
+            this.array = array;
+        }
+
+        public override ParseObject CreateObject()
+        {
+            return array.CreateObject(baseFactory);
+        }
+
+        public override ParseArray CreateArray()
+        {
+            return array.CreateArray(baseFactory);
+        }
     }
 }
 

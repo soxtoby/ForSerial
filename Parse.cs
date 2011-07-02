@@ -64,7 +64,7 @@ namespace json
 
         public static T ToObject<T>(this ParseExtensionPoint parser)
         {
-            ParseValue result = parser.WithBuilder(TypedObjectBuilder.Instance);
+            ParseValue result = parser.WithBuilder(new TypedObjectBuilder(typeof(T)));
             return TypedObjectBuilder.GetResult<T>(result);
         }
 

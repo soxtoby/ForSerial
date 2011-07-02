@@ -287,7 +287,7 @@ namespace json.Objects
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseObject))]
         public void AddUnsupportedParseObjectToObject_ThrowsException()
         {
-            ParseObject obj = TypedObjectBuilder.Instance.CreateObject();
+            ParseObject obj = TypedObjectBuilder.GenericInstance.CreateObject();
             obj.SetType(typeof(IntPropertyClass).AssemblyQualifiedName, null);
             obj.AddObject("Integer", new TestParseObject());
         }
@@ -296,7 +296,7 @@ namespace json.Objects
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseObject))]
         public void AddUnsupportedParseObjectToArray_ThrowsException()
         {
-            ParseArray array = TypedObjectBuilder.Instance.CreateArray();
+            ParseArray array = TypedObjectBuilder.GenericInstance.CreateArray();
             array.AddObject(new TestParseObject());
         }
 
@@ -304,7 +304,7 @@ namespace json.Objects
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseArray))]
         public void AddUnsupportedParseArrayToObject_ThrowsException()
         {
-            ParseObject obj = TypedObjectBuilder.Instance.CreateObject();
+            ParseObject obj = TypedObjectBuilder.GenericInstance.CreateObject();
             obj.SetType(typeof(SettableListPropertyClass).AssemblyQualifiedName, null);
             obj.AddArray("Array", new TestParseArray());
         }
@@ -313,7 +313,7 @@ namespace json.Objects
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseArray))]
         public void AddUnsupportedParseArrayToArray_ThrowsException()
         {
-            ParseArray array = TypedObjectBuilder.Instance.CreateArray();
+            ParseArray array = TypedObjectBuilder.GenericInstance.CreateArray();
             array.AddArray(new TestParseArray());
         }
 
@@ -356,6 +356,44 @@ namespace json.Objects
         private static T Clone<T>(T obj)
         {
             return Parse.From.Object(obj).ToObject<T>();
+        }
+
+        [Test]
+        public void ParseToTypedObject()
+        {
+            IntPropertyClass obj = Parse.From.Json(@"{""Integer"":3}").ToObject<IntPropertyClass>();
+
+            Assert.AreEqual(3, obj.Integer);
+        }
+
+        [Test]
+        public void ParsePropertyToTypedObject()
+        {
+            ObjectPropertyClass obj = Parse.From.Json(@"{""Object"":{""Integer"":4}}").ToObject<ObjectPropertyClass>();
+
+            Assert.AreEqual(4, obj.Object.Integer);
+        }
+
+        [Test]
+        public void ParsePropertyToTypedArray()
+        {
+            ObjectArrayPropertyClass obj = Parse.From
+                .Json(@"{""Array"":[{""Integer"":1},{""Integer"":2},{""Integer"":3}]}")
+                .ToObject<ObjectArrayPropertyClass>();
+
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.Array.Select(i => i.Integer));
+        }
+
+        [Test]
+        public void ParsePropertyToTypedNestedArray()
+        {
+            NestedArrayPropertyClass obj = Parse.From
+                .Json(@"{""NestedArray"":[[1,2,3],[4,5,6]]}")
+                .ToObject<NestedArrayPropertyClass>();
+
+            Assert.NotNull(obj.NestedArray);
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.NestedArray[0]);
+            CollectionAssert.AreEqual(new[] { 4, 5, 6 }, obj.NestedArray[1]);
         }
     }
 }
