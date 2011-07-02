@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace json
 {
     public interface ParseValue
@@ -29,9 +31,34 @@ namespace json
         ParseArray CreateArray(string name, ParseValueFactory valueFactory);
     }
 
-    public interface Parser
+    public abstract class Parser
     {
-        ParseObject ParseSubObject(ParseValueFactory subParseValueFactory);
+        private readonly ParseValueFactory baseValueFactory;
+        private readonly Stack<ParseValueFactory> contextValueFactories = new Stack<ParseValueFactory>();
+        protected ParseValueFactory ValueFactory { get { return contextValueFactories.Peek(); } }
+
+        protected Parser(ParseValueFactory baseValueFactory)
+        {
+            this.baseValueFactory = baseValueFactory;
+            contextValueFactories.Push(baseValueFactory);
+        }
+
+        public abstract ParseObject ParseSubObject(ParseValueFactory subParseValueFactory);
+
+        protected void EnterObjectPropertyContext(ParseObject propertyOwner, string propertyName)
+        {
+            contextValueFactories.Push(new PropertyValueFactory(baseValueFactory, propertyOwner, propertyName));
+        }
+
+        protected void EnterArrayContext(ParseArray array)
+        {
+            contextValueFactories.Push(new ArrayValueFactory(baseValueFactory, array));
+        }
+
+        protected void ExitValueFactoryContext()
+        {
+            contextValueFactories.Pop();
+        }
     }
 
     public abstract class ParseObjectBase : ParseObject

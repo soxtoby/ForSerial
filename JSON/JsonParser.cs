@@ -6,16 +6,9 @@ namespace json.Json
     internal class JsonParser : Parser
     {
         private IEnumerator<Token> tokenEnumerator;
-        private readonly ParseValueFactory baseValueFactory;
-        private readonly Stack<ParseValueFactory> contextValueFactories = new Stack<ParseValueFactory>();
-        private ParseValueFactory ValueFactory { get { return contextValueFactories.Peek(); } }
         private readonly List<ParseObject> objectReferences = new List<ParseObject>();
 
-        private JsonParser(ParseValueFactory valueFactory)
-        {
-            baseValueFactory = valueFactory;
-            contextValueFactories.Push(baseValueFactory);
-        }
+        private JsonParser(ParseValueFactory valueFactory) : base(valueFactory) { }
 
         public static ParseObject Parse(string json, ParseValueFactory valueFactory)
         {
@@ -28,7 +21,7 @@ namespace json.Json
             return parser.ParseTokens(tokens);
         }
 
-        public ParseObject ParseSubObject(ParseValueFactory subParseValueFactory)
+        public override ParseObject ParseSubObject(ParseValueFactory subParseValueFactory)
         {
             return Parse(GetSubObjectTokens(), subParseValueFactory);
         }
@@ -159,7 +152,7 @@ namespace json.Json
 
         private abstract class PropertyParser
         {
-            protected readonly JsonParser Parser;
+            protected readonly JsonParser parser;
 
             /// <summary>
             /// The ParseObject to be returned.
@@ -175,7 +168,7 @@ namespace json.Json
 
             protected PropertyParser(JsonParser parser)
             {
-                Parser = parser;
+                this.parser = parser;
             }
 
             /// <summary>
@@ -195,25 +188,25 @@ namespace json.Json
             {
                 if (name == "_ref")
                 {
-                    ParseObject = Parser.ReferenceObject();
-                    NextPropertyParser = new IgnorePropertyParser(Parser, ParseObject);
+                    ParseObject = parser.ReferenceObject();
+                    NextPropertyParser = new IgnorePropertyParser(parser, ParseObject);
                     return;
                 }
 
-                ParseObject = Parser.ValueFactory.CreateObject();
+                ParseObject = parser.ValueFactory.CreateObject();
 
                 if (name == "_type")
                 {
-                    if (Parser.SetObjectType(ParseObject))
+                    if (parser.SetObjectType(ParseObject))
                         ReturnImmediately = true; // Object was pre-built
                 }
                 else
                 {
-                    NextPropertyParser = new RegularPropertyParser(Parser, ParseObject);
+                    NextPropertyParser = new RegularPropertyParser(parser, ParseObject);
                     NextPropertyParser.ParsePropertyValue(name);
                 }
 
-                Parser.objectReferences.Add(ParseObject);
+                parser.objectReferences.Add(ParseObject);
             }
         }
 
@@ -240,11 +233,11 @@ namespace json.Json
 
             public override void ParsePropertyValue(string name)
             {
-                Parser.EnterObjectPropertyContext(ParseObject, name);
+                parser.EnterObjectPropertyContext(ParseObject, name);
 
-                Parser.ParseValue().AddToObject(ParseObject, name);
+                parser.ParseValue().AddToObject(ParseObject, name);
 
-                Parser.ExitValueFactoryContext();
+                parser.ExitValueFactoryContext();
             }
         }
 
@@ -339,21 +332,6 @@ namespace json.Json
         private void NextToken()
         {
             tokenEnumerator.MoveNext();
-        }
-
-        private void EnterObjectPropertyContext(ParseObject propertyOwner, string propertyName)
-        {
-            contextValueFactories.Push(new PropertyValueFactory(baseValueFactory, propertyOwner, propertyName));
-        }
-
-        private void EnterArrayContext(ParseArray array)
-        {
-            contextValueFactories.Push(new ArrayValueFactory(baseValueFactory, array));
-        }
-
-        private void ExitValueFactoryContext()
-        {
-            contextValueFactories.Pop();
         }
     }
 }

@@ -7,13 +7,9 @@ namespace json.JsonObjects
     public class JsonObjectParser : Parser
     {
         private const string TypeKey = "_type";
-        private readonly ParseValueFactory valueFactory;
         private JsonObject currentObject;
 
-        private JsonObjectParser(ParseValueFactory valueFactory)
-        {
-            this.valueFactory = valueFactory;
-        }
+        private JsonObjectParser(ParseValueFactory valueFactory) : base(valueFactory) { }
 
         public static ParseObject Parse(JsonObject obj, ParseValueFactory valueFactory)
         {
@@ -21,7 +17,7 @@ namespace json.JsonObjects
             return parser.ParseObject(obj);
         }
 
-        public ParseObject ParseSubObject(ParseValueFactory subParseValueFactory)
+        public override ParseObject ParseSubObject(ParseValueFactory subParseValueFactory)
         {
             return Parse(currentObject, subParseValueFactory);
         }
@@ -29,7 +25,7 @@ namespace json.JsonObjects
         private ParseValue ParseValue(object input)
         {
             if (input == null)
-                return valueFactory.CreateNull();
+                return ValueFactory.CreateNull();
 
             switch (input.GetType().GetTypeCodeType())
             {
@@ -44,13 +40,13 @@ namespace json.JsonObjects
                     throw new InvalidObject(input.GetType());
 
                 case TypeCodeType.Boolean:
-                    return valueFactory.CreateBoolean((bool)input);
+                    return ValueFactory.CreateBoolean((bool)input);
 
                 case TypeCodeType.String:
-                    return valueFactory.CreateString((string)input);
+                    return ValueFactory.CreateString((string)input);
 
                 case TypeCodeType.Number:
-                    return valueFactory.CreateNumber(Convert.ToDouble(input));
+                    return ValueFactory.CreateNumber(Convert.ToDouble(input));
 
                 default:
                     throw new UnknownTypeCode(input);
@@ -61,7 +57,7 @@ namespace json.JsonObjects
         {
             currentObject = obj;
 
-            ParseObject parseObject = valueFactory.CreateObject();
+            ParseObject parseObject = ValueFactory.CreateObject();
 
             foreach (var property in obj)
             {
@@ -76,7 +72,7 @@ namespace json.JsonObjects
 
         private ParseArray ParseArray(IEnumerable enumerable)
         {
-            ParseArray array = valueFactory.CreateArray();
+            ParseArray array = ValueFactory.CreateArray();
 
             foreach (object item in enumerable)
                 ParseValue(item).AddToArray(array);

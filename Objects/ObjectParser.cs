@@ -7,14 +7,13 @@ namespace json.Objects
 {
     public class ObjectParser : Parser
     {
-        private readonly ParseValueFactory valueFactory;
         private readonly Options options;
         private object currentObject;
         private readonly Dictionary<object, ParseObject> objectReferences = new Dictionary<object, ParseObject>(new ReferenceEqualityComparer<object>());
 
         private ObjectParser(ParseValueFactory valueFactory, Options options)
+            : base(valueFactory)
         {
-            this.valueFactory = valueFactory;
             this.options = options;
         }
 
@@ -25,7 +24,7 @@ namespace json.Objects
             return parser.ParseValue(obj);
         }
 
-        public ParseObject ParseSubObject(ParseValueFactory subParseValueFactory)
+        public override ParseObject ParseSubObject(ParseValueFactory subParseValueFactory)
         {
             return Parse(currentObject, subParseValueFactory).AsObject();
         }
@@ -33,7 +32,7 @@ namespace json.Objects
         private ParseValue ParseValue(object input)
         {
             if (input == null)
-                return valueFactory.CreateNull();
+                return ValueFactory.CreateNull();
 
             switch (input.GetType().GetTypeCodeType())
             {
@@ -46,13 +45,13 @@ namespace json.Objects
                     return ParseObject(input);
 
                 case TypeCodeType.Boolean:
-                    return valueFactory.CreateBoolean((bool)input);
+                    return ValueFactory.CreateBoolean((bool)input);
 
                 case TypeCodeType.String:
-                    return valueFactory.CreateString((string)input);
+                    return ValueFactory.CreateString((string)input);
 
                 case TypeCodeType.Number:
-                    return valueFactory.CreateNumber(Convert.ToDouble(input));
+                    return ValueFactory.CreateNumber(Convert.ToDouble(input));
 
                 default:
                     throw new UnknownTypeCode(input);
@@ -61,7 +60,7 @@ namespace json.Objects
 
         private ParseObject ParseDictionary(IDictionary dictionary)
         {
-            ParseObject obj = valueFactory.CreateObject();
+            ParseObject obj = ValueFactory.CreateObject();
 
             obj.SetType(GetTypeIdentifier(dictionary.GetType()), this);
 
@@ -87,7 +86,7 @@ namespace json.Objects
 
         private ParseObject ParseNewObject(object obj)
         {
-            ParseObject output = objectReferences[obj] = valueFactory.CreateObject();
+            ParseObject output = objectReferences[obj] = ValueFactory.CreateObject();
 
             TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(obj.GetType());
 
@@ -120,12 +119,12 @@ namespace json.Objects
 
         private ParseObject ReferenceObject(ParseObject parseObject)
         {
-            return valueFactory.CreateReference(parseObject);
+            return ValueFactory.CreateReference(parseObject);
         }
 
         private ParseArray ParseArray(IEnumerable input)
         {
-            ParseArray array = valueFactory.CreateArray();
+            ParseArray array = ValueFactory.CreateArray();
             foreach (object item in input)
             {
                 ParseValue value = ParseValue(item);
