@@ -66,11 +66,16 @@ namespace json.Objects
 
             foreach (object key in dictionary.Keys)
             {
-                ParseValue value = ParseValue(dictionary[key]);
-
                 // Convert.ToString is in case the keys are numbers, which are represented
                 // as strings when used as keys, but can be indexed with numbers in JavaScript
-                value.AddToObject(obj, Convert.ToString(key, CultureInfo.InvariantCulture));
+                string name = Convert.ToString(key, CultureInfo.InvariantCulture);
+                object value = dictionary[key];
+
+                UsingObjectPropertyContext(obj, name, () =>
+                {
+                    ParseValue parseValue = ParseValue(value);
+                    parseValue.AddToObject(obj, name);
+                });
             }
 
             return obj;
@@ -100,8 +105,12 @@ namespace json.Objects
 
             foreach (PropertyDefinition property in propertiesToSerialize)
             {
-                ParseValue value = ParseValue(property.GetFrom(obj));
-                value.AddToObject(output, property.Name);
+                PropertyDefinition prop = property;
+                UsingObjectPropertyContext(output, property.Name, () =>
+                {
+                    ParseValue value = ParseValue(prop.GetFrom(obj));
+                    value.AddToObject(output, prop.Name);
+                });
             }
 
             return output;
@@ -125,11 +134,14 @@ namespace json.Objects
         private ParseArray ParseArray(IEnumerable input)
         {
             ParseArray array = ValueFactory.CreateArray();
-            foreach (object item in input)
+            UsingArrayContext(array, () =>
             {
-                ParseValue value = ParseValue(item);
-                value.AddToArray(array);
-            }
+                foreach (object item in input)
+                {
+                    ParseValue value = ParseValue(item);
+                    value.AddToArray(array);
+                }
+            });
             return array;
         }
 

@@ -36,18 +36,12 @@ namespace json.Objects
 
         public virtual ParseObject CreateObject()
         {
-            TypedObjectObject obj = new TypedObjectObject();
-            SetTypeOfBaseObject(obj);
-            return obj;
-        }
+            if (baseType == null)
+                return new TypedObjectObject();
 
-        private void SetTypeOfBaseObject(TypedObjectObject obj)
-        {
-            if (baseType != null)
-            {
-                obj.SetType(TypeDefinition.GetTypeDefinition(baseType));
-                baseType = null; // Only needed for first object
-            }
+            TypedObjectObject obj = new TypedObjectObject(TypeDefinition.GetTypeDefinition(baseType));
+            baseType = null;    // Only needed for first object
+            return obj;
         }
 
         public ParseArray CreateArray()
@@ -56,7 +50,7 @@ namespace json.Objects
                 return new TypedObjectUnknownTypeArray();
 
             var array = new TypedObjectTypedArray(baseType);
-            baseType = null;
+            baseType = null;    // Only needed for first object
             return array;
         }
 
@@ -98,6 +92,11 @@ namespace json.Objects
                 parseObject = new TypedObjectRegularObject(obj);
             }
 
+            public TypedObjectObject(TypeDefinition typeDef)
+            {
+                SetType(typeDef);
+            }
+
             public object Object
             {
                 get { return parseObject.Object; }
@@ -120,7 +119,7 @@ namespace json.Objects
                 return false;
             }
 
-            public void SetType(TypeDefinition typeDef)
+            private void SetType(TypeDefinition typeDef)
             {
                 parseObject = typeDef.IsJsonCompatibleDictionary
                                   ? (TypedObjectParseObject)new TypedObjectDictionary(typeDef)
@@ -312,11 +311,10 @@ namespace json.Objects
 
             public override ParseObject CreateObject(string name, ParseValueFactory valueFactory)
             {
-                TypedObjectObject obj = new TypedObjectObject();
                 PropertyDefinition property = typeDef.Properties.Get(name);
-                if (property != null)
-                    obj.SetType(property.TypeDef);
-                return obj;
+                return property == null
+                    ? new TypedObjectObject()
+                    : new TypedObjectObject(property.TypeDef);
             }
 
             public override ParseArray CreateArray(string name, ParseValueFactory valueFactory)
@@ -372,6 +370,16 @@ namespace json.Objects
             {
                 TypedObjectArray arrayValue = GetArrayAsTypedObjectArray(value);
                 dictionary[name] = arrayValue.GetTypedArray(valueTypeDef.Type);
+            }
+
+            public override ParseObject CreateObject(string name, ParseValueFactory valueFactory)
+            {
+                return new TypedObjectObject(valueTypeDef);
+            }
+
+            public override ParseArray CreateArray(string name, ParseValueFactory valueFactory)
+            {
+                return new TypedObjectTypedArray(valueTypeDef.Type);
             }
 
             public void AssignToProperty(object owner, PropertyDefinition property)
@@ -558,9 +566,7 @@ namespace json.Objects
 
             public override ParseObject CreateObject(ParseValueFactory valueFactory)
             {
-                TypedObjectObject obj = new TypedObjectObject();
-                obj.SetType(collectionDef.ItemTypeDef);
-                return obj;
+                return new TypedObjectObject(collectionDef.ItemTypeDef);
             }
 
             public override ParseArray CreateArray(ParseValueFactory valueFactory)
@@ -581,7 +587,7 @@ namespace json.Objects
 
             public override ParseObject AsObject()
             {
-                return new TypedObjectObject(null);
+                return new TypedObjectObject((object)null);
             }
         }
 

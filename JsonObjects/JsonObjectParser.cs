@@ -61,10 +61,15 @@ namespace json.JsonObjects
 
             foreach (var property in obj)
             {
-                if (property.Key == TypeKey)
-                    parseObject.SetType((string)obj[TypeKey], this);
-                else
-                    ParseValue(property.Value).AddToObject(parseObject, property.Key);
+                string name = property.Key;
+                object value = property.Value;
+                UsingObjectPropertyContext(parseObject, name, () =>
+                {
+                    if (name == TypeKey)
+                        parseObject.SetType((string)obj[TypeKey], this);
+                    else
+                        ParseValue(value).AddToObject(parseObject, name);
+                });
             }
 
             return parseObject;
@@ -74,8 +79,11 @@ namespace json.JsonObjects
         {
             ParseArray array = ValueFactory.CreateArray();
 
-            foreach (object item in enumerable)
-                ParseValue(item).AddToArray(array);
+            UsingArrayContext(array, () =>
+                {
+                    foreach (object item in enumerable)
+                        ParseValue(item).AddToArray(array);
+                });
 
             return array;
         }

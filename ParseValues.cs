@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace json
@@ -45,18 +46,20 @@ namespace json
 
         public abstract ParseObject ParseSubObject(ParseValueFactory subParseValueFactory);
 
-        protected void EnterObjectPropertyContext(ParseObject propertyOwner, string propertyName)
+        protected void UsingObjectPropertyContext(ParseObject propertyOwner, string propertyName, Action action)
         {
-            contextValueFactories.Push(new PropertyValueFactory(baseValueFactory, propertyOwner, propertyName));
+            UsingValueFactoryContext(new PropertyValueFactory(baseValueFactory, propertyOwner, propertyName), action);
         }
 
-        protected void EnterArrayContext(ParseArray array)
+        protected void UsingArrayContext(ParseArray array, Action action)
         {
-            contextValueFactories.Push(new ArrayValueFactory(baseValueFactory, array));
+            UsingValueFactoryContext(new ArrayValueFactory(baseValueFactory, array), action);
         }
 
-        protected void ExitValueFactoryContext()
+        protected void UsingValueFactoryContext(ParseValueFactory contextValueFactory, Action action)
         {
+            contextValueFactories.Push(contextValueFactory);
+            action();
             contextValueFactories.Pop();
         }
     }

@@ -109,7 +109,6 @@ namespace json.JsonObjects
             }
         }
 
-
         [Test]
         [ExpectedException(typeof(JsonObjectParser.InvalidObject))]
         public void InvalidObject()
@@ -127,6 +126,42 @@ namespace json.JsonObjects
         private static string ParseJsonObject(JsonObject jsonObject)
         {
             return Parse.From.JsonObject(jsonObject).ToJson();
+        }
+
+        [Test]
+        public void CreatePropertyObject()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.JsonObject(new JsonObject { { "foo", new JsonObject() } }).WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ObjectsCreatedFromProperties);
+        }
+
+        [Test]
+        public void CreatePropertyArray()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.JsonObject(new JsonObject { { "foo", new object[] { } } }).WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ArraysCreatedFromProperties);
+        }
+
+        [Test]
+        public void CreateArrayObject()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.JsonObject(new JsonObject { { "foo", new[] { new JsonObject() } } }).WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ObjectsCreatedFromArrays);
+        }
+
+        [Test]
+        public void CreateArrayArray()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.JsonObject(new JsonObject { { "foo", new[] { new object[] { } } } }).WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ArraysCreatedFromArrays);
         }
     }
 }

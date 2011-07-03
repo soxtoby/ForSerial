@@ -1,6 +1,7 @@
 Use ParseObject/ParseArray's CreateObject/CreateArray in JsonObjectParser & ObjectParser.
 Add tests for all exception cases.
 Add tests parsers use of ParseObject/ParseArray's CreateObject/CreateArray methods.
+Add reference support to JsonObject Parser/Builder.
 
 Take attributes like Unserialized and XmlIgnore into account.
 Make PartiallyTypedJsonStringBuilder that only adds type information when necessary.

@@ -177,5 +177,41 @@ namespace json.Objects
 
             Assert.NotNull(testBuilder.ReferencedObject);
         }
+
+        [Test]
+        public void CreatePropertyObject()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.Object(new { foo = new object() }).WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ObjectsCreatedFromProperties);
+        }
+
+        [Test]
+        public void CreatePropertyArray()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.Object(new { foo = new object[] { } }).WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ArraysCreatedFromProperties);
+        }
+
+        [Test]
+        public void CreateArrayObject()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.Object(new[] { new object() }).WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ObjectsCreatedFromArrays);
+        }
+
+        [Test]
+        public void CreateArrayArray()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.Object(new[] { new object[] { } }).WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ArraysCreatedFromArrays);
+        }
     }
 }

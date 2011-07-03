@@ -197,7 +197,6 @@ namespace json.Json
             ParseJson("{ \"foo\": [ 5, ] }");
         }
 
-
         private static T ParseFooProperty<T>(string json)
         {
             JsonObject obj = ParseJson(json);
@@ -208,6 +207,42 @@ namespace json.Json
         private static JsonObject ParseJson(string json)
         {
             return Parse.From.Json(json).ToJsonObject();
+        }
+
+        [Test]
+        public void CreatePropertyObject()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.Json(@"{""foo"":{}}").WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ObjectsCreatedFromProperties);
+        }
+
+        [Test]
+        public void CreatePropertyArray()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.Json(@"{""foo"":[]}").WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ArraysCreatedFromProperties);
+        }
+
+        [Test]
+        public void CreateArrayObject()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.Json(@"{""foo"":[{}]}").WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ObjectsCreatedFromArrays);
+        }
+
+        [Test]
+        public void CreateArrayArray()
+        {
+            var valueFactory = new CustomCreateValueFactory();
+            Parse.From.Json(@"{""foo"":[[]]}").WithBuilder(valueFactory);
+
+            Assert.AreEqual(1, valueFactory.ArraysCreatedFromArrays);
         }
     }
 }

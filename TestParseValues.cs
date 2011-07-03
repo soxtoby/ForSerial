@@ -33,32 +33,26 @@ namespace json
     {
         public override void AddNull()
         {
-            throw new System.NotImplementedException();
         }
 
         public override void AddBoolean(bool value)
         {
-            throw new System.NotImplementedException();
         }
 
         public override void AddNumber(double value)
         {
-            throw new System.NotImplementedException();
         }
 
         public override void AddString(string value)
         {
-            throw new System.NotImplementedException();
         }
 
         public override void AddObject(ParseObject value)
         {
-            throw new System.NotImplementedException();
         }
 
         public override void AddArray(ParseArray value)
         {
-            throw new System.NotImplementedException();
         }
 
         public override ParseObject AsObject()
@@ -164,6 +158,54 @@ namespace json
         {
             ReferencedObject = parseObject;
             return parseObject;
+        }
+    }
+
+    internal class CustomCreateObject : TestParseObject
+    {
+        public override ParseObject CreateObject(string name, ParseValueFactory valueFactory)
+        {
+            ((CustomCreateValueFactory)valueFactory).ObjectsCreatedFromProperties++;
+            return base.CreateObject(name, valueFactory);
+        }
+
+        public override ParseArray CreateArray(string name, ParseValueFactory valueFactory)
+        {
+            ((CustomCreateValueFactory)valueFactory).ArraysCreatedFromProperties++;
+            return base.CreateArray(name, valueFactory);
+        }
+    }
+
+    internal class CustomCreateArray : TestParseArray
+    {
+        public override ParseObject CreateObject(ParseValueFactory valueFactory)
+        {
+            ((CustomCreateValueFactory)valueFactory).ObjectsCreatedFromArrays++;
+            return base.CreateObject(valueFactory);
+        }
+
+        public override ParseArray CreateArray(ParseValueFactory valueFactory)
+        {
+            ((CustomCreateValueFactory)valueFactory).ArraysCreatedFromArrays++;
+            return base.CreateArray(valueFactory);
+        }
+    }
+
+    internal class CustomCreateValueFactory : TestValueFactory
+    {
+        public int ObjectsCreatedFromProperties { get; set; }
+        public int ArraysCreatedFromProperties { get; set; }
+        public int ObjectsCreatedFromArrays { get; set; }
+        public int ArraysCreatedFromArrays { get; set; }
+
+        public override ParseObject CreateObject()
+        {
+            return new CustomCreateObject();
+        }
+
+        public override ParseArray CreateArray()
+        {
+            return new CustomCreateArray();
         }
     }
 }

@@ -233,11 +233,9 @@ namespace json.Json
 
             public override void ParsePropertyValue(string name)
             {
-                parser.EnterObjectPropertyContext(ParseObject, name);
-
-                parser.ParseValue().AddToObject(ParseObject, name);
-
-                parser.ExitValueFactoryContext();
+                parser.UsingObjectPropertyContext(ParseObject, name,
+                    () => parser.ParseValue().AddToObject(ParseObject, name)
+                );
             }
         }
 
@@ -286,14 +284,13 @@ namespace json.Json
 
             if (!IsSymbol("]"))
             {
-                EnterArrayContext(array);
-
-                do
+                UsingArrayContext(array, () =>
                 {
-                    ParseValue().AddToArray(array);
-                } while (MoveNextIfSymbol(","));
-
-                ExitValueFactoryContext();
+                    do
+                    {
+                        ParseValue().AddToArray(array);
+                    } while (MoveNextIfSymbol(","));
+                });
             }
 
             ExpectSymbol("]");
