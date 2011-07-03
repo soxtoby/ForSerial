@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GeneralExtensions.cs" />
+    <Compile Include="JsonObjects\JsonObjectBuilderTests.cs" />
     <Compile Include="JsonObjects\JsonObjectParser.cs" />
     <Compile Include="JsonObjects\JsonObjectParserTests.cs" />
     <Compile Include="JsonObjects\PreDeserializeAttribute.cs" />

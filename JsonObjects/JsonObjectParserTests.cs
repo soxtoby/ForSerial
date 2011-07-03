@@ -129,6 +129,17 @@ namespace json.JsonObjects
         }
 
         [Test]
+        public void MaintainReferences()
+        {
+            var testBuilder = new WatchForReferenceBuilder();
+            var jsonObject = new JsonObject();
+            jsonObject["foo"] = jsonObject["bar"] = new JsonObject();
+            Parse.From.JsonObject(jsonObject).WithBuilder(testBuilder);
+
+            Assert.NotNull(testBuilder.ReferencedObject);
+        }
+
+        [Test]
         public void CreatePropertyObject()
         {
             var valueFactory = new CustomCreateValueFactory();

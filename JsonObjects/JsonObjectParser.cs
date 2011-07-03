@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using json.Objects;
 
 namespace json.JsonObjects
@@ -8,6 +9,7 @@ namespace json.JsonObjects
     {
         private const string TypeKey = "_type";
         private JsonObject currentObject;
+        private readonly Dictionary<JsonObject, ParseObject> objectReferences = new Dictionary<JsonObject, ParseObject>();
 
         private JsonObjectParser(ParseValueFactory valueFactory) : base(valueFactory) { }
 
@@ -55,24 +57,37 @@ namespace json.JsonObjects
 
         private ParseObject ParseObject(JsonObject obj)
         {
+            ParseObject existingReference = objectReferences.Get(obj);
+            return existingReference == null
+                ? ParseNewObject(obj)
+                : ReferenceObject(existingReference);
+        }
+
+        private ParseObject ParseNewObject(JsonObject obj)
+        {
             currentObject = obj;
 
-            ParseObject parseObject = ValueFactory.CreateObject();
+            ParseObject parseObject = objectReferences[obj] = ValueFactory.CreateObject();
 
             foreach (var property in obj)
             {
                 string name = property.Key;
                 object value = property.Value;
                 UsingObjectPropertyContext(parseObject, name, () =>
-                {
-                    if (name == TypeKey)
-                        parseObject.SetType((string)obj[TypeKey], this);
-                    else
-                        ParseValue(value).AddToObject(parseObject, name);
-                });
+                    {
+                        if (name == TypeKey)
+                            parseObject.SetType((string)obj[TypeKey], this);
+                        else
+                            ParseValue(value).AddToObject(parseObject, name);
+                    });
             }
 
             return parseObject;
+        }
+
+        private ParseObject ReferenceObject(ParseObject existingReference)
+        {
+            return ValueFactory.CreateReference(existingReference);
         }
 
         private ParseArray ParseArray(IEnumerable enumerable)
