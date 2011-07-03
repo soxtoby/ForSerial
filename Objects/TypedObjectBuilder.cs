@@ -47,7 +47,7 @@ namespace json.Objects
         public ParseArray CreateArray()
         {
             if (baseType == null)
-                return new TypedObjectUnknownTypeArray();
+                throw new UnknownRootArrayType();
 
             var array = new TypedObjectTypedArray(baseType);
             baseType = null;    // Only needed for first object
@@ -105,6 +105,9 @@ namespace json.Objects
             public override bool SetType(string typeIdentifier, Parser parser)
             {
                 TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(typeIdentifier);
+                bool useCurrentType = CurrentTypeIsNotCompatible(typeDef);
+                if (useCurrentType)
+                    typeDef = parseObject.TypeDef;
 
                 TypeDefinition.PreBuildInfo preBuildInfo = typeDef.GetPreBuildInfo(parser);
 
@@ -114,16 +117,22 @@ namespace json.Objects
                     return true;
                 }
 
-                SetType(typeDef);
+                if (!useCurrentType)
+                    SetType(typeDef);
 
                 return false;
+            }
+
+            private bool CurrentTypeIsNotCompatible(TypeDefinition typeDef)
+            {
+                return parseObject != null && !typeDef.Type.CanBeCastTo(parseObject.TypeDef.Type);
             }
 
             private void SetType(TypeDefinition typeDef)
             {
                 parseObject = typeDef.IsJsonCompatibleDictionary
-                                  ? (TypedObjectParseObject)new TypedObjectDictionary(typeDef)
-                                  : new TypedObjectRegularObject(typeDef);
+                    ? (TypedObjectParseObject)new TypedObjectDictionary(typeDef)
+                    : new TypedObjectRegularObject(typeDef);
             }
 
             private static TypedObjectParseObject PreBuildRegularObject(Parser parser, TypeDefinition.PreBuildInfo preBuildInfo, TypeDefinition typeDef)
@@ -195,18 +204,19 @@ namespace json.Objects
 
         private interface TypedObjectParseObject : ParseObject
         {
+            TypeDefinition TypeDef { get; }
             void AssignToProperty(object owner, PropertyDefinition property);
             object Object { get; }
         }
 
         private class TypedObjectRegularObject : ParseObjectBase, TypedObjectParseObject
         {
-            private readonly TypeDefinition typeDef;
+            public TypeDefinition TypeDef { get; private set; }
             public object Object { get; private set; }
 
             public TypedObjectRegularObject(TypeDefinition typeDef)
             {
-                this.typeDef = typeDef;
+                TypeDef = typeDef;
                 Object = Activator.CreateInstance(typeDef.Type);
             }
 
@@ -259,7 +269,7 @@ namespace json.Objects
             {
                 TypedObjectObject objectValue = GetObjectAsTypedObjectObject(value);
 
-                PropertyDefinition property = typeDef.Properties.Get(name);
+                PropertyDefinition property = TypeDef.Properties.Get(name);
                 if (property != null)
                     objectValue.AssignToProperty(Object, property);
             }
@@ -268,7 +278,7 @@ namespace json.Objects
             {
                 TypedObjectArray array = GetArrayAsTypedObjectArray(value);
 
-                PropertyDefinition property = typeDef.Properties.Get(name);
+                PropertyDefinition property = TypeDef.Properties.Get(name);
 
                 if (property != null)
                 {
@@ -291,15 +301,15 @@ namespace json.Objects
 
             private void SetProperty(string name, object value)
             {
-                PropertyDefinition property = typeDef.Properties.Get(name);
+                PropertyDefinition property = TypeDef.Properties.Get(name);
                 if (property != null)
                     property.SetOn(Object, value);
             }
 
             public void AssignToProperty(object owner, PropertyDefinition property)
             {
-                if (!property.TypeDef.Type.IsAssignableFrom(typeDef.Type))
-                    throw new PropertyTypeMismatch(owner.GetType(), property.Name, property.TypeDef.Type, typeDef.Type);
+                if (!TypeDef.Type.CanBeCastTo(property.TypeDef.Type))
+                    throw new PropertyTypeMismatch(owner.GetType(), property.Name, property.TypeDef.Type, TypeDef.Type);
 
                 property.SetOn(owner, Object);
             }
@@ -311,17 +321,22 @@ namespace json.Objects
 
             public override ParseObject CreateObject(string name, ParseValueFactory valueFactory)
             {
-                PropertyDefinition property = typeDef.Properties.Get(name);
-                return property == null
-                    ? new TypedObjectObject()
-                    : new TypedObjectObject(property.TypeDef);
+                PropertyDefinition property = TypeDef.Properties.Get(name);
+                return CanCreateNewPropertyInstance(property)
+                    ? new TypedObjectObject(property.TypeDef)
+                    : new TypedObjectObject();
+            }
+
+            private static bool CanCreateNewPropertyInstance(PropertyDefinition property)
+            {
+                return property != null && property.TypeDef.IsSerializable;
             }
 
             public override ParseArray CreateArray(string name, ParseValueFactory valueFactory)
             {
-                PropertyDefinition property = typeDef.Properties.Get(name);
+                PropertyDefinition property = TypeDef.Properties.Get(name);
                 return property == null
-                    ? (ParseArray)new TypedObjectUnknownTypeArray()
+                    ? (ParseArray)new TypedObjectNullArray()    // No property - don't care what's in the array
                     : new TypedObjectTypedArray(property.TypeDef.Type);
             }
         }
@@ -329,15 +344,15 @@ namespace json.Objects
         private class TypedObjectDictionary : ParseObjectBase, TypedObjectParseObject
         {
             private readonly Dictionary<string, object> dictionary = new Dictionary<string, object>();
-            private readonly TypeDefinition dictionaryTypeDef;
+            public TypeDefinition TypeDef { get; private set; }
             private readonly TypeDefinition keyTypeDef;
             private readonly TypeDefinition valueTypeDef;
 
             public TypedObjectDictionary(TypeDefinition typeDef)
             {
-                dictionaryTypeDef = typeDef;
-                keyTypeDef = TypeDefinition.GetTypeDefinition(dictionaryTypeDef.Type.GetGenericInterfaceType(typeof(IDictionary<,>), 0));
-                valueTypeDef = TypeDefinition.GetTypeDefinition(dictionaryTypeDef.Type.GetGenericInterfaceType(typeof(IDictionary<,>), 1));
+                TypeDef = typeDef;
+                keyTypeDef = TypeDefinition.GetTypeDefinition(TypeDef.Type.GetGenericInterfaceType(typeof(IDictionary<,>), 0));
+                valueTypeDef = TypeDefinition.GetTypeDefinition(TypeDef.Type.GetGenericInterfaceType(typeof(IDictionary<,>), 1));
             }
 
             public override void AddNull(string name)
@@ -413,7 +428,7 @@ namespace json.Objects
             {
                 get
                 {
-                    IDictionary typedDictionary = (IDictionary)Activator.CreateInstance(dictionaryTypeDef.Type);
+                    IDictionary typedDictionary = (IDictionary)Activator.CreateInstance(TypeDef.Type);
                     PopulateDictionary(typedDictionary);
                     return typedDictionary;
                 }
@@ -446,55 +461,16 @@ namespace json.Objects
             IEnumerable GetTypedArray(Type type);
         }
 
-        private class TypedObjectUnknownTypeArray : ParseArrayBase, TypedObjectArray
+        private class TypedObjectNullArray : NullParseArray, TypedObjectArray
         {
-            private readonly List<object> objectArray = new List<object>();
-
             public IEnumerable Array
             {
-                get { return objectArray; }
+                get { yield break; }
             }
 
             public IEnumerable GetTypedArray(Type type)
             {
-                return PopulateCollection(type, objectArray, () => Activator.CreateInstance(type));
-            }
-
-            public override ParseObject AsObject()
-            {
-                return new TypedObjectObject(objectArray);
-            }
-
-            public override void AddNull()
-            {
-                objectArray.Add(null);
-            }
-
-            public override void AddBoolean(bool value)
-            {
-                objectArray.Add(value);
-            }
-
-            public override void AddNumber(double value)
-            {
-                objectArray.Add(value);
-            }
-
-            public override void AddString(string value)
-            {
-                objectArray.Add(value);
-            }
-
-            public override void AddObject(ParseObject value)
-            {
-                TypedObjectObject obj = GetObjectAsTypedObjectObject(value);
-                objectArray.Add(obj.Object);
-            }
-
-            public override void AddArray(ParseArray value)
-            {
-                TypedObjectArray array = GetArrayAsTypedObjectArray(value);
-                objectArray.Add(array.Array);
+                yield break;
             }
         }
 
@@ -659,16 +635,9 @@ namespace json.Objects
         private static object TypeInnerCollection(Type itemType, object item)
         {
             CollectionDefinition collectionDef = CollectionDefinition.GetCollectionDefinition(itemType);
-            if (collectionDef.IsCollection)
-            {
-                List<object> innerCollection = item as List<object>;
-
-                if (innerCollection == null)
-                    throw new ExpectedCollection(item.GetType());
-
-                return PopulateCollection(itemType, innerCollection, () => Activator.CreateInstance(itemType));
-            }
-            return item;
+            return collectionDef.IsCollection
+                ? PopulateCollection(itemType, (IEnumerable)item, () => Activator.CreateInstance(itemType))
+                : item;
         }
 
         internal class UnsupportedParseObject : Exception
@@ -699,14 +668,14 @@ namespace json.Objects
             public InvalidResultObject() : base("Invalid ParseObject type. Object must be constructed using a TypedObjectBuilder.") { }
         }
 
-        internal class ExpectedCollection : Exception
-        {
-            public ExpectedCollection(Type actual) : base("Expected inner collection but found {0}.".FormatWith(actual.FullName)) { }
-        }
-
         private class InvalidCollectionType : Exception
         {
             public InvalidCollectionType(Type type) : base("Cannot create collection of type {0}.".FormatWith(type.FullName)) { }
+        }
+
+        internal class UnknownRootArrayType : Exception
+        {
+            public UnknownRootArrayType() : base("Can't create array without a known type.") { }
         }
     }
 }

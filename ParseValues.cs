@@ -294,14 +294,12 @@ namespace json
 
     public class PropertyValueFactory : ContextValueFactory
     {
-        private readonly ParseValueFactory baseFactory;
         private readonly ParseObject propertyOwner;
         private readonly string propertyName;
 
         public PropertyValueFactory(ParseValueFactory baseFactory, ParseObject propertyOwner, string propertyName)
             : base(baseFactory)
         {
-            this.baseFactory = baseFactory;
             this.propertyOwner = propertyOwner;
             this.propertyName = propertyName;
         }

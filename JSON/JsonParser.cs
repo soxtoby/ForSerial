@@ -12,7 +12,14 @@ namespace json.Json
 
         public static ParseObject Parse(string json, ParseValueFactory valueFactory)
         {
-            return Parse(Scanner.Scan(json), valueFactory);
+            try
+            {
+                return Parse(Scanner.Scan(json), valueFactory);
+            }
+            catch (ParseException e)
+            {
+                throw new ParseException(e, json);
+            }
         }
 
         private static ParseObject Parse(IEnumerable<Token> tokens, ParseValueFactory valueFactory)
@@ -23,6 +30,7 @@ namespace json.Json
 
         public override ParseObject ParseSubObject(ParseValueFactory subParseValueFactory)
         {
+            MoveNextIfSymbol(",");
             return Parse(GetSubObjectTokens(), subParseValueFactory);
         }
 
@@ -199,6 +207,8 @@ namespace json.Json
                 {
                     if (parser.SetObjectType(ParseObject))
                         ReturnImmediately = true; // Object was pre-built
+                    else
+                        NextPropertyParser = new RegularPropertyParser(parser, ParseObject);
                 }
                 else
                 {
@@ -248,7 +258,6 @@ namespace json.Json
         private bool SetObjectType(ParseObject obj)
         {
             string typeIdentifier = GetString();
-            MoveNextIfSymbol(",");
             return obj.SetType(typeIdentifier, this);
         }
 

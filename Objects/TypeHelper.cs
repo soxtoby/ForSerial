@@ -44,6 +44,14 @@ namespace json.Objects
                     return TypeCodeType.Other;
             }
         }
+
+        /// <summary>
+        /// Because IsAssignableFrom confuses the bajeezus outa me.
+        /// </summary>
+        public static bool CanBeCastTo(this Type type, Type castTo)
+        {
+            return castTo.IsAssignableFrom(type);
+        }
     }
 
     internal enum TypeCodeType

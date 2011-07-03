@@ -14,7 +14,7 @@ namespace json.Json
             Assert.AreEqual(@"\""foo\\bar\""", obj.StringValue);
         }
 
-        private class StringValueObject : TestParseObject
+        private class StringValueObject : NullParseObject
         {
             public string StringValue { get; private set; }
 

@@ -92,7 +92,7 @@ namespace json.JsonObjects
             }
         }
 
-        private class ParseSubObjectObject : TestParseObject
+        private class ParseSubObjectObject : NullParseObject
         {
             private readonly ParseSubObjectValueFactory parentFactory;
 

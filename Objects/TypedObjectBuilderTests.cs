@@ -285,36 +285,102 @@ namespace json.Objects
 
         [Test]
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseObject))]
-        public void AddUnsupportedParseObjectToObject_ThrowsException()
+        public void AddUnsupportedParseObjectToObject()
         {
             ParseObject obj = TypedObjectBuilder.GenericInstance.CreateObject();
             obj.SetType(typeof(IntPropertyClass).AssemblyQualifiedName, null);
-            obj.AddObject("Integer", new TestParseObject());
+            obj.AddObject("Integer", new NullParseObject());
         }
 
         [Test]
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseObject))]
-        public void AddUnsupportedParseObjectToArray_ThrowsException()
+        public void AddUnsupportedParseObjectToArray()
         {
-            ParseArray array = TypedObjectBuilder.GenericInstance.CreateArray();
-            array.AddObject(new TestParseObject());
+            ParseArray array = new TypedObjectBuilder(typeof(List<int>)).CreateArray();
+            array.AddObject(new NullParseObject());
         }
 
         [Test]
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseArray))]
-        public void AddUnsupportedParseArrayToObject_ThrowsException()
+        public void AddUnsupportedParseArrayToObject()
         {
             ParseObject obj = TypedObjectBuilder.GenericInstance.CreateObject();
             obj.SetType(typeof(SettableListPropertyClass).AssemblyQualifiedName, null);
-            obj.AddArray("Array", new TestParseArray());
+            obj.AddArray("Array", new NullParseArray());
         }
 
         [Test]
         [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseArray))]
-        public void AddUnsupportedParseArrayToArray_ThrowsException()
+        public void AddUnsupportedParseArrayToArray()
         {
-            ParseArray array = TypedObjectBuilder.GenericInstance.CreateArray();
-            array.AddArray(new TestParseArray());
+            ParseArray array = new TypedObjectBuilder(typeof(List<int>)).CreateArray();
+            array.AddArray(new NullParseArray());
+        }
+
+        [Test]
+        [ExpectedException(typeof(TypedObjectBuilder.PropertyTypeMismatch))]
+        public void PropertyTypeMismatch()
+        {
+            string json = Parse.From
+                .Object(new { Property = new BooleanPropertyClass() })
+                .ToTypedJson();
+            Parse.From.Json(json).ToObject<InterfacePropertyClass>();
+        }
+
+        [Test]
+        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        public void AddNullToUntypedObject()
+        {
+            Parse.From.Json(@"{""foo"":null}").WithBuilder(TypedObjectBuilder.GenericInstance);
+        }
+
+        [Test]
+        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        public void AddBooleanToUntypedObject()
+        {
+            Parse.From.Json(@"{""foo"":true}").WithBuilder(TypedObjectBuilder.GenericInstance);
+        }
+
+        [Test]
+        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        public void AddNumberToUntypedObject()
+        {
+            Parse.From.Json(@"{""foo"":5}").WithBuilder(TypedObjectBuilder.GenericInstance);
+        }
+
+        [Test]
+        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        public void AddStringToUntypedObject()
+        {
+            Parse.From.Json(@"{""foo"":""bar""}").WithBuilder(TypedObjectBuilder.GenericInstance);
+        }
+
+        [Test]
+        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        public void AddObjectToUntypedObject()
+        {
+            Parse.From.Json(@"{""foo"":{}}").WithBuilder(TypedObjectBuilder.GenericInstance);
+        }
+
+        [Test]
+        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        public void AddArrayToUntypedObject()
+        {
+            Parse.From.Json(@"{""foo"":[]}").WithBuilder(TypedObjectBuilder.GenericInstance);
+        }
+
+        [Test]
+        [ExpectedException(typeof(TypedObjectBuilder.InvalidResultObject))]
+        public void InvalidResultObject()
+        {
+            TypedObjectBuilder.GetResult<object>(new NullParseObject());
+        }
+
+        [Test]
+        [ExpectedException(typeof(TypedObjectBuilder.UnknownRootArrayType))]
+        public void UnknownRootArrayType()
+        {
+            Parse.From.Object(new object[] { }).WithBuilder(TypedObjectBuilder.GenericInstance);
         }
 
         [Test]
@@ -394,6 +460,79 @@ namespace json.Objects
             Assert.NotNull(obj.NestedArray);
             CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.NestedArray[0]);
             CollectionAssert.AreEqual(new[] { 4, 5, 6 }, obj.NestedArray[1]);
+        }
+
+        [Test]
+        public void InterfaceProperty()
+        {
+            InterfacePropertyClass obj = Parse.From
+                .Object(new InterfacePropertyClass { Property = new InterfaceImplementation { Value = 5 } },
+                        ObjectParser.Options.SerializeOneWayTypes)
+                .ToObject<InterfacePropertyClass>();
+
+            Assert.NotNull(obj.Property);
+            Assert.AreEqual(5, obj.Property.Value);
+        }
+
+        private class InterfacePropertyClass
+        {
+            public Interface Property { get; set; }
+        }
+
+        private interface Interface
+        {
+            int Value { get; }
+        }
+
+        private class InterfaceImplementation : Interface
+        {
+            public int Value { get; set; }
+        }
+
+        [Test]
+        public void ConvertToSubType()
+        {
+            SubClass sub = Parse.From.Object(new SuperClass { SuperProperty = 1 }).ToObject<SubClass>();
+
+            Assert.AreEqual(1, sub.SuperProperty);
+            Assert.AreEqual(0, sub.SubProperty);
+        }
+
+        [Test]
+        public void MaintainSubType()
+        {
+            SubClass sub = Parse.From
+                .Object(new SubClass { SuperProperty = 1, SubProperty = 2 })
+                .ToObject<SuperClass>() as SubClass;
+
+            Assert.NotNull(sub);
+            Assert.AreEqual(1, sub.SuperProperty);
+            Assert.AreEqual(2, sub.SubProperty);
+        }
+
+        [Test]
+        public void ConvertToSimilarType()
+        {
+            SimilarClass similar = Parse.From
+                .Object(new SubClass { SuperProperty = 1, SubProperty = 2 })
+                .ToObject<SimilarClass>();
+
+            Assert.AreEqual(2, similar.SubProperty);
+        }
+
+        private class SuperClass
+        {
+            public int SuperProperty { get; set; }
+        }
+
+        private class SubClass : SuperClass
+        {
+            public int SubProperty { get; set; }
+        }
+
+        private class SimilarClass
+        {
+            public int SubProperty { get; set; }
         }
     }
 }

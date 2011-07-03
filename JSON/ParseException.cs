@@ -13,9 +13,7 @@ namespace json.Json
 
         #region Constructors and Serialization
 
-        public ParseException() : base() { }
-
-        public ParseException(string message, string tokenString, int line, int position)
+        protected ParseException(string message, string tokenString, int line, int position)
             : base(message)
         {
             TokenString = tokenString;
@@ -23,18 +21,24 @@ namespace json.Json
             Position = position;
         }
 
+        public ParseException(ParseException innerException, string json)
+            : this(GetWrappedExceptionMessage(innerException, json), innerException.TokenString, innerException.Line, innerException.Position, innerException)
+        { }
+
+        private static string GetWrappedExceptionMessage(ParseException innerException, string json)
+        {
+            return "{0}\r\nInner Exception: {1}".FormatWith(innerException.PrettyPrint(json), innerException);
+        }
+
         public ParseException(string message, Token token) : this(message, token.ToString(), token.Line, token.Position) { }
 
-        public ParseException(string message, string tokenString, int line, int position, Exception innerException)
+        private ParseException(string message, string tokenString, int line, int position, Exception innerException)
             : base(message, innerException)
         {
             TokenString = tokenString;
             Line = line;
             Position = position;
         }
-
-        public ParseException(string message, Token token, Exception innerException) : this(message, token.ToString(), token.Line, token.Position, innerException) { }
-
 
         protected ParseException(SerializationInfo info, StreamingContext context)
             : base(info, context)
@@ -66,9 +70,9 @@ namespace json.Json
 
         #endregion
 
-        public string PrettyPrint(string mdx)
+        private string PrettyPrint(string json)
         {
-            return "{0} \"{1}\" at {2}:{3}.\r\n{4}\r\n{5}^".FormatWith(Message, TokenString, Line, Position, mdx.Split('\n')[Line], new string(' ', Position));
+            return "{0} \"{1}\" at {2}:{3}.\r\n{4}\r\n{5}^".FormatWith(Message, TokenString, Line, Position, json.Split('\n')[Line], new string(' ', Position));
         }
     }
 }

@@ -2,65 +2,6 @@ using System;
 
 namespace json
 {
-    internal class TestParseObject : ParseObjectBase
-    {
-        public override void AddNull(string name)
-        {
-        }
-
-        public override void AddBoolean(string name, bool value)
-        {
-        }
-
-        public override void AddNumber(string name, double value)
-        {
-        }
-
-        public override void AddString(string name, string value)
-        {
-        }
-
-        public override void AddObject(string name, ParseObject value)
-        {
-        }
-
-        public override void AddArray(string name, ParseArray value)
-        {
-        }
-    }
-
-    internal class TestParseArray : ParseArrayBase
-    {
-        public override void AddNull()
-        {
-        }
-
-        public override void AddBoolean(bool value)
-        {
-        }
-
-        public override void AddNumber(double value)
-        {
-        }
-
-        public override void AddString(string value)
-        {
-        }
-
-        public override void AddObject(ParseObject value)
-        {
-        }
-
-        public override void AddArray(ParseArray value)
-        {
-        }
-
-        public override ParseObject AsObject()
-        {
-            throw new System.NotImplementedException();
-        }
-    }
-
     internal class TestParseNumber : ParseNumber
     {
         public TestParseNumber(double value) : base(value) { }
@@ -77,7 +18,7 @@ namespace json
 
         public override ParseObject AsObject()
         {
-            TestParseObject obj = new TestParseObject();
+            NullParseObject obj = new NullParseObject();
             obj.AddString("value", value);
             return obj;
         }
@@ -87,12 +28,12 @@ namespace json
     {
         public virtual ParseObject CreateObject()
         {
-            return new TestParseObject();
+            return new NullParseObject();
         }
 
         public virtual ParseArray CreateArray()
         {
-            return new TestParseArray();
+            return new NullParseArray();
         }
 
         public virtual ParseNumber CreateNumber(double value)
@@ -161,7 +102,7 @@ namespace json
         }
     }
 
-    internal class CustomCreateObject : TestParseObject
+    internal class CustomCreateObject : NullParseObject
     {
         public override ParseObject CreateObject(string name, ParseValueFactory valueFactory)
         {
@@ -176,7 +117,7 @@ namespace json
         }
     }
 
-    internal class CustomCreateArray : TestParseArray
+    internal class CustomCreateArray : NullParseArray
     {
         public override ParseObject CreateObject(ParseValueFactory valueFactory)
         {

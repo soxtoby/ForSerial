@@ -70,6 +70,7 @@
     <Compile Include="JsonObjects\JsonObjectParser.cs" />
     <Compile Include="JsonObjects\JsonObjectParserTests.cs" />
     <Compile Include="JsonObjects\PreDeserializeAttribute.cs" />
+    <Compile Include="NullParseValues.cs" />
     <Compile Include="Objects\ReferenceEqualityComparer.cs" />
     <Compile Include="Objects\TypeHelper.cs" />
     <Compile Include="Parse.cs" />
@@ -117,4 +118,5 @@
     <None Include="packages.config" />
     <None Include="TODO" />
   </ItemGroup>
+  <ItemGroup />
 </Project>
