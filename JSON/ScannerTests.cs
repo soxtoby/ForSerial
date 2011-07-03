@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -134,15 +133,10 @@ namespace json.Json
             Assert.AreEqual(expected.Count, actual.Count);
             for (int i = 0; i < expected.Count; i++)
             {
-                Assert.IsTrue(TokenMatch(actual[i], expected[i]));
+                Assert.AreEqual(expected[i].TokenType, actual[i].TokenType);
+                Assert.AreEqual(expected[i].StringValue, actual[i].StringValue);
+                Assert.AreEqual(expected[i].NumericValue, actual[i].NumericValue, double.Epsilon);
             }
-        }
-
-        private static bool TokenMatch(Token one, Token two)
-        {
-            return one.TokenType == two.TokenType
-                && one.StringValue == two.StringValue
-                && one.NumericValue == two.NumericValue;
         }
 
         private static Token Symbol(string value)

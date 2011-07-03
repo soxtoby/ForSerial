@@ -1,6 +1,10 @@
 
 namespace json
 {
+    /// <summary>
+    /// Ignores all inputs. Do not derive from this type unless you need a Null Object
+    /// with extra methods, or are using the class for testing.
+    /// </summary>
     public class NullParseObject : ParseObjectBase
     {
         private static NullParseObject instance;
@@ -38,6 +42,10 @@ namespace json
         }
     }
 
+    /// <summary>
+    /// Ignores all inputs. Do not derive from this type unless you need a Null Object
+    /// with extra methods, or are using the class for testing.
+    /// </summary>
     public class NullParseArray : ParseArrayBase
     {
         private static NullParseArray instance;

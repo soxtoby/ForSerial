@@ -14,12 +14,19 @@ namespace json.Json
 
         public static IEnumerable<Token> Scan(string text)
         {
-            TextReader reader = new StringReader(text);
-            return Scan(reader);
+            try
+            {
+                return TryScan(text);
+            }
+            catch (ParseException e)
+            {
+                throw new ParseException(e, text);
+            }
         }
 
-        public static IEnumerable<Token> Scan(TextReader reader)
+        private static IEnumerable<Token> TryScan(string text)
         {
+            TextReader reader = new StringReader(text);
             Scanner scanner = new Scanner(reader);
             return scanner.Scan();
         }
