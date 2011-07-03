@@ -343,7 +343,7 @@ namespace json.Json
             }
         }
 
-        private class InvalidResultObject : Exception
+        internal class InvalidResultObject : Exception
         {
             public InvalidResultObject()
                 : base("Invalid ParseObject type. Object must be constructed using a JsonStringBuilder.")
@@ -351,7 +351,7 @@ namespace json.Json
             }
         }
 
-        private class CannotAddValueToReference : Exception
+        internal class CannotAddValueToReference : Exception
         {
             public CannotAddValueToReference() : base("Parser should not be trying to add properties to a reference object.") { }
         }

@@ -60,6 +60,24 @@ namespace json.Json
                 .ToJson(JsonStringBuilder.Options.MaintainObjectReferences);
             Assert.AreEqual(@"{""One"":{""foo"":5},""Two"":{""bar"":6},""Three"":{""_ref"":1},""Four"":{""_ref"":2}}", json);
         }
+
+        [Test]
+        [ExpectedException(typeof(JsonStringBuilder.InvalidResultObject))]
+        public void InvalidResultObject()
+        {
+            JsonStringBuilder.GetResult(NullParseObject.Instance);
+        }
+
+        [Test]
+        [ExpectedException(typeof(JsonStringBuilder.CannotAddValueToReference))]
+        public void AddValueToReferenceObject()
+        {
+            var builder = new JsonStringBuilder(JsonStringBuilder.Options.MaintainObjectReferences);
+            var originalObject = builder.CreateObject();
+            var reference = builder.CreateReference(originalObject);
+            reference.AddNull("foo");
+        }
+
     }
 }
 
