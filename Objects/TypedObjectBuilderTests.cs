@@ -289,7 +289,7 @@ namespace json.Objects
         {
             ParseObject obj = TypedObjectBuilder.GenericInstance.CreateObject();
             obj.SetType(typeof(IntPropertyClass).AssemblyQualifiedName, null);
-            obj.AddObject("Integer", new NullParseObject());
+            obj.AddObject("Integer", NullParseObject.Instance);
         }
 
         [Test]
@@ -297,7 +297,7 @@ namespace json.Objects
         public void AddUnsupportedParseObjectToArray()
         {
             ParseArray array = new TypedObjectBuilder(typeof(List<int>)).CreateArray();
-            array.AddObject(new NullParseObject());
+            array.AddObject(NullParseObject.Instance);
         }
 
         [Test]
@@ -306,7 +306,7 @@ namespace json.Objects
         {
             ParseObject obj = TypedObjectBuilder.GenericInstance.CreateObject();
             obj.SetType(typeof(SettableListPropertyClass).AssemblyQualifiedName, null);
-            obj.AddArray("Array", new NullParseArray());
+            obj.AddArray("Array", NullParseArray.Instance);
         }
 
         [Test]
@@ -314,7 +314,7 @@ namespace json.Objects
         public void AddUnsupportedParseArrayToArray()
         {
             ParseArray array = new TypedObjectBuilder(typeof(List<int>)).CreateArray();
-            array.AddArray(new NullParseArray());
+            array.AddArray(NullParseArray.Instance);
         }
 
         [Test]
@@ -373,7 +373,7 @@ namespace json.Objects
         [ExpectedException(typeof(TypedObjectBuilder.InvalidResultObject))]
         public void InvalidResultObject()
         {
-            TypedObjectBuilder.GetResult<object>(new NullParseObject());
+            TypedObjectBuilder.GetResult<object>(NullParseObject.Instance);
         }
 
         [Test]

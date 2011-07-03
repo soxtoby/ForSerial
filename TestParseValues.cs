@@ -18,7 +18,7 @@ namespace json
 
         public override ParseObject AsObject()
         {
-            NullParseObject obj = new NullParseObject();
+            NullParseObject obj = NullParseObject.Instance;
             obj.AddString("value", value);
             return obj;
         }
@@ -28,12 +28,12 @@ namespace json
     {
         public virtual ParseObject CreateObject()
         {
-            return new NullParseObject();
+            return NullParseObject.Instance;
         }
 
         public virtual ParseArray CreateArray()
         {
-            return new NullParseArray();
+            return NullParseArray.Instance;
         }
 
         public virtual ParseNumber CreateNumber(double value)

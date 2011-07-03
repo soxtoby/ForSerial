@@ -3,6 +3,16 @@ namespace json
 {
     public class NullParseObject : ParseObjectBase
     {
+        private static NullParseObject instance;
+        public static NullParseObject Instance
+        {
+            get { return instance ?? (instance = new NullParseObject()); }
+        }
+
+        protected NullParseObject()
+        {
+        }
+
         public override void AddNull(string name)
         {
         }
@@ -30,6 +40,16 @@ namespace json
 
     public class NullParseArray : ParseArrayBase
     {
+        private static NullParseArray instance;
+        public static NullParseArray Instance
+        {
+            get { return instance ?? (instance = new NullParseArray()); }
+        }
+
+        protected NullParseArray()
+        {
+        }
+
         public override void AddNull()
         {
         }
@@ -56,7 +76,7 @@ namespace json
 
         public override ParseObject AsObject()
         {
-            return new NullParseObject();
+            return NullParseObject.Instance;
         }
     }
 }

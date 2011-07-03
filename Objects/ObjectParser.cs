@@ -145,7 +145,7 @@ namespace json.Objects
             return array;
         }
 
-        public class UnknownTypeCode : Exception
+        internal class UnknownTypeCode : Exception
         {
             public UnknownTypeCode(object obj)
                 : base("Type {0} has unknown TypeCode.".FormatWith(obj.GetType().FullName))

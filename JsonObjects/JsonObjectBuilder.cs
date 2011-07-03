@@ -231,17 +231,17 @@ namespace json.JsonObjects
             }
         }
 
-        private class UnsupportedParseObject : Exception
+        internal class UnsupportedParseObject : Exception
         {
             public UnsupportedParseObject() : base("Can only add ParseObjects of type JsonObjectObject.") { }
         }
 
-        private class UnsupportedParseArray : Exception
+        internal class UnsupportedParseArray : Exception
         {
             public UnsupportedParseArray() : base("Can only add ParseArrays of type JsonObjectArray.") { }
         }
 
-        private class InvalidResultObject : Exception
+        internal class InvalidResultObject : Exception
         {
             public InvalidResultObject() : base("Invalid ParseObject type. Object must be constructed using a JsonObjectBuilder.") { }
         }

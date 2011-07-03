@@ -19,5 +19,44 @@ namespace json.JsonObjects
             Assert.AreSame(jsonObject["One"], jsonObject["Three"]);
             Assert.AreSame(jsonObject["Two"], jsonObject["Four"]);
         }
+
+        [Test]
+        [ExpectedException(typeof(JsonObjectBuilder.UnsupportedParseObject))]
+        public void AddUnsupportedParseObjectToObject()
+        {
+            ParseObject parseObject = JsonObjectBuilder.Instance.CreateObject();
+            parseObject.AddObject("foo", NullParseObject.Instance);
+        }
+
+        [Test]
+        [ExpectedException(typeof(JsonObjectBuilder.UnsupportedParseObject))]
+        public void AddUnsupportedParseObjectToArray()
+        {
+            ParseArray parseArray = JsonObjectBuilder.Instance.CreateArray();
+            parseArray.AddObject(NullParseObject.Instance);
+        }
+
+        [Test]
+        [ExpectedException(typeof(JsonObjectBuilder.UnsupportedParseArray))]
+        public void AddUnsupportedParseArrayToObject()
+        {
+            ParseObject parseObject = JsonObjectBuilder.Instance.CreateObject();
+            parseObject.AddArray("foo", NullParseArray.Instance);
+        }
+
+        [Test]
+        [ExpectedException(typeof(JsonObjectBuilder.UnsupportedParseArray))]
+        public void AddUnsupportedParseArrayToArray()
+        {
+            ParseArray parseArray = JsonObjectBuilder.Instance.CreateArray();
+            parseArray.AddArray(NullParseArray.Instance);
+        }
+
+        [Test]
+        [ExpectedException(typeof(JsonObjectBuilder.InvalidResultObject))]
+        public void InvalidResultObject()
+        {
+            JsonObjectBuilder.GetResult(NullParseObject.Instance);
+        }
     }
 }
