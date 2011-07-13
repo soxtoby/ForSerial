@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using json.Objects;
+using NUnit.Framework;
 
 namespace json.JsonObjects
 {
@@ -8,14 +9,14 @@ namespace json.JsonObjects
         [Test]
         public void MaintainSingleReference()
         {
-            JsonObject jsonObject = Parse.From.Object(new SameReferenceTwice(new { foo = 5 })).ToJsonObject();
+            JsonObject jsonObject = Parse.From.Object(new SameReferenceTwice(new { foo = 5 }), ObjectParser.Options.SerializeAllTypes).ToJsonObject();
             Assert.AreSame(jsonObject["One"], jsonObject["Two"]);
         }
 
         [Test]
         public void MaintainTwoReferences()
         {
-            JsonObject jsonObject = Parse.From.Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 })).ToJsonObject();
+            JsonObject jsonObject = Parse.From.Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 }), ObjectParser.Options.SerializeAllTypes).ToJsonObject();
             Assert.AreSame(jsonObject["One"], jsonObject["Three"]);
             Assert.AreSame(jsonObject["Two"], jsonObject["Four"]);
         }

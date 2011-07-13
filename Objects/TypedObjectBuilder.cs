@@ -39,7 +39,11 @@ namespace json.Objects
             if (baseType == null)
                 return new TypedObjectObject();
 
-            TypedObjectObject obj = new TypedObjectObject(TypeDefinition.GetTypeDefinition(baseType));
+            TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(baseType);
+            if (!typeDef.IsDeserializable)
+                return new TypedObjectObject();
+
+            TypedObjectObject obj = new TypedObjectObject(typeDef);
             baseType = null;    // Only needed for first object
             return obj;
         }
@@ -329,7 +333,7 @@ namespace json.Objects
 
             private static bool CanCreateNewPropertyInstance(PropertyDefinition property)
             {
-                return property != null && property.TypeDef.IsSerializable;
+                return property != null && property.TypeDef.IsDeserializable;
             }
 
             public override ParseArray CreateArray(string name, ParseValueFactory valueFactory)

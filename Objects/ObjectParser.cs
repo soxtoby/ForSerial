@@ -99,21 +99,28 @@ namespace json.Objects
 
             output.SetType(GetTypeIdentifier(typeDef.Type), this);
 
-            IEnumerable<PropertyDefinition> propertiesToSerialize = SerializeOneWayTypes
-                                                                        ? typeDef.Properties.Values
-                                                                        : typeDef.SerializableProperties;
-
-            foreach (PropertyDefinition property in propertiesToSerialize)
+            foreach (PropertyDefinition property in typeDef.Properties.Values)
             {
                 PropertyDefinition prop = property;
-                UsingObjectPropertyContext(output, property.Name, () =>
+                object propertyValue = prop.GetFrom(obj);
+
+                if (SerializeAllTypes || IsSerializable(propertyValue))
                 {
-                    ParseValue value = ParseValue(prop.GetFrom(obj));
-                    value.AddToObject(output, prop.Name);
-                });
+                    UsingObjectPropertyContext(output, property.Name, () =>
+                        {
+                            ParseValue value = ParseValue(propertyValue);
+                            value.AddToObject(output, prop.Name);
+                        });
+                }
             }
 
             return output;
+        }
+
+        private static bool IsSerializable(object propertyValue)
+        {
+            TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(propertyValue.GetType());
+            return typeDef.IsSerializable && typeDef.IsDeserializable;
         }
 
         private static string GetTypeIdentifier(Type type)
@@ -121,9 +128,9 @@ namespace json.Objects
             return type.AssemblyQualifiedName;
         }
 
-        private bool SerializeOneWayTypes
+        private bool SerializeAllTypes
         {
-            get { return (options & Options.SerializeOneWayTypes) != 0; }
+            get { return (options & Options.SerializeAllTypes) != 0; }
         }
 
         private ParseObject ReferenceObject(ParseObject parseObject)
@@ -160,7 +167,7 @@ namespace json.Objects
             /// <summary>
             /// Allows serialization of types that cannot be deserialized.
             /// </summary>
-            SerializeOneWayTypes = 1,
+            SerializeAllTypes = 1,
         }
     }
 }

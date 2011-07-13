@@ -1,5 +1,4 @@
-Add tests for all exception cases.
-
+Investigate deserializing value types and anonymous types.
 Take attributes like Unserialized and XmlIgnore into account.
 Make PartiallyTypedJsonStringBuilder that only adds type information when necessary.
  - Should automatically add type info when source is interface or abstract

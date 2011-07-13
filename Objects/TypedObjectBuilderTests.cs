@@ -467,7 +467,7 @@ namespace json.Objects
         {
             InterfacePropertyClass obj = Parse.From
                 .Object(new InterfacePropertyClass { Property = new InterfaceImplementation { Value = 5 } },
-                        ObjectParser.Options.SerializeOneWayTypes)
+                        ObjectParser.Options.SerializeAllTypes)
                 .ToObject<InterfacePropertyClass>();
 
             Assert.NotNull(obj.Property);
@@ -503,7 +503,7 @@ namespace json.Objects
         {
             SubClass sub = Parse.From
                 .Object(new SubClass { SuperProperty = 1, SubProperty = 2 })
-                .ToObject<SuperClass>() as SubClass;
+                .ToObject<AbstractSuperClass>() as SubClass;
 
             Assert.NotNull(sub);
             Assert.AreEqual(1, sub.SuperProperty);
@@ -520,9 +520,27 @@ namespace json.Objects
             Assert.AreEqual(2, similar.SubProperty);
         }
 
-        private class SuperClass
+        [Test]
+        public void AbstractTypedProperty()
         {
-            public int SuperProperty { get; set; }
+            AbstractTypedPropertyClass original = new AbstractTypedPropertyClass { Property = new SuperClass { SuperProperty = 5 } };
+            AbstractTypedPropertyClass clone = Clone(original);
+            Assert.AreEqual(5, clone.Property.SuperProperty);
+        }
+
+        private class AbstractTypedPropertyClass
+        {
+            public AbstractSuperClass Property { get; set; }
+        }
+
+        private abstract class AbstractSuperClass
+        {
+            public abstract int SuperProperty { get; set; }
+        }
+
+        private class SuperClass : AbstractSuperClass
+        {
+            public override int SuperProperty { get; set; }
         }
 
         private class SubClass : SuperClass

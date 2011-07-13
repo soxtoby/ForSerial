@@ -102,7 +102,7 @@ namespace json.Objects
         public void ParseSubObject()
         {
             ParseSubObjectValueFactory valueFactory = new ParseSubObjectValueFactory();
-            Parse.From.Object(new { foo = new { bar = "baz" } }, ObjectParser.Options.SerializeOneWayTypes).WithBuilder(valueFactory);
+            Parse.From.Object(new { foo = new { bar = "baz" } }, ObjectParser.Options.SerializeAllTypes).WithBuilder(valueFactory);
 
             Assert.AreEqual(@"{""bar"":""baz""}", valueFactory.SubObjectJson);
         }
@@ -165,7 +165,7 @@ namespace json.Objects
 
         private static string ParseToJson(object obj)
         {
-            return Parse.From.Object(obj, ObjectParser.Options.SerializeOneWayTypes).ToJson();
+            return Parse.From.Object(obj, ObjectParser.Options.SerializeAllTypes).ToJson();
         }
 
         [Test]

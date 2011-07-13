@@ -11,6 +11,7 @@ namespace json.Objects
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
         public bool IsSerializable { get; private set; }
+        public bool IsDeserializable { get; private set; }
         public bool IsJsonCompatibleDictionary { get; private set; }
         private readonly TypeCode typeCode;
 
@@ -19,6 +20,7 @@ namespace json.Objects
             Type = type;
             Properties = new Dictionary<string, PropertyDefinition>();
             IsSerializable = DetermineIfSerializable();
+            IsDeserializable = DetermineIfDeserializable();
             IsJsonCompatibleDictionary = DetermineIfJsonCompatibleDictionary();
             typeCode = Type.GetTypeCode(type);
         }
@@ -32,7 +34,19 @@ namespace json.Objects
         private bool DetermineIfSerializable()
         {
             return Type.IsSerializable
-                || Type.GetConstructor(new Type[] { }) != null;
+                || HasDefaultConstructor;
+        }
+
+        private bool DetermineIfDeserializable()
+        {
+            return Type.IsSerializable
+                || !Type.IsAbstract
+                    && HasDefaultConstructor;
+        }
+
+        private bool HasDefaultConstructor
+        {
+            get { return Type.GetConstructor(new Type[] { }) != null; }
         }
 
         private bool DetermineIfJsonCompatibleDictionary()
@@ -65,11 +79,6 @@ namespace json.Objects
             return KnownTypes.ContainsKey(assemblyQualifiedName)
                 ? KnownTypes[assemblyQualifiedName]
                 : GetTypeDefinition(Type.GetType(assemblyQualifiedName));
-        }
-
-        public IEnumerable<PropertyDefinition> SerializableProperties
-        {
-            get { return Properties.Values.Where(p => p.IsSerializable); }
         }
 
         private void PopulateProperties()
