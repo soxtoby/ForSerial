@@ -26,7 +26,7 @@ namespace json.Objects
 
         public override ParseObject ParseSubObject(ParseValueFactory subParseValueFactory)
         {
-            return Parse(currentObject, subParseValueFactory).AsObject();
+            return Parse(currentObject, subParseValueFactory, options).AsObject();
         }
 
         private ParseValue ParseValue(object input)

@@ -128,7 +128,7 @@ namespace json.Objects
 
             public override bool SetType(string typeIdentifier, Parser parser)
             {
-                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(parser.ParseSubObject(JsonStringBuilder.Default));
+                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(parser.ParseSubObject(new JsonStringBuilder()));
                 return true;
             }
         }
@@ -163,11 +163,6 @@ namespace json.Objects
             ParseToJson(new { DBNull.Value });
         }
 
-        private static string ParseToJson(object obj)
-        {
-            return Parse.From.Object(obj, ObjectParser.Options.SerializeAllTypes).ToJson();
-        }
-
         [Test]
         public void MaintainReferences()
         {
@@ -191,7 +186,7 @@ namespace json.Objects
         public void CreatePropertyArray()
         {
             var valueFactory = new CustomCreateValueFactory();
-            Parse.From.Object(new { foo = new object[] { } }).WithBuilder(valueFactory);
+            Parse.From.Object(new { foo = new object[] { } }, ObjectParser.Options.SerializeAllTypes).WithBuilder(valueFactory);
 
             Assert.AreEqual(1, valueFactory.ArraysCreatedFromProperties);
         }
@@ -212,6 +207,35 @@ namespace json.Objects
             Parse.From.Object(new[] { new object[] { } }).WithBuilder(valueFactory);
 
             Assert.AreEqual(1, valueFactory.ArraysCreatedFromArrays);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void IgnorePropertyWithAttributeOfNonAttributeType()
+        {
+            TypeDefinition.IgnorePropertiesMarkedWithAttribute(typeof(IgnoredPropertyClass));
+        }
+
+        [Test]
+        public void IgnorePropertyWithAttribute()
+        {
+            TypeDefinition.IgnorePropertiesMarkedWithAttribute(typeof(IgnoreMeAttribute));
+            Assert.AreEqual(@"{""Serialized"":2}", ParseToJson(new IgnoredPropertyClass { Ignored = 1, Serialized = 2 }));
+        }
+
+        private class IgnoreMeAttribute : Attribute { }
+
+        private class IgnoredPropertyClass
+        {
+            [IgnoreMe]
+            public int Ignored { get; set; }
+
+            public int Serialized { get; set; }
+        }
+
+        private static string ParseToJson(object obj)
+        {
+            return Parse.From.Object(obj, ObjectParser.Options.SerializeAllTypes).ToJson();
         }
     }
 }

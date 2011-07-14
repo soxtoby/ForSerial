@@ -72,6 +72,7 @@
     <Compile Include="JsonObjects\PreDeserializeAttribute.cs" />
     <Compile Include="NullParseValues.cs" />
     <Compile Include="Objects\ReferenceEqualityComparer.cs" />
+    <Compile Include="Objects\TypeDefinitionTests.cs" />
     <Compile Include="Objects\TypeHelper.cs" />
     <Compile Include="Parse.cs" />
     <Compile Include="ParseValues.cs" />

@@ -14,6 +14,7 @@ namespace json.Objects
         public bool IsDeserializable { get; private set; }
         public bool IsJsonCompatibleDictionary { get; private set; }
         private readonly TypeCode typeCode;
+        private static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
 
         private TypeDefinition(Type type)
         {
@@ -39,7 +40,8 @@ namespace json.Objects
 
         private bool DetermineIfDeserializable()
         {
-            return Type.IsSerializable
+            return Type.IsPrimitive
+                || Type == typeof(string)   // Strings are objects
                 || !Type.IsAbstract
                     && HasDefaultConstructor;
         }
@@ -81,14 +83,35 @@ namespace json.Objects
                 : GetTypeDefinition(Type.GetType(assemblyQualifiedName));
         }
 
+        public static void IgnorePropertiesMarkedWithAttribute(Type attributeType)
+        {
+            if (!attributeType.CanBeCastTo(typeof(Attribute)))
+                throw new ArgumentException("Type must derive from Attribute", "attributeType");
+
+            lock (IgnoreAttributes)
+            {
+                IgnoreAttributes.Add(attributeType);
+            }
+        }
+
         private void PopulateProperties()
         {
-            IEnumerable<PropertyDefinition> properties =
-                Type.GetProperties().Select(p => new PropertyDefinition(p));
+            IEnumerable<PropertyDefinition> properties = Type.GetProperties()
+                .Where(NotMarkedWithIgnoreAttribute)
+                .Select(p => new PropertyDefinition(p));
 
             foreach (PropertyDefinition property in properties)
             {
                 Properties[property.Name] = property;
+            }
+        }
+
+        private static bool NotMarkedWithIgnoreAttribute(PropertyInfo property)
+        {
+            object[] attributes = property.GetCustomAttributes(true);
+            lock (IgnoreAttributes)
+            {
+                return attributes.None(a => IgnoreAttributes.Contains(a.GetType()));
             }
         }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using json.JsonObjects;
@@ -552,5 +553,31 @@ namespace json.Objects
         {
             public int SubProperty { get; set; }
         }
+
+        [Test]
+        public void AbstractTypedPropertyMarkedWithSerializable()
+        {
+            var original = new SerializableAbstractTypedPropertyClass { Property = new SerializableAbstractImplementation { AbstractProperty = 5 } };
+            var clone = Clone(original);
+
+            Assert.AreEqual(5, clone.Property.AbstractProperty);
+        }
+
+        private class SerializableAbstractTypedPropertyClass
+        {
+            public SerializableAbstractClass Property { get; set; }
+        }
+
+        [Serializable]
+        private abstract class SerializableAbstractClass
+        {
+            public abstract int AbstractProperty { get; set; }
+        }
+
+        private class SerializableAbstractImplementation : SerializableAbstractClass
+        {
+            public override int AbstractProperty { get; set; }
+        }
+
     }
 }

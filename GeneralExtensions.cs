@@ -68,6 +68,11 @@ namespace json
             return !collection.Any();
         }
 
+        public static bool None<T>(this IEnumerable<T> collection, Func<T, bool> condition)
+        {
+            return !collection.Any(condition);
+        }
+
         public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
             TValue val;
