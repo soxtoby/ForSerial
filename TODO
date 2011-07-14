@@ -1,5 +1,4 @@
-Investigate deserializing value types and anonymous types.
-Take attributes like Unserialized and XmlIgnore into account.
+Investigate deserializing value types and anonymous types. http://stackoverflow.com/questions/1650681
 Make PartiallyTypedJsonStringBuilder that only adds type information when necessary.
  - Should automatically add type info when source is interface or abstract
  - Add attribute that forces type information.
