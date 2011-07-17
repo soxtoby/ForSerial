@@ -1,5 +1,5 @@
 using System;
-using json.Json;
+using json.Json.ValueFactory;
 using NUnit.Framework;
 
 namespace json.JsonObjects

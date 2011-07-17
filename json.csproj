@@ -29,6 +29,10 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>&lt;Project Location In Database&gt;</SccProjectName>
+    <SccLocalPath>&lt;Local Binding Root of Project&gt;</SccLocalPath>
+    <SccAuxPath>&lt;Source Control Database&gt;</SccAuxPath>
+    <SccProvider>Mercurial Source Control Package</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -70,6 +74,13 @@
     <Compile Include="JsonObjects\JsonObjectParser.cs" />
     <Compile Include="JsonObjects\JsonObjectParserTests.cs" />
     <Compile Include="JsonObjects\PreDeserializeAttribute.cs" />
+    <Compile Include="Json\ValueFactory\JsonStringArray.cs" />
+    <Compile Include="Json\ValueFactory\JsonStringBoolean.cs" />
+    <Compile Include="Json\ValueFactory\JsonStringNull.cs" />
+    <Compile Include="Json\ValueFactory\JsonStringNumber.cs" />
+    <Compile Include="Json\ValueFactory\JsonStringObject.cs" />
+    <Compile Include="Json\ValueFactory\JsonStringObjectReference.cs" />
+    <Compile Include="Json\ValueFactory\JsonStringString.cs" />
     <Compile Include="NullParseValues.cs" />
     <Compile Include="Objects\ReferenceEqualityComparer.cs" />
     <Compile Include="Objects\TypeDefinitionTests.cs" />
@@ -84,16 +95,16 @@
     <Compile Include="Objects\TypeDefinition.cs" />
     <Compile Include="Objects\TypedObjectBuilder.cs" />
     <Compile Include="Objects\TypedObjectBuilderTests.cs" />
-    <Compile Include="JSON\JsonParser.cs" />
-    <Compile Include="JSON\JsonParserTests.cs" />
-    <Compile Include="JSON\JsonStringBuilder.cs" />
-    <Compile Include="JSON\JsonStringBuilderTests.cs" />
-    <Compile Include="JSON\ParseException.cs" />
-    <Compile Include="JSON\PreDeserializeJsonAttribute.cs" />
-    <Compile Include="JSON\Scanner.cs" />
-    <Compile Include="JSON\ScannerTests.cs" />
-    <Compile Include="JSON\Token.cs" />
-    <Compile Include="JSON\TokenReader.cs" />
+    <Compile Include="Json\JsonParser.cs" />
+    <Compile Include="Json\JsonParserTests.cs" />
+    <Compile Include="Json\ValueFactory\JsonStringBuilder.cs" />
+    <Compile Include="Json\ValueFactory\JsonStringBuilderTests.cs" />
+    <Compile Include="Json\ParseException.cs" />
+    <Compile Include="Json\PreDeserializeJsonAttribute.cs" />
+    <Compile Include="Json\Scanner.cs" />
+    <Compile Include="Json\ScannerTests.cs" />
+    <Compile Include="Json\Token.cs" />
+    <Compile Include="Json\TokenReader.cs" />
     <Compile Include="JsonObjects\JsonObjectBuilder.cs" />
     <Compile Include="TestParseValues.cs" />
   </ItemGroup>

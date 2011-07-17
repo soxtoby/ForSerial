@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using json.Json;
+using json.Json.ValueFactory;
 using NUnit.Framework;
 
 namespace json.Objects

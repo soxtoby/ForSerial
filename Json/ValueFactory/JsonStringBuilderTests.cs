@@ -1,7 +1,7 @@
 using json.Objects;
 using NUnit.Framework;
 
-namespace json.Json
+namespace json.Json.ValueFactory
 {
     [TestFixture]
     public class JsonStringBuilderTests
@@ -26,21 +26,21 @@ namespace json.Json
         }
 
         [Test]
-        public void Number_IsWrappedInObject()
+        public void NumberIsWrappedInObject()
         {
             ParseNumber number = JsonStringBuilder.Default.CreateNumber(5);
             Assert.AreEqual("{\"value\":5}", JsonStringBuilder.GetResult(number.AsObject()));
         }
 
         [Test]
-        public void String_IsWrappedInObject()
+        public void StringIsWrappedInObject()
         {
             ParseString str = JsonStringBuilder.Default.CreateString("foo");
             Assert.AreEqual("{\"value\":\"foo\"}", JsonStringBuilder.GetResult(str.AsObject()));
         }
 
         [Test]
-        public void Array_IsWrappedInObject()
+        public void ArrayIsWrappedInObject()
         {
             ParseArray array = JsonStringBuilder.Default.CreateArray();
             Assert.AreEqual("{\"items\":[]}", JsonStringBuilder.GetResult(array.AsObject()));
