@@ -1,3 +1,7 @@
+Add test for serializing properties will null value (should fail in ObjectParser.IsSerializable).
+Don't get value for unserializable property (either marked with attribute or has no setter).
+Don't serialize static properties, doofus.
+Add support for System.Guid. Try not to make it a special case.
 Investigate deserializing value types and anonymous types. http://stackoverflow.com/questions/1650681
 Make PartiallyTypedJsonStringBuilder that only adds type information when necessary.
  - Should automatically add type info when source is interface or abstract
