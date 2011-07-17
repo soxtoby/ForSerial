@@ -35,7 +35,12 @@ namespace json.Objects
         [Test]
         public void Null()
         {
-            Assert.AreEqual("{\"foo\":null}", ParseToJson(new { foo = (object)null }));
+            Assert.AreEqual("{\"Property\":null}", ParseToJson(new NullPropertyClass(), false));
+        }
+
+        private class NullPropertyClass
+        {
+            public object Property { get; set; }
         }
 
         [Test]
@@ -233,9 +238,10 @@ namespace json.Objects
             public int Serialized { get; set; }
         }
 
-        private static string ParseToJson(object obj)
+        private static string ParseToJson(object obj, bool serializeAllTypes = true)
         {
-            return Parse.From.Object(obj, ObjectParser.Options.SerializeAllTypes).ToJson();
+            ObjectParser.Options options = serializeAllTypes ? ObjectParser.Options.SerializeAllTypes : ObjectParser.Options.Default;
+            return Parse.From.Object(obj, options).ToJson();
         }
     }
 }

@@ -119,6 +119,8 @@ namespace json.Objects
 
         private static bool IsSerializable(object propertyValue)
         {
+            if (propertyValue == null) return true;
+
             TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(propertyValue.GetType());
             return typeDef.IsSerializable && typeDef.IsDeserializable;
         }
