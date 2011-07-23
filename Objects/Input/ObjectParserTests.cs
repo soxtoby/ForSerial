@@ -182,7 +182,7 @@ namespace json.Objects
         public void CreatePropertyObject()
         {
             var valueFactory = new CustomCreateValueFactory();
-            Parse.From.Object(new { foo = new object() }).WithBuilder(valueFactory);
+            Parse.From.Object(new { foo = new object() }, ObjectParser.Options.SerializeAllTypes).WithBuilder(valueFactory);
 
             Assert.AreEqual(1, valueFactory.ObjectsCreatedFromProperties);
         }
@@ -236,6 +236,20 @@ namespace json.Objects
             public int Ignored { get; set; }
 
             public int Serialized { get; set; }
+        }
+
+        [Test]
+        public void UnserializablePropertyIsNotGotten()
+        {
+            Assert.AreEqual("{}", ParseToJson(new PropertyThrowsOnGet(), false));
+        }
+
+        private class PropertyThrowsOnGet
+        {
+            public int Property
+            {
+                get { throw new InvalidOperationException(); }
+            }
         }
 
         private static string ParseToJson(object obj, bool serializeAllTypes = true)

@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace json.Objects
 {
-    public class ObjectParser : Parser
+    public partial class ObjectParser : Parser
     {
         private readonly Options options;
         private object currentObject;
@@ -37,12 +35,10 @@ namespace json.Objects
             switch (input.GetType().GetTypeCodeType())
             {
                 case TypeCodeType.Object:
-                    if (TypeDefinition.GetTypeDefinition(input.GetType()).IsJsonCompatibleDictionary)
-                        return ParseDictionary((IDictionary)input);
-                    IEnumerable enumerable = input as IEnumerable;
-                    if (enumerable != null)
-                        return ParseArray(enumerable);
-                    return ParseObject(input);
+                    ParseObject previouslyParsedObject = objectReferences.Get(input);
+                    return previouslyParsedObject == null
+                        ? ParseObject(input)
+                        : ReferenceObject(previouslyParsedObject);
 
                 case TypeCodeType.Boolean:
                     return ValueFactory.CreateBoolean((bool)input);
@@ -58,71 +54,30 @@ namespace json.Objects
             }
         }
 
-        private ParseObject ParseDictionary(IDictionary dictionary)
+        private ParseValue ParseObject(object input)
         {
-            ParseObject obj = ValueFactory.CreateObject();
+            currentObject = input;
 
-            obj.SetType(GetTypeIdentifier(dictionary.GetType()), this);
+            TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(input.GetType());
+            ParseValue output = typeDef.GetParseValue(ValueFactory);
 
-            foreach (object key in dictionary.Keys)
+            ParseObject obj = output as ParseObject;
+            if (obj != null)
             {
-                // Convert.ToString is in case the keys are numbers, which are represented
-                // as strings when used as keys, but can be indexed with numbers in JavaScript
-                string name = Convert.ToString(key, CultureInfo.InvariantCulture);
-                object value = dictionary[key];
-
-                UsingObjectPropertyContext(obj, name, () =>
-                {
-                    ParseValue parseValue = ParseValue(value);
-                    parseValue.AddToObject(obj, name);
-                });
+                objectReferences[input] = obj;
+                obj.SetType(GetTypeIdentifier(typeDef.Type), this);
             }
 
-            return obj;
-        }
+            ObjectParserValueFactory parserValueFactory = null;
 
-        private ParseObject ParseObject(object obj)
-        {
-            ParseObject previouslyParsedObject = objectReferences.Get(obj);
-            return previouslyParsedObject == null
-                ? ParseNewObject(obj)
-                : ReferenceObject(previouslyParsedObject);
-        }
+            ParseArray array = output as ParseArray;
+            if (array != null)
+                parserValueFactory = new ArrayParserValueFactory(this, array);
 
-        private ParseObject ParseNewObject(object obj)
-        {
-            ParseObject output = objectReferences[obj] = ValueFactory.CreateObject();
-
-            TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(obj.GetType());
-
-            currentObject = obj;
-
-            output.SetType(GetTypeIdentifier(typeDef.Type), this);
-
-            foreach (PropertyDefinition property in typeDef.Properties.Values)
-            {
-                PropertyDefinition prop = property;
-                object propertyValue = prop.GetFrom(obj);
-
-                if (SerializeAllTypes || IsSerializable(propertyValue))
-                {
-                    UsingObjectPropertyContext(output, property.Name, () =>
-                        {
-                            ParseValue value = ParseValue(propertyValue);
-                            value.AddToObject(output, prop.Name);
-                        });
-                }
-            }
+            parserValueFactory = parserValueFactory ?? new ObjectParserValueFactory(this);
+            typeDef.ParseObject(input, output, parserValueFactory);
 
             return output;
-        }
-
-        private static bool IsSerializable(object propertyValue)
-        {
-            if (propertyValue == null) return true;
-
-            TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(propertyValue.GetType());
-            return typeDef.IsSerializable && typeDef.IsDeserializable;
         }
 
         private static string GetTypeIdentifier(Type type)
@@ -130,28 +85,9 @@ namespace json.Objects
             return type.AssemblyQualifiedName;
         }
 
-        private bool SerializeAllTypes
-        {
-            get { return (options & Options.SerializeAllTypes) != 0; }
-        }
-
         private ParseObject ReferenceObject(ParseObject parseObject)
         {
             return ValueFactory.CreateReference(parseObject);
-        }
-
-        private ParseArray ParseArray(IEnumerable input)
-        {
-            ParseArray array = ValueFactory.CreateArray();
-            UsingArrayContext(array, () =>
-            {
-                foreach (object item in input)
-                {
-                    ParseValue value = ParseValue(item);
-                    value.AddToArray(array);
-                }
-            });
-            return array;
         }
 
         internal class UnknownTypeCode : Exception

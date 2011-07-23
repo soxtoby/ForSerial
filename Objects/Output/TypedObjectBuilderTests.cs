@@ -324,7 +324,7 @@ namespace json.Objects
         public void PropertyTypeMismatch()
         {
             string json = Parse.From
-                .Object(new { Property = new BooleanPropertyClass() })
+                .Object(new { Property = new BooleanPropertyClass() }, ObjectParser.Options.SerializeAllTypes)
                 .ToTypedJson();
             Parse.From.Json(json).ToObject<InterfacePropertyClass>();
         }

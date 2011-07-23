@@ -21,7 +21,7 @@ namespace json.Objects
             getter = property.GetGetMethod();
             setter = property.GetSetMethod();
 
-            IsSerializable = CanGet && TypeDef.IsSerializable;
+            IsSerializable = TypeDef.PropertyCanBeSerialized(this);
         }
 
         public object GetFrom(object obj)
@@ -32,9 +32,7 @@ namespace json.Objects
         public void SetOn(object obj, object value)
         {
             if (CanSet)
-            {
                 setter.Invoke(obj, new[] { TypeDef.ConvertToCorrectType(value) });
-            }
         }
     }
 }

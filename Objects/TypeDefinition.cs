@@ -5,31 +5,32 @@ using System.Reflection;
 
 namespace json.Objects
 {
-    public class TypeDefinition
+    public abstract class TypeDefinition
     {
+        private static readonly Dictionary<string, TypeDefinition> KnownTypes = new Dictionary<string, TypeDefinition>();
+        private static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
+        private static readonly List<Func<Type, TypeDefinition>> TypeDefinitionFactories = new List<Func<Type, TypeDefinition>>
+            {
+                DefaultTypeDefinition.CreateDefaultTypeDefinition,
+                CollectionDefinition.CreateCollectionDefinition, // FIXME I'm not keen on this inter-dependency. Maybe move factories into another class.
+                DictionaryDefinition.CreateDictionaryDefinition,
+            };
+
+        private readonly TypeCode typeCode;
+        private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
+
         public Type Type { get; private set; }
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
-        private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
         public bool IsSerializable { get; private set; }
         public bool IsDeserializable { get; private set; }
-        public bool IsJsonCompatibleDictionary { get; private set; }
-        private readonly TypeCode typeCode;
-        private static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
 
-        private TypeDefinition(Type type)
+        protected TypeDefinition(Type type)
         {
             Type = type;
             Properties = new Dictionary<string, PropertyDefinition>();
             IsSerializable = DetermineIfSerializable();
             IsDeserializable = DetermineIfDeserializable();
-            IsJsonCompatibleDictionary = DetermineIfJsonCompatibleDictionary();
             typeCode = Type.GetTypeCode(type);
-        }
-
-        private void Populate()
-        {
-            PopulateProperties();
-            PopulatePreBuildMethods();
         }
 
         private bool DetermineIfSerializable()
@@ -51,31 +52,6 @@ namespace json.Objects
             get { return Type.GetConstructor(new Type[] { }) != null; }
         }
 
-        private bool DetermineIfJsonCompatibleDictionary()
-        {
-            Type keyType = Type.GetGenericInterfaceType(typeof(IDictionary<,>));
-            TypeCodeType typeCodeType = keyType.GetTypeCodeType();
-
-            return typeCodeType == TypeCodeType.String
-                   || typeCodeType == TypeCodeType.Number;
-        }
-
-        // FIXME Make this thread-safe - use a ConcurrentDictionary. This version of Mono doesn't appear to have it :(
-        private static readonly Dictionary<string, TypeDefinition> KnownTypes = new Dictionary<string, TypeDefinition>();
-
-        public static TypeDefinition GetTypeDefinition(Type type)
-        {
-            if (type == null) return null;
-
-            if (!KnownTypes.ContainsKey(type.AssemblyQualifiedName))
-            {
-                TypeDefinition typeDef = KnownTypes[type.AssemblyQualifiedName] = new TypeDefinition(type);
-                typeDef.Populate();
-            }
-
-            return KnownTypes[type.AssemblyQualifiedName];
-        }
-
         public static TypeDefinition GetTypeDefinition(string assemblyQualifiedName)
         {
             return KnownTypes.ContainsKey(assemblyQualifiedName)
@@ -83,15 +59,40 @@ namespace json.Objects
                 : GetTypeDefinition(Type.GetType(assemblyQualifiedName));
         }
 
-        public static void IgnorePropertiesMarkedWithAttribute(Type attributeType)
+        public static TypeDefinition GetTypeDefinition(Type type)
         {
-            if (!attributeType.CanBeCastTo(typeof(Attribute)))
-                throw new ArgumentException("Type must derive from Attribute", "attributeType");
+            if (type == null) return null;
 
-            lock (IgnoreAttributes)
+            if (!KnownTypes.ContainsKey(type.AssemblyQualifiedName))
             {
-                IgnoreAttributes.Add(attributeType);
+                // Since this is where we automatically create a TypeDefinition, 
+                // we need to register before we populate, in case the type contains itself.
+                TypeDefinition typeDef = CreateTypeDefinition(type);
+                RegisterTypeDefinition(typeDef);
+                typeDef.Populate();
             }
+
+            return KnownTypes[type.AssemblyQualifiedName];
+        }
+
+        private static void RegisterTypeDefinition(TypeDefinition typeDef)
+        {
+            KnownTypes[typeDef.Type.AssemblyQualifiedName] = typeDef;
+        }
+
+        private static TypeDefinition CreateTypeDefinition(Type type)
+        {
+            TypeDefinition typeDef = null;
+            int i = TypeDefinitionFactories.Count;
+            while (typeDef == null && i >= 0)
+                typeDef = TypeDefinitionFactories[--i](type);
+            return typeDef;
+        }
+
+        private void Populate()
+        {
+            PopulateProperties();
+            PopulatePreBuildMethods();
         }
 
         private void PopulateProperties()
@@ -138,37 +139,45 @@ namespace json.Objects
                 : obj;
         }
 
+        public virtual bool PropertyCanBeSerialized(PropertyDefinition property)
+        {
+            return property.CanGet && property.CanSet;
+        }
+
+        public static void IgnorePropertiesMarkedWithAttribute(Type attributeType)
+        {
+            if (!attributeType.CanBeCastTo(typeof(Attribute)))
+                throw new ArgumentException("Type must derive from Attribute", "attributeType");
+
+            lock (IgnoreAttributes)
+            {
+                IgnoreAttributes.Add(attributeType);
+            }
+        }
+
         internal PreBuildInfo GetPreBuildInfo(Parser parser)
         {
             return parser == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ParserMatches(parser));
         }
 
-        internal class PreBuildInfo
+        public abstract ParseValue GetParseValue(ParseValueFactory valueFactory);
+
+        public abstract void ParseObject(object input, ParseValue output, ParserValueFactory valueFactory);
+
+        protected IEnumerable<KeyValuePair<string, object>> GetSerializableProperties(object obj, bool serializeAllTypes)
         {
-            private readonly PreBuildAttribute attribute;
-            private readonly MethodInfo method;
+            return Properties.Values
+                .Where(p => serializeAllTypes || p.IsSerializable)
+                .Select(p => new KeyValuePair<string, object>(p.Name, p.GetFrom(obj)))
+                .Where(p => serializeAllTypes || ValueIsSerializable(p.Value));
+        }
 
-            public PreBuildInfo(PreBuildAttribute attribute, MethodInfo method)
-            {
-                this.attribute = attribute;
-                this.method = method;
-            }
+        private static bool ValueIsSerializable(object value)
+        {
+            if (value == null) return true;
 
-            public void PreBuild(object target, Parser parser, ParseValueFactory objectPopulator)
-            {
-                ParseValueFactory contextBuilder = attribute.GetBuilder();
-                ParseObject parsedContext = parser.ParseSubObject(contextBuilder);
-                object context = attribute.GetContextValue(parsedContext);
-
-                object preBuildResult = method.Invoke(target, new[] { context });
-
-                attribute.ParsePreBuildResult(preBuildResult, objectPopulator);
-            }
-
-            public bool ParserMatches(Parser parser)
-            {
-                return attribute.ParserMatches(parser);
-            }
+            TypeDefinition typeDef = GetTypeDefinition(value.GetType());
+            return typeDef.IsSerializable && typeDef.IsDeserializable;
         }
     }
 }

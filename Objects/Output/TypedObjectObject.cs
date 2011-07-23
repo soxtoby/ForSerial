@@ -34,7 +34,7 @@ namespace json.Objects
                 if (useCurrentType)
                     typeDef = parseObject.TypeDef;
 
-                TypeDefinition.PreBuildInfo preBuildInfo = typeDef.GetPreBuildInfo(parser);
+                PreBuildInfo preBuildInfo = typeDef.GetPreBuildInfo(parser);
 
                 if (preBuildInfo != null)
                 {
@@ -55,12 +55,12 @@ namespace json.Objects
 
             private void SetType(TypeDefinition typeDef)
             {
-                parseObject = typeDef.IsJsonCompatibleDictionary
+                parseObject = typeDef is DictionaryDefinition
                     ? (TypedObjectParseObject)new TypedObjectDictionary(typeDef)
                     : new TypedObjectRegularObject(typeDef);
             }
 
-            private static TypedObjectParseObject PreBuildRegularObject(Parser parser, TypeDefinition.PreBuildInfo preBuildInfo, TypeDefinition typeDef)
+            private static TypedObjectParseObject PreBuildRegularObject(Parser parser, PreBuildInfo preBuildInfo, TypeDefinition typeDef)
             {
                 TypedObjectRegularObject regularObject = new TypedObjectRegularObject(typeDef);
                 regularObject.PreBuild(preBuildInfo, parser);

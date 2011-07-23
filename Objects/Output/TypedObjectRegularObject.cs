@@ -91,7 +91,7 @@ namespace json.Objects
 
             private void PopulateArrayProperty(PropertyDefinition property, TypedObjectArray array)
             {
-                PopulateCollection(property.TypeDef.Type, array.Array, () => property.GetFrom(Object));
+                PopulateCollection(property.TypeDef, array.Array, () => property.GetFrom(Object));
             }
 
             private void SetProperty(string name, object value)
@@ -109,7 +109,7 @@ namespace json.Objects
                 property.SetOn(owner, Object);
             }
 
-            public void PreBuild(TypeDefinition.PreBuildInfo preBuildInfo, Parser parser)
+            public void PreBuild(PreBuildInfo preBuildInfo, Parser parser)
             {
                 preBuildInfo.PreBuild(Object, parser, ((Func<ParseValueFactory>)(() => new TypedObjectSubBuilder(this)))());
             }

@@ -18,8 +18,8 @@ namespace json.Objects
 
             private static CollectionDefinition PopulateCollectionDefinition(Type collectionType)
             {
-                CollectionDefinition collectionDef = CollectionDefinition.GetCollectionDefinition(collectionType);
-                if (!collectionDef.IsCollection)
+                CollectionDefinition collectionDef = TypeDefinition.GetTypeDefinition(collectionType) as CollectionDefinition;
+                if (collectionDef == null)
                     throw new InvalidCollectionType(collectionType);
                 return collectionDef;
             }

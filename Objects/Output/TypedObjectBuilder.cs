@@ -102,34 +102,29 @@ namespace json.Objects
             return arrayValue;
         }
 
-        private static IEnumerable PopulateCollection(Type collectionType, IEnumerable items, Func<object> getCollection)
+        private static IEnumerable PopulateCollection(TypeDefinition collectionType, IEnumerable items, Func<object> getCollection)
         {
-            CollectionDefinition collectionDef = CollectionDefinition.GetCollectionDefinition(collectionType);
+            CollectionDefinition collectionDef = collectionType as CollectionDefinition;
+            if (collectionDef == null) return null;
 
-            if (collectionDef.IsCollection)
+            IEnumerable collection = getCollection() as IEnumerable;
+
+            if (collection != null)
             {
-                IEnumerable collection = getCollection() as IEnumerable;
-
-                if (collection != null)
+                foreach (object item in items)
                 {
-                    foreach (object item in items)
-                    {
-                        object itemToAdd = TypeInnerCollection(collectionDef.ItemTypeDef.Type, item);
-                        collectionDef.AddToCollection(collection, itemToAdd);
-                    }
+                    object itemToAdd = TypeInnerCollection(collectionDef.ItemTypeDef, item);
+                    collectionDef.AddToCollection(collection, itemToAdd);
                 }
-
-                return collection;
             }
 
-            return null;
+            return collection;
         }
 
-        private static object TypeInnerCollection(Type itemType, object item)
+        private static object TypeInnerCollection(TypeDefinition itemTypeDef, object item)
         {
-            CollectionDefinition collectionDef = CollectionDefinition.GetCollectionDefinition(itemType);
-            return collectionDef.IsCollection
-                ? PopulateCollection(itemType, (IEnumerable)item, () => Activator.CreateInstance(itemType))
+            return itemTypeDef is CollectionDefinition
+                ? PopulateCollection(itemTypeDef, (IEnumerable)item, () => Activator.CreateInstance(itemTypeDef.Type))
                 : item;
         }
 
