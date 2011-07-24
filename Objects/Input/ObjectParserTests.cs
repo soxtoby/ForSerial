@@ -162,13 +162,6 @@ namespace json.Objects
         }
 
         [Test]
-        [ExpectedException(typeof(ObjectParser.UnknownTypeCode))]
-        public void UnknownTypeCode()
-        {
-            ParseToJson(new { DBNull.Value });
-        }
-
-        [Test]
         public void MaintainReferences()
         {
             SameReferenceTwice foo = new SameReferenceTwice(new object());
@@ -253,11 +246,38 @@ namespace json.Objects
         }
 
         [Test]
-        public void Guid()
+        public void ParseGuid()
         {
             Guid guid = new Guid("{ceac23f4-9a28-4dc5-856a-1411511a0a88}");
             Assert.AreEqual(@"{""foo"":""ceac23f4-9a28-4dc5-856a-1411511a0a88""}", ParseToJson(new { foo = guid }));
         }
+
+        [Test]
+        public void ValueTypeParsedToValue()
+        {
+            Parse.From.Object(new ValueType()).WithBuilder(new ParseToValueFactory());
+        }
+
+        private struct ValueType { }
+
+        private class ParseToValueFactory : TestValueFactory
+        {
+            public override ParseObject CreateObject()
+            {
+                throw new AssertionException("Tried to create an object.");
+            }
+
+            public override ParseArray CreateArray()
+            {
+                throw new AssertionException("Tried to create an array.");
+            }
+
+            public override ParseObject CreateReference(ParseObject parseObject)
+            {
+                throw new AssertionException("Tried to create a reference.");
+            }
+        }
+
 
         private static string ParseToJson(object obj, bool serializeAllTypes = true)
         {

@@ -30,28 +30,24 @@ namespace json.Objects
         private ParseValue ParseValue(object input)
         {
             if (input == null)
-                return ValueFactory.CreateNull();
+                return ValueFactory.CreateValue(null);
 
-            switch (input.GetType().GetTypeCodeType())
+            Type inputType = input.GetType();
+
+            ParseValue output = null;
+
+            if (inputType.IsValueType || inputType == typeof(string))
+                output = ValueFactory.CreateValue(input);
+
+            if (output == null)
             {
-                case TypeCodeType.Object:
-                    ParseObject previouslyParsedObject = objectReferences.Get(input);
-                    return previouslyParsedObject == null
-                        ? ParseObject(input)
-                        : ReferenceObject(previouslyParsedObject);
-
-                case TypeCodeType.Boolean:
-                    return ValueFactory.CreateBoolean((bool)input);
-
-                case TypeCodeType.String:
-                    return ValueFactory.CreateString((string)input);
-
-                case TypeCodeType.Number:
-                    return ValueFactory.CreateNumber(Convert.ToDouble(input));
-
-                default:
-                    throw new UnknownTypeCode(input);
+                ParseObject previouslyParsedObject = objectReferences.Get(input);
+                output = previouslyParsedObject == null
+                    ? ParseObject(input)
+                    : ReferenceObject(previouslyParsedObject);
             }
+
+            return output;
         }
 
         private ParseValue ParseObject(object input)

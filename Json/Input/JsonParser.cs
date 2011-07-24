@@ -71,15 +71,15 @@ namespace json.Json
                     {
                         case "true":
                             NextToken();
-                            return ValueFactory.CreateBoolean(true);
+                            return ValueFactory.CreateValue(true);
 
                         case "false":
                             NextToken();
-                            return ValueFactory.CreateBoolean(false);
+                            return ValueFactory.CreateValue(false);
 
                         case "null":
                             NextToken();
-                            return ValueFactory.CreateNull();
+                            return ValueFactory.CreateValue(null);
 
                         default:
                             throw new ParseException("Expected value.", CurrentToken);
@@ -106,7 +106,7 @@ namespace json.Json
             if (CurrentToken.TokenType != TokenType.Numeric)
                 throw new ParseException("Expected number.", CurrentToken);
 
-            ParseNumber number = ValueFactory.CreateNumber(CurrentToken.NumericValue);
+            ParseValue number = ValueFactory.CreateValue(CurrentToken.NumericValue);
             NextToken();
             return number;
         }
@@ -116,7 +116,7 @@ namespace json.Json
             if (CurrentToken.TokenType != TokenType.String)
                 throw new ParseException("Expected string.", CurrentToken);
 
-            ParseString str = ValueFactory.CreateString(CurrentToken.StringValue);
+            ParseValue str = ValueFactory.CreateValue(CurrentToken.StringValue);
             NextToken();
             return str;
         }

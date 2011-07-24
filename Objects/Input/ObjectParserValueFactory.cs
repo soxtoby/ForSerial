@@ -47,6 +47,11 @@
                 return obj;
             }
 
+            public ParseValue CreateValue(object value)
+            {
+                return parser.ValueFactory.CreateValue(value);
+            }
+
             public ParseObject CreateObject()
             {
                 return parser.ValueFactory.CreateObject();
@@ -55,26 +60,6 @@
             public ParseArray CreateArray()
             {
                 return parser.ValueFactory.CreateArray();
-            }
-
-            public ParseNumber CreateNumber(double value)
-            {
-                return parser.ValueFactory.CreateNumber(value);
-            }
-
-            public ParseString CreateString(string value)
-            {
-                return parser.ValueFactory.CreateString(value);
-            }
-
-            public ParseBoolean CreateBoolean(bool value)
-            {
-                return parser.ValueFactory.CreateBoolean(value);
-            }
-
-            public ParseNull CreateNull()
-            {
-                return parser.ValueFactory.CreateNull();
             }
 
             public ParseObject CreateReference(ParseObject parseObject)

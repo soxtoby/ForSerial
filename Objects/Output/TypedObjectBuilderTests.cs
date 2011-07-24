@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using json.JsonObjects;
-using json.Objects;
 using NUnit.Framework;
 
 namespace json.Objects
@@ -421,11 +420,6 @@ namespace json.Objects
             Assert.AreNotSame(intProperty, clone.One);
         }
 
-        private static T Clone<T>(T obj)
-        {
-            return Parse.From.Object(obj).ToObject<T>();
-        }
-
         [Test]
         public void ParseToTypedObject()
         {
@@ -580,5 +574,33 @@ namespace json.Objects
             public override int AbstractProperty { get; set; }
         }
 
+        [Test]
+        public void ValueTypesClonedWithoutAccessingProperties()
+        {
+            ValueTypePropertyClass obj = Clone(new ValueTypePropertyClass { Property = new ValueType { DontAccessMeBro = 5 } });
+            Assert.AreEqual(5, obj.Property.Value);
+        }
+
+        private class ValueTypePropertyClass
+        {
+            public ValueType Property { get; set; }
+        }
+
+        private struct ValueType
+        {
+            public int Value { get; set; }
+
+            public int DontAccessMeBro
+            {
+                get { throw new AssertionException("Property should not have been accessed."); }
+                set { Value = value; }
+            }
+        }
+
+
+        private static T Clone<T>(T obj)
+        {
+            return Parse.From.Object(obj, ObjectParser.Options.SerializeAllTypes).ToObject<T>();
+        }
     }
 }

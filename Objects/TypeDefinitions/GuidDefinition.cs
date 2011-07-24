@@ -23,7 +23,7 @@ namespace json.Objects
             Guid? guid = input as Guid?;
             return guid == null
                 ? null
-                : valueFactory.CreateString(guid.ToString());
+                : valueFactory.CreateValue(guid.ToString());
         }
     }
 }

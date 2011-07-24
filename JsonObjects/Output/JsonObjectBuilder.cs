@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using json.Objects;
 
 namespace json.JsonObjects
 {
@@ -23,6 +24,26 @@ namespace json.JsonObjects
                 throw new InvalidResultObject();
 
             return objObject.Object;
+        }
+
+        public ParseValue CreateValue(object value)
+        {
+            if (value == null)
+                return CreateNull();
+
+            switch (value.GetType().GetTypeCodeType())
+            {
+                case TypeCodeType.Object:
+                    return null;
+                case TypeCodeType.Boolean:
+                    return CreateBoolean((bool)value);
+                case TypeCodeType.String:
+                    return CreateString((string)value);
+                case TypeCodeType.Number:
+                    return CreateNumber(Convert.ToDouble(value));
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public ParseObject CreateObject()

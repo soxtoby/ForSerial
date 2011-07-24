@@ -2,12 +2,9 @@ namespace json
 {
     public interface ParseValueFactory
     {
+        ParseValue CreateValue(object value);
         ParseObject CreateObject();
         ParseArray CreateArray();
-        ParseNumber CreateNumber(double value);
-        ParseString CreateString(string value);
-        ParseBoolean CreateBoolean(bool value);
-        ParseNull CreateNull();
         ParseObject CreateReference(ParseObject parseObject);
     }
 }

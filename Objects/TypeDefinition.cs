@@ -11,9 +11,10 @@ namespace json.Objects
         private static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
         private static readonly List<Func<Type, TypeDefinition>> TypeDefinitionFactories = new List<Func<Type, TypeDefinition>>
             {
+                // FIXME I'm not keen on this inter-dependency. Maybe move factories into another class.
                 DefaultTypeDefinition.CreateDefaultTypeDefinition,
                 GuidDefinition.CreateGuidDefinition,
-                CollectionDefinition.CreateCollectionDefinition, // FIXME I'm not keen on this inter-dependency. Maybe move factories into another class.
+                CollectionDefinition.CreateCollectionDefinition,
                 DictionaryDefinition.CreateDictionaryDefinition,
             };
 

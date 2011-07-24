@@ -27,7 +27,7 @@ namespace json.JsonObjects
         private ParseValue ParseValue(object input)
         {
             if (input == null)
-                return ValueFactory.CreateNull();
+                return ValueFactory.CreateValue(null);
 
             switch (input.GetType().GetTypeCodeType())
             {
@@ -42,13 +42,9 @@ namespace json.JsonObjects
                     throw new InvalidObject(input.GetType());
 
                 case TypeCodeType.Boolean:
-                    return ValueFactory.CreateBoolean((bool)input);
-
                 case TypeCodeType.String:
-                    return ValueFactory.CreateString((string)input);
-
                 case TypeCodeType.Number:
-                    return ValueFactory.CreateNumber(Convert.ToDouble(input));
+                    return ValueFactory.CreateValue(input);
 
                 default:
                     throw new UnknownTypeCode(input);

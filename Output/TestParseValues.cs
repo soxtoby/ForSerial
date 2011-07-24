@@ -2,30 +2,31 @@ using System;
 
 namespace json
 {
-    internal class TestParseNumber : ParseNumber
+    internal class TestParseValue : ParseValue
     {
-        public TestParseNumber(double value) : base(value) { }
-
-        public override ParseObject AsObject()
+        public void AddToObject(ParseObject obj, string name)
         {
-            throw new NotImplementedException();
+            obj.AddNull(name);
         }
-    }
 
-    internal class TestParseString : ParseString
-    {
-        public TestParseString(string value) : base(value) { }
-
-        public override ParseObject AsObject()
+        public void AddToArray(ParseArray array)
         {
-            NullParseObject obj = NullParseObject.Instance;
-            obj.AddString("value", value);
-            return obj;
+            array.AddNull();
+        }
+
+        public ParseObject AsObject()
+        {
+            return NullParseObject.Instance;
         }
     }
 
     internal class TestValueFactory : ParseValueFactory
     {
+        public virtual ParseValue CreateValue(object value)
+        {
+            return new TestParseValue();
+        }
+
         public virtual ParseObject CreateObject()
         {
             return NullParseObject.Instance;
@@ -34,26 +35,6 @@ namespace json
         public virtual ParseArray CreateArray()
         {
             return NullParseArray.Instance;
-        }
-
-        public virtual ParseNumber CreateNumber(double value)
-        {
-            return new TestParseNumber(value);
-        }
-
-        public virtual ParseString CreateString(string value)
-        {
-            return new TestParseString(value);
-        }
-
-        public virtual ParseBoolean CreateBoolean(bool value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual ParseNull CreateNull()
-        {
-            throw new NotImplementedException();
         }
 
         public virtual ParseObject CreateReference(ParseObject parseObject)

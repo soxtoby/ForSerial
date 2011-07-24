@@ -17,7 +17,11 @@ namespace json.Objects
 
             public TypedObjectRegularObject(object obj)
             {
-                Object = obj;
+                if (obj != null)
+                {
+                    TypeDef = TypeDefinition.GetTypeDefinition(obj.GetType());
+                    Object = obj;
+                }
             }
 
             private class TypedObjectSubBuilder : TypedObjectBuilder

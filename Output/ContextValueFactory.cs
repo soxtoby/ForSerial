@@ -9,6 +9,11 @@ namespace json
             this.baseFactory = baseFactory;
         }
 
+        public ParseValue CreateValue(object value)
+        {
+            return baseFactory.CreateValue(value);
+        }
+
         public virtual ParseObject CreateObject()
         {
             return baseFactory.CreateObject();
@@ -17,26 +22,6 @@ namespace json
         public virtual ParseArray CreateArray()
         {
             return baseFactory.CreateArray();
-        }
-
-        public ParseNumber CreateNumber(double value)
-        {
-            return baseFactory.CreateNumber(value);
-        }
-
-        public ParseString CreateString(string value)
-        {
-            return baseFactory.CreateString(value);
-        }
-
-        public ParseBoolean CreateBoolean(bool value)
-        {
-            return baseFactory.CreateBoolean(value);
-        }
-
-        public ParseNull CreateNull()
-        {
-            return baseFactory.CreateNull();
         }
 
         public ParseObject CreateReference(ParseObject parseObject)
