@@ -1,5 +1,5 @@
-using NUnit.Framework;
 using json.Objects;
+using NUnit.Framework;
 
 namespace json.JsonObjects
 {
@@ -19,38 +19,6 @@ namespace json.JsonObjects
             JsonObject jsonObject = Parse.From.Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 }), ObjectParser.Options.SerializeAllTypes).ToJsonObject();
             Assert.AreSame(jsonObject["One"], jsonObject["Three"]);
             Assert.AreSame(jsonObject["Two"], jsonObject["Four"]);
-        }
-
-        [Test]
-        [ExpectedException(typeof(JsonObjectBuilder.UnsupportedParseObject))]
-        public void AddUnsupportedParseObjectToObject()
-        {
-            ParseObject parseObject = JsonObjectBuilder.Instance.CreateObject();
-            parseObject.AddObject("foo", NullParseObject.Instance);
-        }
-
-        [Test]
-        [ExpectedException(typeof(JsonObjectBuilder.UnsupportedParseObject))]
-        public void AddUnsupportedParseObjectToArray()
-        {
-            ParseArray parseArray = JsonObjectBuilder.Instance.CreateArray();
-            parseArray.AddObject(NullParseObject.Instance);
-        }
-
-        [Test]
-        [ExpectedException(typeof(JsonObjectBuilder.UnsupportedParseArray))]
-        public void AddUnsupportedParseArrayToObject()
-        {
-            ParseObject parseObject = JsonObjectBuilder.Instance.CreateObject();
-            parseObject.AddArray("foo", NullParseArray.Instance);
-        }
-
-        [Test]
-        [ExpectedException(typeof(JsonObjectBuilder.UnsupportedParseArray))]
-        public void AddUnsupportedParseArrayToArray()
-        {
-            ParseArray parseArray = JsonObjectBuilder.Instance.CreateArray();
-            parseArray.AddArray(NullParseArray.Instance);
         }
 
         [Test]

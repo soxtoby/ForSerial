@@ -12,6 +12,11 @@ namespace json
             this.propertyName = propertyName;
         }
 
+        public override ParseValue CreateValue(object value)
+        {
+            return propertyOwner.CreateValue(propertyName, baseFactory, value);
+        }
+
         public override ParseObject CreateObject()
         {
             return propertyOwner.CreateObject(propertyName, baseFactory);

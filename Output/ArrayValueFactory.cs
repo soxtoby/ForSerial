@@ -10,6 +10,11 @@ namespace json
             this.array = array;
         }
 
+        public override ParseValue CreateValue(object value)
+        {
+            return array.CreateValue(baseFactory, value);
+        }
+
         public override ParseObject CreateObject()
         {
             return array.CreateObject(baseFactory);

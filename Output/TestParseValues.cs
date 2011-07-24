@@ -6,12 +6,10 @@ namespace json
     {
         public void AddToObject(ParseObject obj, string name)
         {
-            obj.AddNull(name);
         }
 
         public void AddToArray(ParseArray array)
         {
-            array.AddNull();
         }
 
         public ParseObject AsObject()

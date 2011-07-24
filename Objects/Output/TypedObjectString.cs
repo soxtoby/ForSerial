@@ -10,6 +10,16 @@
             {
                 return new TypedObjectObject(value);
             }
+
+            public override void AddToObject(ParseObject obj, string name)
+            {
+                ((TypedObjectObject)obj).AddProperty(name, value);
+            }
+
+            public override void AddToArray(ParseArray array)
+            {
+                ((TypedObjectArray)array).AddItem(value);
+            }
         }
     }
 }

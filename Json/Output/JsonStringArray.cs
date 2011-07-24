@@ -14,38 +14,23 @@ namespace json.Json
                 json.Append('[');
             }
 
-            public override void AddNull()
+            public void AddNull()
             {
                 AddRegularValue("null");
             }
 
-            public override void AddBoolean(bool value)
+            public void AddBoolean(bool value)
             {
                 AddRegularValue(value ? "true" : "false");
             }
 
-            public override void AddNumber(double value)
-            {
-                AddRegularValue(value);
-            }
-
-            public override void AddString(string value)
+            public void AddString(string value)
             {
                 AppendComma();
                 json.Append('"').Append(value).Append('"');
             }
 
-            public override void AddObject(ParseObject value)
-            {
-                AddRegularValue(value);
-            }
-
-            public override void AddArray(ParseArray value)
-            {
-                AddRegularValue(value);
-            }
-
-            private void AddRegularValue(object value)
+            internal void AddRegularValue(object value)
             {
                 AppendComma();
                 json.Append(value);
@@ -61,14 +46,24 @@ namespace json.Json
 
             public override ParseObject AsObject()
             {
-                ParseObject obj = new JsonStringObject();
-                obj.AddArray("items", this);
+                JsonStringObject obj = new JsonStringObject();
+                obj.AddRegularProperty("items", this);
                 return obj;
             }
 
             public override string ToString()
             {
                 return json + "]";
+            }
+
+            public override void AddToObject(ParseObject obj, string name)
+            {
+                ((JsonStringObject)obj).AddRegularProperty(name, this);
+            }
+
+            public override void AddToArray(ParseArray array)
+            {
+                ((JsonStringArray)array).AddRegularValue(this);
             }
         }
     }

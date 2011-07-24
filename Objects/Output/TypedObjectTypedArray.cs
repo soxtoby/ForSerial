@@ -3,88 +3,99 @@ using System.Collections;
 
 namespace json.Objects
 {
-    public partial class TypedObjectBuilder
+    internal class TypedObjectTypedArray : ParseArrayBase, TypedObjectArray
     {
-        private class TypedObjectTypedArray : ParseArrayBase, TypedObjectArray
+        private readonly CollectionDefinition collectionDef;
+        private readonly IEnumerable typedArray;
+
+        public TypedObjectTypedArray(Type collectionType)
         {
-            private readonly CollectionDefinition collectionDef;
-            public IEnumerable Array { get; private set; }
+            collectionDef = GetCollectionDefinition(collectionType);
+            typedArray = (IEnumerable)Activator.CreateInstance(collectionType);
+        }
 
-            public TypedObjectTypedArray(Type collectionType)
+        private static CollectionDefinition GetCollectionDefinition(Type collectionType)
+        {
+            CollectionDefinition collectionDef = TypeDefinition.GetTypeDefinition(collectionType) as CollectionDefinition;
+            if (collectionDef == null)
+                throw new InvalidCollectionType(collectionType);
+            return collectionDef;
+        }
+
+        public IEnumerable GetTypedArray()
+        {
+            return typedArray;
+        }
+
+        public void PopulateCollection(object collection)
+        {
+            PopulateCollection(collectionDef, typedArray, () => collection);
+        }
+
+        public override ParseObject AsObject()
+        {
+            return new TypedObjectObject(typedArray);
+        }
+
+        public void AddItem(object item)
+        {
+            collectionDef.AddToCollection(typedArray, item);
+        }
+
+        public override ParseValue CreateValue(ParseValueFactory valueFactory, object value)
+        {
+            return collectionDef.ItemTypeDef.CreateValue(valueFactory, value);
+        }
+
+        public override ParseObject CreateObject(ParseValueFactory valueFactory)
+        {
+            return new TypedObjectObject(collectionDef.ItemTypeDef);
+        }
+
+        public override ParseArray CreateArray(ParseValueFactory valueFactory)
+        {
+            return new TypedObjectTypedArray(collectionDef.ItemTypeDef.Type);
+        }
+
+        private static IEnumerable PopulateCollection(TypeDefinition collectionType, IEnumerable items, Func<object> getCollection)
+        {
+            CollectionDefinition collectionDef = collectionType as CollectionDefinition;
+            if (collectionDef == null) return null;
+
+            IEnumerable collection = getCollection() as IEnumerable;
+
+            if (collection != null)
             {
-                collectionDef = PopulateCollectionDefinition(collectionType);
-                Array = (IEnumerable)Activator.CreateInstance(collectionType);
+                foreach (object item in items)
+                {
+                    object itemToAdd = TypeInnerCollection(collectionDef.ItemTypeDef, item);
+                    collectionDef.AddToCollection(collection, itemToAdd);
+                }
             }
 
-            private static CollectionDefinition PopulateCollectionDefinition(Type collectionType)
-            {
-                CollectionDefinition collectionDef = TypeDefinition.GetTypeDefinition(collectionType) as CollectionDefinition;
-                if (collectionDef == null)
-                    throw new InvalidCollectionType(collectionType);
-                return collectionDef;
-            }
+            return collection;
+        }
 
-            public IEnumerable GetTypedArray(Type type)
-            {
-                return Array;
-            }
-
-            public override ParseObject AsObject()
-            {
-                return new TypedObjectObject(Array);
-            }
-
-            public override void AddNull()
-            {
-                AddItem(null);
-            }
-
-            public override void AddBoolean(bool value)
-            {
-                AddItem(value);
-            }
-
-            public override void AddNumber(double value)
-            {
-                AddItem(value);
-            }
-
-            public override void AddString(string value)
-            {
-                AddItem(value);
-            }
-
-            public override void AddObject(ParseObject value)
-            {
-                TypedObjectObject obj = GetObjectAsTypedObjectObject(value);
-                AddItem(obj.Object);
-            }
-
-            public override void AddArray(ParseArray value)
-            {
-                TypedObjectArray array = GetArrayAsTypedObjectArray(value);
-                AddItem(array.GetTypedArray(collectionDef.ItemTypeDef.Type));
-            }
-
-            private void AddItem(object item)
-            {
-                collectionDef.AddToCollection(Array, item);
-            }
-
-            public override ParseObject CreateObject(ParseValueFactory valueFactory)
-            {
-                return new TypedObjectObject(collectionDef.ItemTypeDef);
-            }
-
-            public override ParseArray CreateArray(ParseValueFactory valueFactory)
-            {
-                return new TypedObjectTypedArray(collectionDef.ItemTypeDef.Type);
-            }
+        private static object TypeInnerCollection(TypeDefinition itemTypeDef, object item)
+        {
+            return itemTypeDef is CollectionDefinition
+                ? PopulateCollection(itemTypeDef, (IEnumerable)item, () => Activator.CreateInstance(itemTypeDef.Type))
+                : item;
         }
 
         private class InvalidCollectionType : Exception
         {
             public InvalidCollectionType(Type type) : base("Cannot create collection of type {0}.".FormatWith(type.FullName)) { }
+        }
+
+        public override void AddToObject(ParseObject obj, string name)
+        {
+            ((TypedObjectObject)obj).AddArray(name, this);
+        }
+
+        public override void AddToArray(ParseArray array)
+        {
+            ((TypedObjectArray)array).AddItem(typedArray);
         }
     }
 }

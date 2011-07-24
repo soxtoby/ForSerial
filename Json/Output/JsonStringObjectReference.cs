@@ -1,4 +1,3 @@
-using System;
 
 namespace json.Json
 {
@@ -18,40 +17,15 @@ namespace json.Json
                 return @"{""_ref"":" + referenceId + "}";
             }
 
-            public override void AddNull(string name)
+            public override void AddToObject(ParseObject obj, string name)
             {
-                throw new CannotAddValueToReference();
+                ((JsonStringObject)obj).AddRegularProperty(name, this);
             }
 
-            public override void AddBoolean(string name, bool value)
+            public override void AddToArray(ParseArray array)
             {
-                throw new CannotAddValueToReference();
+                ((JsonStringArray)array).AddRegularValue(this);
             }
-
-            public override void AddNumber(string name, double value)
-            {
-                throw new CannotAddValueToReference();
-            }
-
-            public override void AddString(string name, string value)
-            {
-                throw new CannotAddValueToReference();
-            }
-
-            public override void AddObject(string name, ParseObject value)
-            {
-                throw new CannotAddValueToReference();
-            }
-
-            public override void AddArray(string name, ParseArray value)
-            {
-                throw new CannotAddValueToReference();
-            }
-        }
-
-        internal class CannotAddValueToReference : Exception
-        {
-            public CannotAddValueToReference() : base("Parser should not be trying to add properties to a reference object.") { }
         }
     }
 }

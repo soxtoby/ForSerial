@@ -2,134 +2,142 @@
 
 namespace json.Objects
 {
-    public partial class TypedObjectBuilder
+    public class TypedObjectObject : ParseObjectBase
     {
-        private class TypedObjectObject : ParseObjectBase
+        private TypedObjectParseObject parseObject;
+
+        public TypedObjectObject()
         {
-            private TypedObjectParseObject parseObject;
+        }
 
-            public TypedObjectObject()
+        public TypedObjectObject(object obj)
+        {
+            parseObject = new TypedObjectRegularObject(obj);
+        }
+
+        public TypedObjectObject(TypeDefinition typeDef)
+        {
+            SetType(typeDef);
+        }
+
+        public object Object
+        {
+            get { return parseObject.Object; }
+        }
+
+        public override bool SetType(string typeIdentifier, Parser parser)
+        {
+            TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(typeIdentifier);
+            bool useCurrentType = CurrentTypeIsNotCompatible(typeDef);
+            if (useCurrentType)
+                typeDef = parseObject.TypeDef;
+
+            PreBuildInfo preBuildInfo = typeDef.GetPreBuildInfo(parser);
+
+            if (preBuildInfo != null)
             {
+                parseObject = PreBuildRegularObject(parser, preBuildInfo, typeDef);
+                return true;
             }
 
-            public TypedObjectObject(object obj)
-            {
-                parseObject = new TypedObjectRegularObject(obj);
-            }
-
-            public TypedObjectObject(TypeDefinition typeDef)
-            {
+            if (!useCurrentType)
                 SetType(typeDef);
-            }
 
-            public object Object
-            {
-                get { return parseObject.Object; }
-            }
+            return false;
+        }
 
-            public override bool SetType(string typeIdentifier, Parser parser)
-            {
-                TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(typeIdentifier);
-                bool useCurrentType = CurrentTypeIsNotCompatible(typeDef);
-                if (useCurrentType)
-                    typeDef = parseObject.TypeDef;
+        private bool CurrentTypeIsNotCompatible(TypeDefinition typeDef)
+        {
+            return parseObject != null && !typeDef.Type.CanBeCastTo(parseObject.TypeDef.Type);
+        }
 
-                PreBuildInfo preBuildInfo = typeDef.GetPreBuildInfo(parser);
+        private void SetType(TypeDefinition typeDef)
+        {
+            parseObject = typeDef.CreateObject();
+        }
 
-                if (preBuildInfo != null)
-                {
-                    parseObject = PreBuildRegularObject(parser, preBuildInfo, typeDef);
-                    return true;
-                }
+        private static TypedObjectParseObject PreBuildRegularObject(Parser parser, PreBuildInfo preBuildInfo, TypeDefinition typeDef)
+        {
+            TypedObjectRegularObject regularObject = new TypedObjectRegularObject(typeDef);
+            regularObject.PreBuild(preBuildInfo, parser);
+            return regularObject;
+        }
 
-                if (!useCurrentType)
-                    SetType(typeDef);
+        public void AddProperty(string name, object value)
+        {
+            AssertObjectInitialized();
+            parseObject.AddProperty(name, value);
+        }
 
-                return false;
-            }
+        public void AddObject(string name, TypedObjectObject value)
+        {
+            AssertObjectInitialized();
+            parseObject.AddObject(name, value);
+        }
 
-            private bool CurrentTypeIsNotCompatible(TypeDefinition typeDef)
-            {
-                return parseObject != null && !typeDef.Type.CanBeCastTo(parseObject.TypeDef.Type);
-            }
+        public void AddArray(string name, TypedObjectArray array)
+        {
+            AssertObjectInitialized();
+            parseObject.AddArray(name, array);
+        }
 
-            private void SetType(TypeDefinition typeDef)
-            {
-                parseObject = typeDef is DictionaryDefinition
-                    ? (TypedObjectParseObject)new TypedObjectDictionary(typeDef)
-                    : new TypedObjectRegularObject(typeDef);
-            }
+        public override ParseValue CreateValue(string name, ParseValueFactory valueFactory, object value)
+        {
+            AssertObjectInitialized();
+            return parseObject.CreateValue(name, valueFactory, value);
+        }
 
-            private static TypedObjectParseObject PreBuildRegularObject(Parser parser, PreBuildInfo preBuildInfo, TypeDefinition typeDef)
-            {
-                TypedObjectRegularObject regularObject = new TypedObjectRegularObject(typeDef);
-                regularObject.PreBuild(preBuildInfo, parser);
-                return regularObject;
-            }
+        public override ParseObject CreateObject(string name, ParseValueFactory valueFactory)
+        {
+            AssertObjectInitialized();
+            return parseObject.CreateObject(name, valueFactory);
+        }
 
-            public override void AddNull(string name)
-            {
-                AssertObjectInitialized();
-                parseObject.AddNull(name);
-            }
+        public override ParseArray CreateArray(string name, ParseValueFactory valueFactory)
+        {
+            AssertObjectInitialized();
+            return parseObject.CreateArray(name, valueFactory);
+        }
 
-            public override void AddBoolean(string name, bool value)
-            {
-                AssertObjectInitialized();
-                parseObject.AddBoolean(name, value);
-            }
+        private void AssertObjectInitialized()
+        {
+            if (parseObject == null)
+                throw new ObjectNotInitialized();
+        }
 
-            public override void AddNumber(string name, double value)
-            {
-                AssertObjectInitialized();
-                parseObject.AddNumber(name, value);
-            }
+        public void AssignToProperty(object owner, PropertyDefinition property)
+        {
+            parseObject.AssignToProperty(owner, property);
+        }
 
-            public override void AddString(string name, string value)
-            {
-                AssertObjectInitialized();
-                parseObject.AddString(name, value);
-            }
+        internal static TypedObjectObject GetObjectAsTypedObjectObject(ParseObject value)
+        {
+            TypedObjectObject objectValue = value as TypedObjectObject;
 
-            public override void AddObject(string name, ParseObject value)
-            {
-                AssertObjectInitialized();
-                parseObject.AddObject(name, value);
-            }
+            if (objectValue == null)
+                throw new UnsupportedParseObject();
 
-            public override void AddArray(string name, ParseArray value)
-            {
-                AssertObjectInitialized();
-                parseObject.AddArray(name, value);
-            }
-
-            public override ParseObject CreateObject(string name, ParseValueFactory valueFactory)
-            {
-                AssertObjectInitialized();
-                return parseObject.CreateObject(name, valueFactory);
-            }
-
-            public override ParseArray CreateArray(string name, ParseValueFactory valueFactory)
-            {
-                AssertObjectInitialized();
-                return parseObject.CreateArray(name, valueFactory);
-            }
-
-            private void AssertObjectInitialized()
-            {
-                if (parseObject == null)
-                    throw new ObjectNotInitialized();
-            }
-
-            public void AssignToProperty(object owner, PropertyDefinition property)
-            {
-                parseObject.AssignToProperty(owner, property);
-            }
+            return objectValue;
         }
 
         internal class ObjectNotInitialized : Exception
         {
             public ObjectNotInitialized() : base("Tried to add a property to an uninitialized object. Make sure input contains type information.") { }
+        }
+
+        internal class UnsupportedParseObject : Exception
+        {
+            public UnsupportedParseObject() : base("Can only add ParseObjects that created by a TypedObjectBuilder.") { }
+        }
+
+        public override void AddToObject(ParseObject obj, string name)
+        {
+            ((TypedObjectObject)obj).AddObject(name, this);
+        }
+
+        public override void AddToArray(ParseArray array)
+        {
+            ((TypedObjectArray)array).AddItem(parseObject.Object);
         }
     }
 }

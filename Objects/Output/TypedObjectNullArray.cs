@@ -1,21 +1,28 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 
 namespace json.Objects
 {
-    public partial class TypedObjectBuilder
+    internal class TypedObjectNullArray : NullParseArray, TypedObjectArray
     {
-        private class TypedObjectNullArray : NullParseArray, TypedObjectArray
-        {
-            public IEnumerable Array
-            {
-                get { yield break; }
-            }
+        private TypedObjectNullArray() { }
 
-            public IEnumerable GetTypedArray(Type type)
-            {
-                yield break;
-            }
+        private static TypedObjectNullArray instance;
+        public new static TypedObjectNullArray Instance
+        {
+            get { return instance ?? (instance = new TypedObjectNullArray()); }
+        }
+
+        public IEnumerable GetTypedArray()
+        {
+            yield break;
+        }
+
+        public void AddItem(object item)
+        {
+        }
+
+        public void PopulateCollection(object collection)
+        {
         }
     }
 }

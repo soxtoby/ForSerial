@@ -9,33 +9,21 @@ namespace json.Json
         [Test]
         public void StringIsEscaped()
         {
-            ParseString parseString = JsonStringBuilder.Default.CreateString("\"foo\\bar\"");
-            StringValueObject obj = new StringValueObject();
-            parseString.AddToObject(obj, null);
-            Assert.AreEqual(@"\""foo\\bar\""", obj.StringValue);
-        }
-
-        private class StringValueObject : NullParseObject
-        {
-            public string StringValue { get; private set; }
-
-            public override void AddString(string name, string value)
-            {
-                StringValue = value;
-            }
+            ParseValue parseString = JsonStringBuilder.Default.CreateValue("\"foo\\bar\"");
+            Assert.AreEqual(@"{""value"":""\""foo\\bar\""""}", JsonStringBuilder.GetResult(parseString.AsObject()));
         }
 
         [Test]
         public void NumberIsWrappedInObject()
         {
-            ParseNumber number = JsonStringBuilder.Default.CreateNumber(5);
+            ParseValue number = JsonStringBuilder.Default.CreateValue(5);
             Assert.AreEqual("{\"value\":5}", JsonStringBuilder.GetResult(number.AsObject()));
         }
 
         [Test]
         public void StringIsWrappedInObject()
         {
-            ParseString str = JsonStringBuilder.Default.CreateString("foo");
+            ParseValue str = JsonStringBuilder.Default.CreateValue("foo");
             Assert.AreEqual("{\"value\":\"foo\"}", JsonStringBuilder.GetResult(str.AsObject()));
         }
 
@@ -68,17 +56,6 @@ namespace json.Json
         {
             JsonStringBuilder.GetResult(NullParseObject.Instance);
         }
-
-        [Test]
-        [ExpectedException(typeof(JsonStringBuilder.CannotAddValueToReference))]
-        public void AddValueToReferenceObject()
-        {
-            var builder = new JsonStringBuilder(JsonStringBuilder.Options.MaintainObjectReferences);
-            var originalObject = builder.CreateObject();
-            var reference = builder.CreateReference(originalObject);
-            reference.AddNull("foo");
-        }
-
     }
 }
 

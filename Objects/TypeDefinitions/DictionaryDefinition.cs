@@ -48,5 +48,10 @@ namespace json.Objects
 
             return output;
         }
+
+        public override TypedObjectParseObject CreateObject()
+        {
+            return new TypedObjectDictionary(this);
+        }
     }
 }

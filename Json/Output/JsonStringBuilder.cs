@@ -37,18 +37,24 @@ namespace json.Json
         public ParseValue CreateValue(object value)
         {
             if (value == null)
-                return CreateNull();
+                return JsonStringNull.Value;
 
             switch (value.GetType().GetTypeCodeType())
             {
                 case TypeCodeType.Object:
                     return null;
+
                 case TypeCodeType.Boolean:
-                    return CreateBoolean((bool)value);
+                    return (bool)value
+                        ? JsonStringBoolean.True
+                        : JsonStringBoolean.False;
+
                 case TypeCodeType.String:
-                    return CreateString((string)value);
+                    return new JsonStringString((string)value);
+
                 case TypeCodeType.Number:
-                    return CreateNumber(Convert.ToDouble(value));
+                    return new JsonStringNumber(Convert.ToDouble(value));
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -64,26 +70,6 @@ namespace json.Json
         public ParseArray CreateArray()
         {
             return new JsonStringArray();
-        }
-
-        public ParseNumber CreateNumber(double value)
-        {
-            return new JsonStringNumber(value);
-        }
-
-        public ParseString CreateString(string value)
-        {
-            return new JsonStringString(value);
-        }
-
-        public ParseBoolean CreateBoolean(bool value)
-        {
-            return value ? JsonStringBoolean.True : JsonStringBoolean.False;
-        }
-
-        public ParseNull CreateNull()
-        {
-            return JsonStringNull.Value;
         }
 
         public ParseObject CreateReference(ParseObject parseObject)

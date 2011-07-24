@@ -9,7 +9,7 @@ namespace json
             this.baseFactory = baseFactory;
         }
 
-        public ParseValue CreateValue(object value)
+        public virtual ParseValue CreateValue(object value)
         {
             return baseFactory.CreateValue(value);
         }

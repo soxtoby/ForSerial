@@ -25,5 +25,10 @@ namespace json.Objects
                 ? null
                 : valueFactory.CreateValue(guid.ToString());
         }
+
+        public override ParseValue CreateValue(ParseValueFactory valueFactory, object value)
+        {
+            return valueFactory.CreateValue(new Guid(value.ToString()));
+        }
     }
 }

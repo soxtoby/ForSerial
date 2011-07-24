@@ -2,16 +2,8 @@ namespace json
 {
     public abstract class ParseNull : ParseValue
     {
-        public void AddToObject(ParseObject obj, string name)
-        {
-            obj.AddNull(name);
-        }
-
-        public void AddToArray(ParseArray array)
-        {
-            array.AddNull();
-        }
-
+        public abstract void AddToObject(ParseObject obj, string name);
+        public abstract void AddToArray(ParseArray array);
         public abstract ParseObject AsObject();
     }
 }

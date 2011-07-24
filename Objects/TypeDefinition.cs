@@ -13,9 +13,10 @@ namespace json.Objects
             {
                 // FIXME I'm not keen on this inter-dependency. Maybe move factories into another class.
                 DefaultTypeDefinition.CreateDefaultTypeDefinition,
-                GuidDefinition.CreateGuidDefinition,
                 CollectionDefinition.CreateCollectionDefinition,
                 DictionaryDefinition.CreateDictionaryDefinition,
+                ValueTypeDefinition.CreateValueTypeDefinition,
+                GuidDefinition.CreateGuidDefinition,
             };
 
         private readonly TypeCode typeCode;
@@ -178,6 +179,26 @@ namespace json.Objects
 
             TypeDefinition typeDef = GetTypeDefinition(value.GetType());
             return typeDef.IsSerializable && typeDef.IsDeserializable;
+        }
+
+        public virtual ParseValue CreateValue(ParseValueFactory valueFactory, object value)
+        {
+            throw new NotAValue(Type);
+        }
+
+        public virtual TypedObjectParseObject CreateObject()
+        {
+            throw new NotAnObject(Type);
+        }
+
+        private class NotAValue : Exception
+        {
+            public NotAValue(Type type) : base("Cannot create value for type {0}.".FormatWith(type.FullName)) { }
+        }
+
+        private class NotAnObject : Exception
+        {
+            public NotAnObject(Type type) : base("Cannot create object for type {0}".FormatWith(type.FullName)) { }
         }
     }
 }

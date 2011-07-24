@@ -9,16 +9,8 @@ namespace json
             this.value = value;
         }
 
-        public void AddToObject(ParseObject obj, string name)
-        {
-            obj.AddNumber(name, value);
-        }
-
-        public void AddToArray(ParseArray array)
-        {
-            array.AddNumber(value);
-        }
-
+        public abstract void AddToObject(ParseObject obj, string name);
+        public abstract void AddToArray(ParseArray array);
         public abstract ParseObject AsObject();
     }
 }

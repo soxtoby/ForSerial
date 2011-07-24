@@ -20,9 +20,19 @@ namespace json.Json
 
             public override ParseObject AsObject()
             {
-                ParseObject obj = new JsonStringObject();
+                JsonStringObject obj = new JsonStringObject();
                 obj.AddBoolean("value", value);
                 return obj;
+            }
+
+            public override void AddToObject(ParseObject obj, string name)
+            {
+                ((JsonStringObject)obj).AddBoolean(name, value);
+            }
+
+            public override void AddToArray(ParseArray array)
+            {
+                ((JsonStringArray)array).AddBoolean(value);
             }
         }
     }

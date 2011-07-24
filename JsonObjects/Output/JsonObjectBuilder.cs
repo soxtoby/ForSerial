@@ -29,18 +29,18 @@ namespace json.JsonObjects
         public ParseValue CreateValue(object value)
         {
             if (value == null)
-                return CreateNull();
+                return JsonObjectNull.Value;
 
             switch (value.GetType().GetTypeCodeType())
             {
                 case TypeCodeType.Object:
                     return null;
                 case TypeCodeType.Boolean:
-                    return CreateBoolean((bool)value);
+                    return (bool)value ? JsonObjectBoolean.True : JsonObjectBoolean.False;
                 case TypeCodeType.String:
-                    return CreateString((string)value);
+                    return new JsonObjectString((string)value);
                 case TypeCodeType.Number:
-                    return CreateNumber(Convert.ToDouble(value));
+                    return new JsonObjectNumber(Convert.ToDouble(value));
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -54,26 +54,6 @@ namespace json.JsonObjects
         public ParseArray CreateArray()
         {
             return new JsonObjectArray();
-        }
-
-        public ParseNumber CreateNumber(double value)
-        {
-            return new JsonObjectNumber(value);
-        }
-
-        public ParseString CreateString(string value)
-        {
-            return new JsonObjectString(value);
-        }
-
-        public ParseBoolean CreateBoolean(bool value)
-        {
-            return value ? JsonObjectBoolean.True : JsonObjectBoolean.False;
-        }
-
-        public ParseNull CreateNull()
-        {
-            return JsonObjectNull.Value;
         }
 
         public ParseObject CreateReference(ParseObject parseObject)
@@ -90,99 +70,57 @@ namespace json.JsonObjects
                 Object = new JsonObject();
             }
 
-            public override void AddNull(string name)
-            {
-                Object[name] = null;
-            }
-
-            public override void AddBoolean(string name, bool value)
-            {
-                Object[name] = value;
-            }
-
-            public override void AddNumber(string name, double value)
-            {
-                Object[name] = value;
-            }
-
-            public override void AddString(string name, string value)
-            {
-                Object[name] = value;
-            }
-
-            public override void AddObject(string name, ParseObject value)
-            {
-                JsonObjectObject valueObject = value as JsonObjectObject;
-                if (valueObject == null)
-                    throw new UnsupportedParseObject();
-                Object[name] = valueObject.Object;
-            }
-
-            public override void AddArray(string name, ParseArray value)
-            {
-                JsonObjectArray valueArray = value as JsonObjectArray;
-                if (valueArray == null)
-                    throw new UnsupportedParseArray();
-                Object[name] = valueArray.Array;
-            }
-
             public override bool SetType(string typeIdentifier, Parser parser)
             {
                 Object.TypeIdentifier = typeIdentifier;
                 return false;
             }
+
+            public void AddProperty(string name, object value)
+            {
+                Object[name] = value;
+            }
+
+            public override void AddToObject(ParseObject obj, string name)
+            {
+                ((JsonObjectObject)obj).AddProperty(name, Object);
+            }
+
+            public override void AddToArray(ParseArray array)
+            {
+                ((JsonObjectArray)array).AddValue(Object);
+            }
         }
 
         private class JsonObjectArray : ParseArrayBase
         {
-            public List<object> Array { get; private set; }
+            private readonly List<object> values;
 
             public JsonObjectArray()
             {
-                Array = new List<object>();
+                values = new List<object>();
             }
 
-            public override void AddNull()
+            public void AddValue(object value)
             {
-                Array.Add(null);
-            }
-
-            public override void AddBoolean(bool value)
-            {
-                Array.Add(value);
-            }
-
-            public override void AddNumber(double value)
-            {
-                Array.Add(value);
-            }
-
-            public override void AddString(string value)
-            {
-                Array.Add(value);
-            }
-
-            public override void AddObject(ParseObject value)
-            {
-                JsonObjectObject valueObject = value as JsonObjectObject;
-                if (valueObject == null)
-                    throw new UnsupportedParseObject();
-                Array.Add(valueObject.Object);
-            }
-
-            public override void AddArray(ParseArray value)
-            {
-                JsonObjectArray valueArray = value as JsonObjectArray;
-                if (valueArray == null)
-                    throw new UnsupportedParseArray();
-                Array.Add(valueArray.Array);
+                values.Add(value);
             }
 
             public override ParseObject AsObject()
             {
-                ParseObject obj = new JsonObjectObject();
-                obj.AddArray("items", this);
+                JsonObjectObject obj = new JsonObjectObject();
+                obj.AddProperty("items", this);
                 return obj;
+            }
+
+            public override void AddToObject(ParseObject obj, string name)
+            {
+                ((JsonObjectObject)obj).AddProperty(name, values);
+            }
+
+            public override void AddToArray(ParseArray array)
+            {
+                ((JsonObjectArray)array).AddValue(values);
             }
         }
 
@@ -198,9 +136,19 @@ namespace json.JsonObjects
 
             public override ParseObject AsObject()
             {
-                ParseObject obj = new JsonObjectObject();
-                obj.AddNull("value");
+                JsonObjectObject obj = new JsonObjectObject();
+                obj.AddProperty("value", null);
                 return obj;
+            }
+
+            public override void AddToObject(ParseObject obj, string name)
+            {
+                ((JsonObjectObject)obj).AddProperty(name, null);
+            }
+
+            public override void AddToArray(ParseArray array)
+            {
+                ((JsonObjectArray)array).AddValue(null);
             }
         }
 
@@ -222,9 +170,19 @@ namespace json.JsonObjects
 
             public override ParseObject AsObject()
             {
-                ParseObject obj = new JsonObjectObject();
-                obj.AddBoolean("value", value);
+                JsonObjectObject obj = new JsonObjectObject();
+                obj.AddProperty("value", value);
                 return obj;
+            }
+
+            public override void AddToObject(ParseObject obj, string name)
+            {
+                ((JsonObjectObject)obj).AddProperty(name, value);
+            }
+
+            public override void AddToArray(ParseArray array)
+            {
+                ((JsonObjectArray)array).AddValue(value);
             }
         }
 
@@ -234,9 +192,19 @@ namespace json.JsonObjects
 
             public override ParseObject AsObject()
             {
-                ParseObject obj = new JsonObjectObject();
-                obj.AddNumber("value", value);
+                JsonObjectObject obj = new JsonObjectObject();
+                obj.AddProperty("value", value);
                 return obj;
+            }
+
+            public override void AddToObject(ParseObject obj, string name)
+            {
+                ((JsonObjectObject)obj).AddProperty(name, value);
+            }
+
+            public override void AddToArray(ParseArray array)
+            {
+                ((JsonObjectArray)array).AddValue(value);
             }
         }
 
@@ -246,9 +214,19 @@ namespace json.JsonObjects
 
             public override ParseObject AsObject()
             {
-                ParseObject obj = new JsonObjectObject();
-                obj.AddString("value", value);
+                JsonObjectObject obj = new JsonObjectObject();
+                obj.AddProperty("value", value);
                 return obj;
+            }
+
+            public override void AddToObject(ParseObject obj, string name)
+            {
+                ((JsonObjectObject)obj).AddProperty(name, value);
+            }
+
+            public override void AddToArray(ParseArray array)
+            {
+                ((JsonObjectArray)array).AddValue(value);
             }
         }
 

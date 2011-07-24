@@ -101,6 +101,7 @@
     <Compile Include="Objects\PreBuildInfo.cs" />
     <Compile Include="Objects\TypeDefinitions\DefaultTypeDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\GuidDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\ValueTypeDefinition.cs" />
     <Compile Include="Output\NullParseValues.cs" />
     <Compile Include="Objects\Input\ObjectParser.cs" />
     <Compile Include="Objects\Input\ObjectParserTests.cs" />

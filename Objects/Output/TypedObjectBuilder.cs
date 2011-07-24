@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 namespace json.Objects
 {
@@ -24,7 +23,7 @@ namespace json.Objects
         {
             TypedObjectArray array = value as TypedObjectArray;
             if (array != null)
-                return (T)array.GetTypedArray(typeof(T));
+                return (T)array.GetTypedArray();
 
             TypedObjectObject obj = value.AsObject() as TypedObjectObject;
             if (obj == null)
@@ -36,18 +35,24 @@ namespace json.Objects
         public ParseValue CreateValue(object value)
         {
             if (value == null)
-                return CreateNull();
+                return TypedObjectNull.Value;
 
             switch (value.GetType().GetTypeCodeType())
             {
                 case TypeCodeType.Object:
                     return new TypedObjectObject(value);
+
                 case TypeCodeType.Boolean:
-                    return CreateBoolean((bool)value);
+                    return (bool)value
+                        ? TypedObjectBoolean.True
+                        : TypedObjectBoolean.False;
+
                 case TypeCodeType.String:
-                    return CreateString((string)value);
+                    return new TypedObjectString((string)value);
+
                 case TypeCodeType.Number:
-                    return CreateNumber(Convert.ToDouble(value));
+                    return new TypedObjectNumber(Convert.ToDouble(value));
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -77,80 +82,29 @@ namespace json.Objects
             return array;
         }
 
-        public ParseNumber CreateNumber(double value)
-        {
-            return new TypedObjectNumber(value);
-        }
-
-        public ParseString CreateString(string value)
-        {
-            return new TypedObjectString(value);
-        }
-
-        public ParseBoolean CreateBoolean(bool value)
-        {
-            return value ? TypedObjectBoolean.True : TypedObjectBoolean.False;
-        }
-
-        public ParseNull CreateNull()
-        {
-            return TypedObjectNull.Value;
-        }
-
         public ParseObject CreateReference(ParseObject parseObject)
         {
             return parseObject;
         }
 
-        private static TypedObjectObject GetObjectAsTypedObjectObject(ParseObject value)
+        internal class TypedObjectSubBuilder : TypedObjectBuilder
         {
-            TypedObjectObject objectValue = value as TypedObjectObject;
+            private readonly object baseObject;
+            private bool isBase = true;
 
-            if (objectValue == null)
-                throw new UnsupportedParseObject();
-
-            return objectValue;
-        }
-
-        private static TypedObjectArray GetArrayAsTypedObjectArray(ParseArray value)
-        {
-            TypedObjectArray arrayValue = value as TypedObjectArray;
-
-            if (arrayValue == null)
-                throw new UnsupportedParseArray();
-
-            return arrayValue;
-        }
-
-        private static IEnumerable PopulateCollection(TypeDefinition collectionType, IEnumerable items, Func<object> getCollection)
-        {
-            CollectionDefinition collectionDef = collectionType as CollectionDefinition;
-            if (collectionDef == null) return null;
-
-            IEnumerable collection = getCollection() as IEnumerable;
-
-            if (collection != null)
+            public TypedObjectSubBuilder(object baseObject)
             {
-                foreach (object item in items)
-                {
-                    object itemToAdd = TypeInnerCollection(collectionDef.ItemTypeDef, item);
-                    collectionDef.AddToCollection(collection, itemToAdd);
-                }
+                this.baseObject = baseObject;
             }
 
-            return collection;
-        }
+            public override ParseObject CreateObject()
+            {
+                if (!isBase)
+                    return base.CreateObject();
 
-        private static object TypeInnerCollection(TypeDefinition itemTypeDef, object item)
-        {
-            return itemTypeDef is CollectionDefinition
-                ? PopulateCollection(itemTypeDef, (IEnumerable)item, () => Activator.CreateInstance(itemTypeDef.Type))
-                : item;
-        }
-
-        internal class UnsupportedParseObject : Exception
-        {
-            public UnsupportedParseObject() : base("Can only add ParseObjects that created by a TypedObjectBuilder.") { }
+                isBase = false;
+                return new TypedObjectObject(baseObject);
+            }
         }
 
         internal class UnsupportedParseArray : Exception

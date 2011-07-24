@@ -285,41 +285,7 @@ namespace json.Objects
         }
 
         [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseObject))]
-        public void AddUnsupportedParseObjectToObject()
-        {
-            ParseObject obj = TypedObjectBuilder.GenericInstance.CreateObject();
-            obj.SetType(typeof(IntPropertyClass).AssemblyQualifiedName, null);
-            obj.AddObject("Integer", NullParseObject.Instance);
-        }
-
-        [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseObject))]
-        public void AddUnsupportedParseObjectToArray()
-        {
-            ParseArray array = new TypedObjectBuilder(typeof(List<int>)).CreateArray();
-            array.AddObject(NullParseObject.Instance);
-        }
-
-        [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseArray))]
-        public void AddUnsupportedParseArrayToObject()
-        {
-            ParseObject obj = TypedObjectBuilder.GenericInstance.CreateObject();
-            obj.SetType(typeof(SettableListPropertyClass).AssemblyQualifiedName, null);
-            obj.AddArray("Array", NullParseArray.Instance);
-        }
-
-        [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.UnsupportedParseArray))]
-        public void AddUnsupportedParseArrayToArray()
-        {
-            ParseArray array = new TypedObjectBuilder(typeof(List<int>)).CreateArray();
-            array.AddArray(NullParseArray.Instance);
-        }
-
-        [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.PropertyTypeMismatch))]
+        [ExpectedException(typeof(TypedObjectRegularObject.PropertyTypeMismatch))]
         public void PropertyTypeMismatch()
         {
             string json = Parse.From
@@ -329,42 +295,42 @@ namespace json.Objects
         }
 
         [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        [ExpectedException(typeof(TypedObjectObject.ObjectNotInitialized))]
         public void AddNullToUntypedObject()
         {
             Parse.From.Json(@"{""foo"":null}").WithBuilder(TypedObjectBuilder.GenericInstance);
         }
 
         [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        [ExpectedException(typeof(TypedObjectObject.ObjectNotInitialized))]
         public void AddBooleanToUntypedObject()
         {
             Parse.From.Json(@"{""foo"":true}").WithBuilder(TypedObjectBuilder.GenericInstance);
         }
 
         [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        [ExpectedException(typeof(TypedObjectObject.ObjectNotInitialized))]
         public void AddNumberToUntypedObject()
         {
             Parse.From.Json(@"{""foo"":5}").WithBuilder(TypedObjectBuilder.GenericInstance);
         }
 
         [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        [ExpectedException(typeof(TypedObjectObject.ObjectNotInitialized))]
         public void AddStringToUntypedObject()
         {
             Parse.From.Json(@"{""foo"":""bar""}").WithBuilder(TypedObjectBuilder.GenericInstance);
         }
 
         [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        [ExpectedException(typeof(TypedObjectObject.ObjectNotInitialized))]
         public void AddObjectToUntypedObject()
         {
             Parse.From.Json(@"{""foo"":{}}").WithBuilder(TypedObjectBuilder.GenericInstance);
         }
 
         [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.ObjectNotInitialized))]
+        [ExpectedException(typeof(TypedObjectObject.ObjectNotInitialized))]
         public void AddArrayToUntypedObject()
         {
             Parse.From.Json(@"{""foo"":[]}").WithBuilder(TypedObjectBuilder.GenericInstance);
@@ -595,6 +561,20 @@ namespace json.Objects
                 get { throw new AssertionException("Property should not have been accessed."); }
                 set { Value = value; }
             }
+        }
+
+        [Test]
+        public void ParseGuid()
+        {
+            GuidPropertyClass obj = Parse.From
+                .Json(@"{""Property"":""4bb47128-42c1-4a75-9b0c-cd424f84d3e3""}")
+                .ToObject<GuidPropertyClass>();
+            Assert.AreEqual(obj.Property, new Guid("4bb47128-42c1-4a75-9b0c-cd424f84d3e3"));
+        }
+
+        private class GuidPropertyClass
+        {
+            public Guid Property { get; set; }
         }
 
 

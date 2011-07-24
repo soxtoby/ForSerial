@@ -1,14 +1,24 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 
 namespace json.Objects
 {
-    public partial class TypedObjectBuilder
+    public interface TypedObjectArray : ParseArray
     {
-        private interface TypedObjectArray : ParseArray
+        IEnumerable GetTypedArray();
+        void AddItem(object item);
+        void PopulateCollection(object collection);
+    }
+
+    internal static class TypedObjectArrayExtensions
+    {
+        public static TypedObjectArray GetArrayAsTypedObjectArray(this ParseArray value)
         {
-            IEnumerable Array { get; }
-            IEnumerable GetTypedArray(Type type);
+            TypedObjectArray arrayValue = value as TypedObjectArray;
+
+            if (arrayValue == null)
+                throw new TypedObjectBuilder.UnsupportedParseArray();
+
+            return arrayValue;
         }
     }
 }
