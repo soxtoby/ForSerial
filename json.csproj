@@ -83,9 +83,8 @@
     <Compile Include="Json\Output\JsonStringObject.cs" />
     <Compile Include="Json\Output\JsonStringObjectReference.cs" />
     <Compile Include="Json\Output\JsonStringString.cs" />
-    <Compile Include="Objects\DictionaryDefinition.cs" />
-    <Compile Include="Objects\EnumerableDefinition.cs" />
-    <Compile Include="Objects\Input\ArrayParserValueFactory.cs" />
+    <Compile Include="Objects\TypeDefinitions\DictionaryDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\EnumerableDefinition.cs" />
     <Compile Include="Objects\Input\ObjectParserValueFactory.cs" />
     <Compile Include="Objects\Input\ParserValueFactory.cs" />
     <Compile Include="Objects\Output\TypedObjectNull.cs" />
@@ -100,7 +99,8 @@
     <Compile Include="Objects\Output\TypedObjectTypedArray.cs" />
     <Compile Include="Objects\Output\TypedObjectObject.cs" />
     <Compile Include="Objects\PreBuildInfo.cs" />
-    <Compile Include="Objects\DefaultTypeDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\DefaultTypeDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\GuidDefinition.cs" />
     <Compile Include="Output\NullParseValues.cs" />
     <Compile Include="Objects\Input\ObjectParser.cs" />
     <Compile Include="Objects\Input\ObjectParserTests.cs" />
@@ -124,7 +124,7 @@
     <Compile Include="Parse.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Output\ParseValue.cs" />
-    <Compile Include="Objects\CollectionDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\CollectionDefinition.cs" />
     <Compile Include="Objects\PreBuildAttribute.cs" />
     <Compile Include="Objects\PropertyDefinition.cs" />
     <Compile Include="Objects\TypeDefinition.cs" />

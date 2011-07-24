@@ -12,6 +12,7 @@ namespace json.Objects
         private static readonly List<Func<Type, TypeDefinition>> TypeDefinitionFactories = new List<Func<Type, TypeDefinition>>
             {
                 DefaultTypeDefinition.CreateDefaultTypeDefinition,
+                GuidDefinition.CreateGuidDefinition,
                 CollectionDefinition.CreateCollectionDefinition, // FIXME I'm not keen on this inter-dependency. Maybe move factories into another class.
                 DictionaryDefinition.CreateDictionaryDefinition,
             };
@@ -39,7 +40,7 @@ namespace json.Objects
                 || HasDefaultConstructor;
         }
 
-        private bool DetermineIfDeserializable()
+        protected virtual bool DetermineIfDeserializable()
         {
             return Type.IsPrimitive
                 || Type == typeof(string)   // Strings are objects
@@ -160,9 +161,7 @@ namespace json.Objects
             return parser == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ParserMatches(parser));
         }
 
-        public abstract ParseValue GetParseValue(ParseValueFactory valueFactory);
-
-        public abstract void ParseObject(object input, ParseValue output, ParserValueFactory valueFactory);
+        public abstract ParseValue ParseObject(object input, ParserValueFactory valueFactory);
 
         protected IEnumerable<KeyValuePair<string, object>> GetSerializableProperties(object obj, bool serializeAllTypes)
         {

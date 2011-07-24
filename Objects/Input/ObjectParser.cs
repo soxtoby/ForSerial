@@ -57,27 +57,8 @@ namespace json.Objects
         private ParseValue ParseObject(object input)
         {
             currentObject = input;
-
             TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(input.GetType());
-            ParseValue output = typeDef.GetParseValue(ValueFactory);
-
-            ParseObject obj = output as ParseObject;
-            if (obj != null)
-            {
-                objectReferences[input] = obj;
-                obj.SetType(GetTypeIdentifier(typeDef.Type), this);
-            }
-
-            ObjectParserValueFactory parserValueFactory = null;
-
-            ParseArray array = output as ParseArray;
-            if (array != null)
-                parserValueFactory = new ArrayParserValueFactory(this, array);
-
-            parserValueFactory = parserValueFactory ?? new ObjectParserValueFactory(this);
-            typeDef.ParseObject(input, output, parserValueFactory);
-
-            return output;
+            return typeDef.ParseObject(input, new ObjectParserValueFactory(this));
         }
 
         private static string GetTypeIdentifier(Type type)

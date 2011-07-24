@@ -29,16 +29,12 @@ namespace json.Objects
             return property.CanGet;
         }
 
-        public override ParseValue GetParseValue(ParseValueFactory valueFactory)
-        {
-            return valueFactory.CreateObject();
-        }
-
-        public override void ParseObject(object input, ParseValue output, ParserValueFactory valueFactory)
+        public override ParseValue ParseObject(object input, ParserValueFactory valueFactory)
         {
             IDictionary dictionary = input as IDictionary;
-            ParseObject obj = output as ParseObject;
-            if (dictionary == null || obj == null) return;
+            if (dictionary == null) return null;
+
+            ParseObject output = valueFactory.CreateObject(input);
 
             foreach (object key in dictionary.Keys)
             {
@@ -47,9 +43,10 @@ namespace json.Objects
                 string name = Convert.ToString(key, CultureInfo.InvariantCulture);
                 object value = dictionary[key];
 
-                ParseValue parseValue = valueFactory.ParseProperty(obj, name, value);
-                parseValue.AddToObject(obj, name);
+                valueFactory.ParseProperty(output, name, value);
             }
+
+            return output;
         }
     }
 }

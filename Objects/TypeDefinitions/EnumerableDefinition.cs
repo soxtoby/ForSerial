@@ -20,22 +20,19 @@ namespace json.Objects
             return false;
         }
 
-        public override ParseValue GetParseValue(ParseValueFactory valueFactory)
-        {
-            return valueFactory.CreateArray();
-        }
-
-        public override void ParseObject(object input, ParseValue output, ParserValueFactory valueFactory)
+        public override ParseValue ParseObject(object input, ParserValueFactory valueFactory)
         {
             IEnumerable inputArray = input as IEnumerable;
-            ParseArray outputArray = output as ParseArray;
-            if (inputArray == null || outputArray == null) return;
+            if (inputArray == null) return null;
+
+            ParseArray output = valueFactory.CreateArray();
 
             foreach (object item in inputArray)
             {
-                ParseValue value = valueFactory.Parse(item);
-                value.AddToArray(outputArray);
+                valueFactory.ParseArrayItem(output, item);
             }
+
+            return output;
         }
     }
 }

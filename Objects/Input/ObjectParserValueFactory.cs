@@ -4,7 +4,7 @@
     {
         private class ObjectParserValueFactory : ParserValueFactory
         {
-            protected readonly ObjectParser parser;
+            private readonly ObjectParser parser;
 
             public ObjectParserValueFactory(ObjectParser parser)
             {
@@ -16,16 +16,35 @@
                 get { return (parser.options & Options.SerializeAllTypes) != 0; }
             }
 
-            public virtual ParseValue Parse(object input)
+            public ParseValue Parse(object input)
             {
                 return parser.ParseValue(input);
             }
 
-            public ParseValue ParseProperty(ParseObject owner, string propertyName, object propertyValue)
+            public void ParseProperty(ParseObject owner, string propertyName, object propertyValue)
             {
-                ParseValue value = null;
-                parser.UsingObjectPropertyContext(owner, propertyName, () => value = Parse(propertyValue));
-                return value;
+                parser.UsingObjectPropertyContext(owner, propertyName, () =>
+                    {
+                        ParseValue value = Parse(propertyValue);
+                        value.AddToObject(owner, propertyName);
+                    });
+            }
+
+            public void ParseArrayItem(ParseArray array, object item)
+            {
+                parser.UsingArrayContext(array, () =>
+                    {
+                        ParseValue value = parser.ParseValue(item);
+                        value.AddToArray(array);
+                    });
+            }
+
+            public ParseObject CreateObject(object input)
+            {
+                ParseObject obj = parser.ValueFactory.CreateObject();
+                obj.SetType(GetTypeIdentifier(input.GetType()), parser);
+                parser.objectReferences[input] = obj;
+                return obj;
             }
 
             public ParseObject CreateObject()

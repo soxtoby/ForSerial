@@ -252,6 +252,13 @@ namespace json.Objects
             }
         }
 
+        [Test]
+        public void Guid()
+        {
+            Guid guid = new Guid("{ceac23f4-9a28-4dc5-856a-1411511a0a88}");
+            Assert.AreEqual(@"{""foo"":""ceac23f4-9a28-4dc5-856a-1411511a0a88""}", ParseToJson(new { foo = guid }));
+        }
+
         private static string ParseToJson(object obj, bool serializeAllTypes = true)
         {
             ObjectParser.Options options = serializeAllTypes ? ObjectParser.Options.SerializeAllTypes : ObjectParser.Options.Default;

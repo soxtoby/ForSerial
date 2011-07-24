@@ -12,21 +12,16 @@ namespace json.Objects
             return new DefaultTypeDefinition(type);
         }
 
-        public override ParseValue GetParseValue(ParseValueFactory valueFactory)
+        public override ParseValue ParseObject(object input, ParserValueFactory valueFactory)
         {
-            return valueFactory.CreateObject();
-        }
-
-        public override void ParseObject(object input, ParseValue output, ParserValueFactory valueFactory)
-        {
-            ParseObject obj = output as ParseObject;
-            if (obj == null) return;    // should probably throw
+            ParseObject output = valueFactory.CreateObject(input);
 
             foreach (KeyValuePair<string, object> property in GetSerializableProperties(input, valueFactory.SerializeAllTypes))
             {
-                ParseValue value = valueFactory.ParseProperty(obj, property.Key, property.Value);
-                value.AddToObject(obj, property.Key);
+                valueFactory.ParseProperty(output, property.Key, property.Value);
             }
+
+            return output;
         }
     }
 }
