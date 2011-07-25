@@ -564,6 +564,20 @@ namespace json.Objects
         }
 
         [Test]
+        public void CloneGuid()
+        {
+            Guid guid = new Guid("{6a4a91ad-acd8-46ba-b539-49651c1dd31a}");
+            Assert.AreEqual(guid, Clone(guid));
+        }
+
+        [Test]
+        public void CloneGuidProperty()
+        {
+            Guid guid = new Guid("{6a4a91ad-acd8-46ba-b539-49651c1dd31a}");
+            Assert.AreEqual(guid, Clone(new GuidPropertyClass { Property = guid }).Property);
+        }
+
+        [Test]
         public void ParseGuid()
         {
             GuidPropertyClass obj = Parse.From

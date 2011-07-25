@@ -100,7 +100,7 @@ namespace json.Objects
 
         private void PopulateProperties()
         {
-            IEnumerable<PropertyDefinition> properties = Type.GetProperties()
+            IEnumerable<PropertyDefinition> properties = Type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
                 .Where(NotMarkedWithIgnoreAttribute)
                 .Select(p => new PropertyDefinition(p));
 

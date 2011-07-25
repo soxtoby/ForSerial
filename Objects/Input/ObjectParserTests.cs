@@ -278,6 +278,19 @@ namespace json.Objects
             }
         }
 
+        [Test]
+        public void StaticPropertyIsNotSerialized()
+        {
+            StaticPropertyClass.StaticProperty = 6;
+            Assert.AreEqual(@"{""Property"":5}", ParseToJson(new StaticPropertyClass { Property = 5 }));
+        }
+
+        private class StaticPropertyClass
+        {
+            public int Property { get; set; }
+            public static int StaticProperty { get; set; }
+        }
+
 
         private static string ParseToJson(object obj, bool serializeAllTypes = true)
         {
