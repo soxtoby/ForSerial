@@ -36,7 +36,7 @@ namespace json.Objects
 
             ParseValue output = null;
 
-            if (ValueTypeDefinition.IsValueType(inputType))
+            if (IsValueType(inputType))
                 output = ValueFactory.CreateValue(input);
 
             if (output == null)
@@ -48,6 +48,11 @@ namespace json.Objects
             }
 
             return output;
+        }
+
+        private static bool IsValueType(Type type)
+        {
+            return type.IsValueType || type == typeof(string);
         }
 
         private ParseValue ParseObject(object input)

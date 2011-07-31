@@ -5,7 +5,7 @@ namespace json.Objects
 {
     public class DefaultTypeDefinition : TypeDefinition
     {
-        private DefaultTypeDefinition(Type type) : base(type) { }
+        protected DefaultTypeDefinition(Type type) : base(type) { }
 
         internal static DefaultTypeDefinition CreateDefaultTypeDefinition(Type type)
         {
