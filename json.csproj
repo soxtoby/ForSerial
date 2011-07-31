@@ -83,6 +83,7 @@
     <Compile Include="Json\Output\JsonStringObject.cs" />
     <Compile Include="Json\Output\JsonStringObjectReference.cs" />
     <Compile Include="Json\Output\JsonStringString.cs" />
+    <Compile Include="Objects\Output\TypedObjectConstructorOnlyObjectTests.cs" />
     <Compile Include="Objects\Output\TypedObjectConstructorOnlyObject.cs" />
     <Compile Include="Objects\Output\TypedObjectParseObjectBase.cs" />
     <Compile Include="Objects\TypeDefinitions\DictionaryDefinition.cs" />

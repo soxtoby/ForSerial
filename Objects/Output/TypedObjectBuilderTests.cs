@@ -591,6 +591,16 @@ namespace json.Objects
             public Guid Property { get; set; }
         }
 
+        [Test]
+        public void ParseKeyValuePair()
+        {
+            KeyValuePair<string, int> kv = Parse.From
+                .Json(@"{""Key"":""foo"", ""Value"":5}")
+                .ToObject<KeyValuePair<string, int>>();
+            Assert.AreEqual("foo", kv.Key);
+            Assert.AreEqual(5, kv.Value);
+        }
+
 
         private static T Clone<T>(T obj)
         {

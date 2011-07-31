@@ -13,6 +13,11 @@ namespace json.Objects
                 : null;
         }
 
+        protected override bool DetermineIfDeserializable()
+        {
+            return true;
+        }
+
         public override TypedObjectParseObject CreateObject()
         {
             return new TypedObjectConstructorOnlyObject(this);
