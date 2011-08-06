@@ -63,7 +63,7 @@ namespace json.Objects
             if (baseType == null)
                 return new TypedObjectObject();
 
-            TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(baseType);
+            TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(baseType);
             if (!typeDef.IsDeserializable)
                 return new TypedObjectObject();
 

@@ -17,7 +17,7 @@ namespace json.Objects
         public PropertyDefinition(PropertyInfo property)
         {
             Name = property.Name;
-            TypeDef = TypeDefinition.GetTypeDefinition(property.PropertyType);
+            TypeDef = CurrentTypeHandler.GetTypeDefinition(property.PropertyType);
             getter = property.GetGetMethod();
             setter = property.GetSetMethod();
 

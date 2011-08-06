@@ -14,8 +14,8 @@ namespace json.Objects
         public TypedObjectDictionary(TypeDefinition typeDef)
         {
             TypeDef = typeDef;
-            keyTypeDef = TypeDefinition.GetTypeDefinition(TypeDef.Type.GetGenericInterfaceType(typeof(IDictionary<,>), 0));
-            valueTypeDef = TypeDefinition.GetTypeDefinition(TypeDef.Type.GetGenericInterfaceType(typeof(IDictionary<,>), 1));
+            keyTypeDef = CurrentTypeHandler.GetTypeDefinition(TypeDef.Type.GetGenericInterfaceType(typeof(IDictionary<,>), 0));
+            valueTypeDef = CurrentTypeHandler.GetTypeDefinition(TypeDef.Type.GetGenericInterfaceType(typeof(IDictionary<,>), 1));
         }
 
         public void AddProperty(string name, object value)

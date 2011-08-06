@@ -17,7 +17,7 @@ namespace json.Objects
         {
             if (obj != null)
             {
-                TypeDef = TypeDefinition.GetTypeDefinition(obj.GetType());
+                TypeDef = CurrentTypeHandler.GetTypeDefinition(obj.GetType());
                 this.obj = obj;
             }
         }

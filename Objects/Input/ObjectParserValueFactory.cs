@@ -42,7 +42,7 @@
             public ParseObject CreateObject(object input)
             {
                 ParseObject obj = parser.ValueFactory.CreateObject();
-                obj.SetType(parser.GetTypeIdentifier(input.GetType()), parser);
+                obj.SetType(GetTypeIdentifier(input.GetType()), parser);
                 parser.objectReferences[input] = obj;
                 return obj;
             }

@@ -294,8 +294,11 @@ namespace json.Objects
         [Test]
         public void OverrideTypeHandler()
         {
-            string json = Parse.From.Object(new { foo = 5 }, new CustomObjectParsingOptions { SerializeAllTypes = true, TypeHandler = new CustomTypeHandler() }).ToTypedJson();
-            Assert.AreEqual(@"{""_type"":""foobar"",""foo"":5}", json);
+            using (CurrentTypeHandler.Override(new CustomTypeHandler()))
+            {
+                string json = Parse.From.Object(new { foo = 5 }, new CustomObjectParsingOptions { SerializeAllTypes = true }).ToTypedJson();
+                Assert.AreEqual(@"{""_type"":""foobar"",""foo"":5}", json);
+            }
         }
 
         private class CustomTypeHandler : TypeHandler
@@ -305,9 +308,14 @@ namespace json.Objects
                 return "foobar";
             }
 
+            public TypeDefinition GetTypeDefinition(string typeIdentifier)
+            {
+                return DefaultTypeHandler.Instance.GetTypeDefinition(typeIdentifier);
+            }
+
             public TypeDefinition GetTypeDefinition(Type type)
             {
-                throw new NotImplementedException();
+                return DefaultTypeHandler.Instance.GetTypeDefinition(type);
             }
         }
 

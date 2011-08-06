@@ -16,7 +16,7 @@ namespace json.Objects
 
         private static CollectionDefinition GetCollectionDefinition(Type collectionType)
         {
-            CollectionDefinition collectionDef = TypeDefinition.GetTypeDefinition(collectionType) as CollectionDefinition;
+            CollectionDefinition collectionDef = CurrentTypeHandler.GetTypeDefinition(collectionType) as CollectionDefinition;
             if (collectionDef == null)
                 throw new InvalidCollectionType(collectionType);
             return collectionDef;

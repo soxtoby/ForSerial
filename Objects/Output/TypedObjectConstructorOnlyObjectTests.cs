@@ -137,7 +137,7 @@ namespace json.Objects
 
         private static T Construct<T>(Action<TypedObjectConstructorOnlyObject> populate)
         {
-            var parseObject = new TypedObjectConstructorOnlyObject(TypeDefinition.GetTypeDefinition(typeof(T)));
+            var parseObject = new TypedObjectConstructorOnlyObject(CurrentTypeHandler.GetTypeDefinition(typeof(T)));
             populate(parseObject);
             object obj = parseObject.Object;
             Assert.IsInstanceOf<T>(obj);

@@ -27,7 +27,7 @@ namespace json.Objects
 
         public override bool SetType(string typeIdentifier, Parser parser)
         {
-            TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(typeIdentifier);
+            TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(typeIdentifier);
             bool useCurrentType = CurrentTypeIsNotCompatible(typeDef);
             if (useCurrentType)
                 typeDef = parseObject.TypeDef;

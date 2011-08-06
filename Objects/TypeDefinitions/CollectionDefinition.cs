@@ -12,7 +12,7 @@ namespace json.Objects
         private CollectionDefinition(Type collectionType, Type itemType, MethodInfo addMethod)
             : base(collectionType)
         {
-            ItemTypeDef = GetTypeDefinition(itemType);
+            ItemTypeDef = CurrentTypeHandler.GetTypeDefinition(itemType);
             adder = addMethod;
         }
 

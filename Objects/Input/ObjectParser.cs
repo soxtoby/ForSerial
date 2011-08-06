@@ -58,13 +58,13 @@ namespace json.Objects
         private ParseValue ParseObject(object input)
         {
             currentObject = input;
-            TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(input.GetType());
+            TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(input.GetType());
             return typeDef.ParseObject(input, new ObjectParserValueFactory(this));
         }
 
-        private string GetTypeIdentifier(Type type)
+        private static string GetTypeIdentifier(Type type)
         {
-            return options.TypeHandler.GetTypeIdentifier(type);
+            return CurrentTypeHandler.GetTypeIdentifier(type);
         }
 
         private ParseObject ReferenceObject(ParseObject parseObject)

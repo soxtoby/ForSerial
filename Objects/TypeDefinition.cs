@@ -7,18 +7,7 @@ namespace json.Objects
 {
     public abstract class TypeDefinition
     {
-        private static readonly Dictionary<string, TypeDefinition> KnownTypes = new Dictionary<string, TypeDefinition>();
         private static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
-        private static readonly List<Func<Type, TypeDefinition>> TypeDefinitionFactories = new List<Func<Type, TypeDefinition>>
-            {
-                // FIXME I'm not keen on this inter-dependency. Maybe move factories into another class.
-                DefaultTypeDefinition.CreateDefaultTypeDefinition,
-                CollectionDefinition.CreateCollectionDefinition,
-                DictionaryDefinition.CreateDictionaryDefinition,
-                ValueTypeDefinition.CreateValueTypeDefinition,
-                PrimitiveTypeDefinition.CreatePrimitiveTypeDefinition,
-                GuidDefinition.CreateGuidDefinition,
-            };
 
         private readonly TypeCode typeCode;
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
@@ -56,44 +45,7 @@ namespace json.Objects
             get { return Type.GetConstructor(new Type[] { }) != null; }
         }
 
-        public static TypeDefinition GetTypeDefinition(string assemblyQualifiedName)
-        {
-            return KnownTypes.ContainsKey(assemblyQualifiedName)
-                ? KnownTypes[assemblyQualifiedName]
-                : GetTypeDefinition(Type.GetType(assemblyQualifiedName));
-        }
-
-        public static TypeDefinition GetTypeDefinition(Type type)
-        {
-            if (type == null) return null;
-
-            if (!KnownTypes.ContainsKey(type.AssemblyQualifiedName))
-            {
-                // Since this is where we automatically create a TypeDefinition, 
-                // we need to register before we populate, in case the type contains itself.
-                TypeDefinition typeDef = CreateTypeDefinition(type);
-                RegisterTypeDefinition(typeDef);
-                typeDef.Populate();
-            }
-
-            return KnownTypes[type.AssemblyQualifiedName];
-        }
-
-        private static void RegisterTypeDefinition(TypeDefinition typeDef)
-        {
-            KnownTypes[typeDef.Type.AssemblyQualifiedName] = typeDef;
-        }
-
-        private static TypeDefinition CreateTypeDefinition(Type type)
-        {
-            TypeDefinition typeDef = null;
-            int i = TypeDefinitionFactories.Count;
-            while (typeDef == null && i >= 0)
-                typeDef = TypeDefinitionFactories[--i](type);
-            return typeDef;
-        }
-
-        private void Populate()
+        internal void Populate()
         {
             PopulateProperties();
             PopulatePreBuildMethods();
@@ -178,7 +130,7 @@ namespace json.Objects
         {
             if (value == null) return true;
 
-            TypeDefinition typeDef = GetTypeDefinition(value.GetType());
+            TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(value.GetType());
             return typeDef.IsSerializable && typeDef.IsDeserializable;
         }
 

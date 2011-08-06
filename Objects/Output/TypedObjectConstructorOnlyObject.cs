@@ -33,7 +33,7 @@ namespace json.Objects
 
         private object GetParameterPropertyValue(ParameterInfo parameter)
         {
-            TypeDefinition typeDef = TypeDefinition.GetTypeDefinition(parameter.ParameterType);
+            TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(parameter.ParameterType);
             return typeDef.ConvertToCorrectType(properties.Get(parameter.Name));
         }
 

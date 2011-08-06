@@ -8,13 +8,13 @@ namespace json.Objects
         [Test]
         public void StringIsSerializable()
         {
-            Assert.IsTrue(TypeDefinition.GetTypeDefinition(typeof(string)).IsSerializable);
+            Assert.IsTrue(CurrentTypeHandler.GetTypeDefinition(typeof(string)).IsSerializable);
         }
 
         [Test]
         public void StringIsDeserializable()
         {
-            Assert.IsTrue(TypeDefinition.GetTypeDefinition(typeof(string)).IsDeserializable);
+            Assert.IsTrue(CurrentTypeHandler.GetTypeDefinition(typeof(string)).IsDeserializable);
         }
     }
 }
