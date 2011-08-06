@@ -83,6 +83,8 @@
     <Compile Include="Json\Output\JsonStringObject.cs" />
     <Compile Include="Json\Output\JsonStringObjectReference.cs" />
     <Compile Include="Json\Output\JsonStringString.cs" />
+    <Compile Include="Objects\DefaultTypeHandler.cs" />
+    <Compile Include="Objects\ObjectParsingOptions.cs" />
     <Compile Include="Objects\Output\TypedObjectConstructorOnlyObjectTests.cs" />
     <Compile Include="Objects\Output\TypedObjectConstructorOnlyObject.cs" />
     <Compile Include="Objects\Output\TypedObjectParseObjectBase.cs" />
@@ -108,6 +110,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Objects\TypeDefinitions\ValueTypeDefinition.cs" />
+    <Compile Include="Objects\TypeHandler.cs" />
     <Compile Include="Output\NullParseValues.cs" />
     <Compile Include="Objects\Input\ObjectParser.cs" />
     <Compile Include="Objects\Input\ObjectParserTests.cs" />

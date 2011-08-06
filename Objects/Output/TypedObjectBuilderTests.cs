@@ -289,7 +289,7 @@ namespace json.Objects
         public void PropertyTypeMismatch()
         {
             string json = Parse.From
-                .Object(new { Property = new BooleanPropertyClass() }, ObjectParser.Options.SerializeAllTypes)
+                .Object(new { Property = new BooleanPropertyClass() }, new CustomObjectParsingOptions { SerializeAllTypes = true })
                 .ToTypedJson();
             Parse.From.Json(json).ToObject<InterfacePropertyClass>();
         }
@@ -429,7 +429,7 @@ namespace json.Objects
         {
             InterfacePropertyClass obj = Parse.From
                 .Object(new InterfacePropertyClass { Property = new InterfaceImplementation { Value = 5 } },
-                        ObjectParser.Options.SerializeAllTypes)
+                        new CustomObjectParsingOptions { SerializeAllTypes = true })
                 .ToObject<InterfacePropertyClass>();
 
             Assert.NotNull(obj.Property);
@@ -604,7 +604,7 @@ namespace json.Objects
 
         private static T Clone<T>(T obj)
         {
-            return Parse.From.Object(obj, ObjectParser.Options.SerializeAllTypes).ToObject<T>();
+            return Parse.From.Object(obj, new CustomObjectParsingOptions { SerializeAllTypes = true }).ToObject<T>();
         }
     }
 }

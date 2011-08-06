@@ -5,19 +5,19 @@ namespace json.Objects
 {
     public partial class ObjectParser : Parser
     {
-        private readonly Options options;
+        private readonly ObjectParsingOptions options;
         private object currentObject;
         private readonly Dictionary<object, ParseObject> objectReferences = new Dictionary<object, ParseObject>(new ReferenceEqualityComparer<object>());
 
-        private ObjectParser(ParseValueFactory valueFactory, Options options)
+        private ObjectParser(ParseValueFactory valueFactory, ObjectParsingOptions options)
             : base(valueFactory)
         {
             this.options = options;
         }
 
-        public static ParseValue Parse(object obj, ParseValueFactory valueFactory, Options options = Options.Default)
+        public static ParseValue Parse(object obj, ParseValueFactory valueFactory, ObjectParsingOptions options = null)
         {
-            ObjectParser parser = new ObjectParser(valueFactory, options);
+            ObjectParser parser = new ObjectParser(valueFactory, options ?? DefaultObjectParsingOptions.Instance);
 
             return parser.ParseValue(obj);
         }
@@ -62,9 +62,9 @@ namespace json.Objects
             return typeDef.ParseObject(input, new ObjectParserValueFactory(this));
         }
 
-        private static string GetTypeIdentifier(Type type)
+        private string GetTypeIdentifier(Type type)
         {
-            return type.AssemblyQualifiedName;
+            return options.TypeHandler.GetTypeIdentifier(type);
         }
 
         private ParseObject ReferenceObject(ParseObject parseObject)
@@ -77,17 +77,6 @@ namespace json.Objects
             public UnknownTypeCode(object obj)
                 : base("Type {0} has unknown TypeCode.".FormatWith(obj.GetType().FullName))
             { }
-        }
-
-        [Flags]
-        public enum Options
-        {
-            Default = 0,
-
-            /// <summary>
-            /// Allows serialization of types that cannot be deserialized.
-            /// </summary>
-            SerializeAllTypes = 1,
         }
     }
 }

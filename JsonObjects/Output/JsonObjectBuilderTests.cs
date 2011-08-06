@@ -9,14 +9,16 @@ namespace json.JsonObjects
         [Test]
         public void MaintainSingleReference()
         {
-            JsonObject jsonObject = Parse.From.Object(new SameReferenceTwice(new { foo = 5 }), ObjectParser.Options.SerializeAllTypes).ToJsonObject();
+            JsonObject jsonObject = Parse.From.Object(new SameReferenceTwice(new { foo = 5 }), new CustomObjectParsingOptions { SerializeAllTypes = true }).ToJsonObject();
             Assert.AreSame(jsonObject["One"], jsonObject["Two"]);
         }
 
         [Test]
         public void MaintainTwoReferences()
         {
-            JsonObject jsonObject = Parse.From.Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 }), ObjectParser.Options.SerializeAllTypes).ToJsonObject();
+            JsonObject jsonObject = Parse.From
+                .Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 }), new CustomObjectParsingOptions { SerializeAllTypes = true })
+                .ToJsonObject();
             Assert.AreSame(jsonObject["One"], jsonObject["Three"]);
             Assert.AreSame(jsonObject["Two"], jsonObject["Four"]);
         }

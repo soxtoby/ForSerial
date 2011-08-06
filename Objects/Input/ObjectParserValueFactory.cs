@@ -13,7 +13,7 @@
 
             public bool SerializeAllTypes
             {
-                get { return (parser.options & Options.SerializeAllTypes) != 0; }
+                get { return parser.options.SerializeAllTypes; }
             }
 
             public ParseValue Parse(object input)
@@ -42,7 +42,7 @@
             public ParseObject CreateObject(object input)
             {
                 ParseObject obj = parser.ValueFactory.CreateObject();
-                obj.SetType(GetTypeIdentifier(input.GetType()), parser);
+                obj.SetType(parser.GetTypeIdentifier(input.GetType()), parser);
                 parser.objectReferences[input] = obj;
                 return obj;
             }

@@ -107,7 +107,7 @@ namespace json.Objects
         public void ParseSubObject()
         {
             ParseSubObjectValueFactory valueFactory = new ParseSubObjectValueFactory();
-            Parse.From.Object(new { foo = new { bar = "baz" } }, ObjectParser.Options.SerializeAllTypes).WithBuilder(valueFactory);
+            Parse.From.Object(new { foo = new { bar = "baz" } }, new CustomObjectParsingOptions { SerializeAllTypes = true }).WithBuilder(valueFactory);
 
             Assert.AreEqual(@"{""bar"":""baz""}", valueFactory.SubObjectJson);
         }
@@ -175,7 +175,7 @@ namespace json.Objects
         public void CreatePropertyObject()
         {
             var valueFactory = new CustomCreateValueFactory();
-            Parse.From.Object(new { foo = new object() }, ObjectParser.Options.SerializeAllTypes).WithBuilder(valueFactory);
+            Parse.From.Object(new { foo = new object() }, new CustomObjectParsingOptions { SerializeAllTypes = true }).WithBuilder(valueFactory);
 
             Assert.AreEqual(1, valueFactory.ObjectsCreatedFromProperties);
         }
@@ -184,7 +184,7 @@ namespace json.Objects
         public void CreatePropertyArray()
         {
             var valueFactory = new CustomCreateValueFactory();
-            Parse.From.Object(new { foo = new object[] { } }, ObjectParser.Options.SerializeAllTypes).WithBuilder(valueFactory);
+            Parse.From.Object(new { foo = new object[] { } }, new CustomObjectParsingOptions { SerializeAllTypes = true }).WithBuilder(valueFactory);
 
             Assert.AreEqual(1, valueFactory.ArraysCreatedFromProperties);
         }
@@ -291,10 +291,74 @@ namespace json.Objects
             public static int StaticProperty { get; set; }
         }
 
+        [Test]
+        public void OverrideTypeHandler()
+        {
+            string json = Parse.From.Object(new { foo = 5 }, new CustomObjectParsingOptions { SerializeAllTypes = true, TypeHandler = new CustomTypeHandler() }).ToTypedJson();
+            Assert.AreEqual(@"{""_type"":""foobar"",""foo"":5}", json);
+        }
+
+        private class CustomTypeHandler : TypeHandler
+        {
+            public string GetTypeIdentifier(Type type)
+            {
+                return "foobar";
+            }
+
+            public TypeDefinition GetTypeDefinition(Type type)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        [Test]
+        public void InterfacePropertyTypeSerialized()
+        {
+            string json = Parse.From
+                .Object(new InterfacePropertyClass { Property = new ConcreteClass { Value = 1 } })
+                .ToTypedJson();
+        }
+
+        [Test]
+        public void UnnecessaryTypesNotSerialized()
+        {
+
+        }
+
+        private class InterfacePropertyClass
+        {
+            public Interface Property { get; set; }
+        }
+
+        private class AbstractTypePropertyClass
+        {
+            public AbstractClass Property { get; set; }
+        }
+
+        private class ConcreteTypePropertyClass
+        {
+            public ConcreteClass Property { get; set; }
+        }
+
+        private interface Interface
+        {
+            int Value { get; set; }
+        }
+
+        private abstract class AbstractClass : Interface
+        {
+            public abstract int Value { get; set; }
+        }
+
+        private class ConcreteClass : AbstractClass
+        {
+            public override int Value { get; set; }
+        }
+
 
         private static string ParseToJson(object obj, bool serializeAllTypes = true)
         {
-            ObjectParser.Options options = serializeAllTypes ? ObjectParser.Options.SerializeAllTypes : ObjectParser.Options.Default;
+            var options = new CustomObjectParsingOptions { SerializeAllTypes = serializeAllTypes };
             return Parse.From.Object(obj, options).ToJson();
         }
     }
