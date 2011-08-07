@@ -19,21 +19,25 @@ namespace json.Objects
                 get { return parser.options.SerializeAllTypes; }
             }
 
-            public ParseValue Parse(object input)
+            public void ParseProperty(object source, PropertyDefinition property, ParseObject target)
             {
-                return parser.ParseValue(input);
+                bool serializeTypeIdentifier = !property.TypeDef.IsSerializable || property.ForceTypeIdentifierSerialization;
+                ParseProperty(target, property.Name, property.GetFrom(source), serializeTypeIdentifier);
             }
 
-            public void ParseProperty(ParseObject owner, string propertyName, TypeDefinition propertyTypeDef, object propertyValue)
+            public void ParseProperty(TypeDefinition propertyTypeDef, string propertyName, object propertyValue, ParseObject target)
             {
-                bool serializeType = !propertyTypeDef.IsSerializable;
-                using (parser.UseObjectPropertyContext(owner, propertyName))
+                bool serializeTypeIdentifier = !propertyTypeDef.IsSerializable;
+                ParseProperty(target, propertyName, propertyValue, serializeTypeIdentifier);
+            }
+
+            private void ParseProperty(ParseObject target, string propertyName, object propertyValue, bool serializeTypeIdentifier)
+            {
+                using (parser.UseObjectPropertyContext(target, propertyName))
+                using (parser.parserValueFactory.OverrideState(new ObjectParserValueFactory(parser, serializeTypeIdentifier)))
                 {
-                    using (parser.parserValueFactory.OverrideState(new ObjectParserValueFactory(parser, serializeType)))
-                    {
-                        ParseValue value = Parse(propertyValue);
-                        value.AddToObject(owner, propertyName);
-                    }
+                    ParseValue value = parser.ParseValue(propertyValue);
+                    value.AddToObject(target, propertyName);
                 }
             }
 

@@ -3,8 +3,8 @@ namespace json.Objects
     public interface ParserValueFactory : ParseValueFactory
     {
         bool SerializeAllTypes { get; }
-        ParseValue Parse(object input);
-        void ParseProperty(ParseObject owner, string propertyName, TypeDefinition propertyTypeDef, object propertyValue);
+        void ParseProperty(object source, PropertyDefinition property, ParseObject target);
+        void ParseProperty(TypeDefinition propertyTypeDef, string propertyName, object propertyValue, ParseObject target);
         void ParseArrayItem(ParseArray array, object item);
 
         /// <summary>

@@ -25,6 +25,7 @@ namespace json.Objects
                 DefaultTypeDefinition.CreateDefaultTypeDefinition,
                 CollectionDefinition.CreateCollectionDefinition,
                 DictionaryDefinition.CreateDictionaryDefinition,
+                JsonDictionaryDefinition.CreateDictionaryDefinition,
                 ValueTypeDefinition.CreateValueTypeDefinition,
                 PrimitiveTypeDefinition.CreatePrimitiveTypeDefinition,
                 GuidDefinition.CreateGuidDefinition,

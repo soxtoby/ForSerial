@@ -17,9 +17,9 @@ namespace json.Objects
         {
             ParseObject output = valueFactory.CreateObject(input);
 
-            foreach (KeyValuePair<PropertyDefinition, object> propertyValue in GetSerializableProperties(input, valueFactory.SerializeAllTypes))
+            foreach (KeyValuePair<PropertyDefinition, object> property in GetSerializableProperties(input, valueFactory.SerializeAllTypes))
             {
-                valueFactory.ParseProperty(output, propertyValue.Key.Name, propertyValue.Key.TypeDef, propertyValue.Value);
+                valueFactory.ParseProperty(input, property.Key, output);
             }
 
             return output;
@@ -33,9 +33,14 @@ namespace json.Objects
         private IEnumerable<KeyValuePair<PropertyDefinition, object>> GetSerializableProperties(object obj, bool serializeAllTypes)
         {
             return Properties.Values
-                .Where(p => serializeAllTypes || p.IsSerializable)
+                .Where(p => serializeAllTypes || ShouldSerializeProperty(p))
                 .Select(p => new KeyValuePair<PropertyDefinition, object>(p, p.GetFrom(obj)))
                 .Where(p => serializeAllTypes || ValueIsSerializable(p.Value));
+        }
+
+        protected virtual bool ShouldSerializeProperty(PropertyDefinition property)
+        {
+            return property.IsSerializable;
         }
     }
 }

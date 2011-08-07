@@ -5,21 +5,21 @@ namespace json.Objects
 {
     internal class TypedObjectTypedArray : ParseArrayBase, TypedObjectArray
     {
-        private readonly CollectionDefinition collectionDef;
+        private readonly JsonArrayDefinition jsonArrayDef;
         private readonly IEnumerable typedArray;
 
         public TypedObjectTypedArray(Type collectionType)
         {
-            collectionDef = GetCollectionDefinition(collectionType);
+            jsonArrayDef = GetCollectionDefinition(collectionType);
             typedArray = (IEnumerable)Activator.CreateInstance(collectionType);
         }
 
-        private static CollectionDefinition GetCollectionDefinition(Type collectionType)
+        private static JsonArrayDefinition GetCollectionDefinition(Type collectionType)
         {
-            CollectionDefinition collectionDef = CurrentTypeHandler.GetTypeDefinition(collectionType) as CollectionDefinition;
-            if (collectionDef == null)
+            JsonArrayDefinition jsonArrayDef = CurrentTypeHandler.GetTypeDefinition(collectionType) as CollectionDefinition;
+            if (jsonArrayDef == null)
                 throw new InvalidCollectionType(collectionType);
-            return collectionDef;
+            return jsonArrayDef;
         }
 
         public IEnumerable GetTypedArray()
@@ -29,7 +29,7 @@ namespace json.Objects
 
         public void PopulateCollection(object collection)
         {
-            PopulateCollection(collectionDef, typedArray, () => collection);
+            PopulateCollection(jsonArrayDef, typedArray, () => collection);
         }
 
         public override ParseObject AsObject()
@@ -39,28 +39,28 @@ namespace json.Objects
 
         public void AddItem(object item)
         {
-            collectionDef.AddToCollection(typedArray, item);
+            jsonArrayDef.AddToCollection(typedArray, item);
         }
 
         public override ParseValue CreateValue(ParseValueFactory valueFactory, object value)
         {
-            return collectionDef.ItemTypeDef.CreateValue(valueFactory, value);
+            return jsonArrayDef.ItemTypeDef.CreateValue(valueFactory, value);
         }
 
         public override ParseObject CreateObject(ParseValueFactory valueFactory)
         {
-            return new TypedObjectObject(collectionDef.ItemTypeDef);
+            return new TypedObjectObject(jsonArrayDef.ItemTypeDef);
         }
 
         public override ParseArray CreateArray(ParseValueFactory valueFactory)
         {
-            return new TypedObjectTypedArray(collectionDef.ItemTypeDef.Type);
+            return new TypedObjectTypedArray(jsonArrayDef.ItemTypeDef.Type);
         }
 
         private static IEnumerable PopulateCollection(TypeDefinition collectionType, IEnumerable items, Func<object> getCollection)
         {
-            CollectionDefinition collectionDef = collectionType as CollectionDefinition;
-            if (collectionDef == null) return null;
+            JsonArrayDefinition jsonArrayDef = collectionType as CollectionDefinition;
+            if (jsonArrayDef == null) return null;
 
             IEnumerable collection = getCollection() as IEnumerable;
 
@@ -68,8 +68,8 @@ namespace json.Objects
             {
                 foreach (object item in items)
                 {
-                    object itemToAdd = TypeInnerCollection(collectionDef.ItemTypeDef, item);
-                    collectionDef.AddToCollection(collection, itemToAdd);
+                    object itemToAdd = TypeInnerCollection(jsonArrayDef.ItemTypeDef, item);
+                    jsonArrayDef.AddToCollection(collection, itemToAdd);
                 }
             }
 

@@ -5,15 +5,15 @@ using System.Globalization;
 
 namespace json.Objects
 {
-    public class DictionaryDefinition : TypeDefinition
+    public class JsonDictionaryDefinition : TypeDefinition
     {
-        private DictionaryDefinition(Type dictionaryType) : base(dictionaryType) { }
+        private JsonDictionaryDefinition(Type dictionaryType) : base(dictionaryType) { }
 
-        internal static DictionaryDefinition CreateDictionaryDefinition(Type type)
+        internal static JsonDictionaryDefinition CreateDictionaryDefinition(Type type)
         {
             Type keyType = type.GetGenericInterfaceType(typeof(IDictionary<,>));
             return IsJsonCompatibleKeyType(keyType)
-                ? new DictionaryDefinition(type)
+                ? new JsonDictionaryDefinition(type)
                 : null;
         }
 
@@ -24,7 +24,7 @@ namespace json.Objects
                 || typeCodeType == TypeCodeType.Number;
         }
 
-        public override bool PropertyCanBeSerialized(PropertyDefinition property)
+        public override bool PropertyOfThisTypeShouldBeSerialized(PropertyDefinition property)
         {
             return property.CanGet;
         }
@@ -46,7 +46,7 @@ namespace json.Objects
                 string name = Convert.ToString(key, CultureInfo.InvariantCulture);
                 object value = dictionary[key];
 
-                valueFactory.ParseProperty(output, name, valueTypeDef, value);
+                valueFactory.ParseProperty(valueTypeDef, name, value, output);
             }
 
             return output;

@@ -7,6 +7,7 @@ namespace json.Objects
         public string Name { get; private set; }
         public TypeDefinition TypeDef { get; private set; }
         public bool IsSerializable { get; private set; }
+        public bool ForceTypeIdentifierSerialization { get; private set; }
 
         private readonly MethodInfo getter;
         private readonly MethodInfo setter;
@@ -20,8 +21,9 @@ namespace json.Objects
             TypeDef = CurrentTypeHandler.GetTypeDefinition(property.PropertyType);
             getter = property.GetGetMethod();
             setter = property.GetSetMethod();
+            ForceTypeIdentifierSerialization = property.HasAttribute<SerializeTypeAttribute>();
 
-            IsSerializable = TypeDef.PropertyCanBeSerialized(this);
+            IsSerializable = TypeDef.PropertyOfThisTypeShouldBeSerialized(this);
         }
 
         public object GetFrom(object obj)

@@ -296,7 +296,7 @@ namespace json.Objects
         {
             using (CurrentTypeHandler.Override(new CustomTypeHandler()))
             {
-                string json = Parse.From.Object(new { foo = 5 }, new ObjectParsingOptions{ SerializeAllTypes = true }).ToTypedJson();
+                string json = Parse.From.Object(new { foo = 5 }, new ObjectParsingOptions { SerializeAllTypes = true }).ToTypedJson();
                 Assert.AreEqual(@"{""_type"":""foobar"",""foo"":5}", json);
             }
         }
@@ -340,6 +340,66 @@ namespace json.Objects
             Assert.AreEqual(@"{""_type"":""ConcreteTypePropertyClass"",""Property"":{""Value"":3}}", json);
         }
 
+        [Test]
+        public void MarkedKnownTypePropertyTypeSerialized()
+        {
+            string json = ParseToSimpleTypeJson(new MarkedConcreteTypePropertyClass { Property = new ConcreteClass { Value = 4 } });
+            Assert.AreEqual(@"{""_type"":""MarkedConcreteTypePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":4}}", json);
+        }
+
+        [Test]
+        public void KnownTypeEnumerablePropertyTypeNotSerialized()
+        {
+            string json = ParseToSimpleTypeJson(new ConcreteTypeEnumerablePropertyClass { Property = new List<ConcreteClass> { new ConcreteClass { Value = 5 } } });
+            Assert.AreEqual(@"{""_type"":""ConcreteTypeEnumerablePropertyClass"",""Property"":[{""Value"":5}]}", json);
+        }
+
+        [Test]
+        public void MarkedKnownTypeEnumerablePropertyTypeSerialized()
+        {
+            string json = ParseToSimpleTypeJson(new MarkedConcreteTypeEnumerablePropertyClass { Property = new List<ConcreteClass> { new ConcreteClass { Value = 6 } } });
+            Assert.AreEqual(@"{""_type"":""MarkedConcreteTypeEnumerablePropertyClass"",""Property"":[{""_type"":""ConcreteClass"",""Value"":6}]}", json);
+        }
+
+        [Test]
+        public void KnownTypeDictionaryTypeNotSerialized()
+        {
+            string json = ParseToSimpleTypeJson(new ConcreteTypeDictionaryPropertyClass
+            {
+                Property = new Dictionary<ConcreteClass, ConcreteClass>
+                        {
+                            { new ConcreteClass { Value = 7 }, new ConcreteClass { Value = 8 } }
+                        }
+            });
+            Assert.AreEqual(@"{""_type"":""ConcreteTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""Value"":7},""Value"":{""Value"":8}}]}", json);
+        }
+
+        //[Test]
+        public void MarkedKnownTypeKeyDictionaryTypeSerialized()
+        {
+            string json = ParseToSimpleTypeJson(new MarkedConcreteKeyTypeDictionaryPropertyClass
+            {
+                Property = new Dictionary<ConcreteClass, ConcreteClass>
+                        {
+                            { new ConcreteClass { Value = 9 }, new ConcreteClass { Value = 10 } }
+                        }
+            });
+            Assert.AreEqual(@"{""_type"":""MarkedConcreteKeyTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""_type"":""ConcreteClass"",""Value"":9},""Value"":{""Value"":10}}]}", json);
+        }
+
+        //[Test]
+        public void MarkedKnownTypeValueDictionaryTypeSerialized()
+        {
+            string json = ParseToSimpleTypeJson(new MarkedConcreteValueTypeDictionaryPropertyClass
+                {
+                    Property = new Dictionary<ConcreteClass, ConcreteClass>
+                        {
+                            { new ConcreteClass { Value = 11 }, new ConcreteClass { Value = 12 } }
+                        }
+                });
+            Assert.AreEqual(@"{""_type"":""MarkedConcreteValueTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""Value"":11},""Value"":{""_type"":""ConcreteClass"",""Value"":12}}]}", json);
+        }
+
         private static string ParseToSimpleTypeJson(object obj)
         {
             using (CurrentTypeHandler.Override(new SimpleTypeNameTypeHandler()))
@@ -379,6 +439,40 @@ namespace json.Objects
         private class ConcreteTypePropertyClass
         {
             public ConcreteClass Property { get; set; }
+        }
+
+        private class MarkedConcreteTypePropertyClass
+        {
+            [SerializeType]
+            public ConcreteClass Property { get; set; }
+        }
+
+        private class ConcreteTypeEnumerablePropertyClass
+        {
+            public List<ConcreteClass> Property { get; set; }
+        }
+
+        private class MarkedConcreteTypeEnumerablePropertyClass
+        {
+            [SerializeType]
+            public List<ConcreteClass> Property { get; set; }
+        }
+
+        private class ConcreteTypeDictionaryPropertyClass
+        {
+            public Dictionary<ConcreteClass, ConcreteClass> Property { get; set; }
+        }
+
+        private class MarkedConcreteKeyTypeDictionaryPropertyClass
+        {
+            [SerializeKeyType]
+            public Dictionary<ConcreteClass, ConcreteClass> Property { get; set; }
+        }
+
+        private class MarkedConcreteValueTypeDictionaryPropertyClass
+        {
+            [SerializeValueType]
+            public Dictionary<ConcreteClass, ConcreteClass> Property { get; set; }
         }
 
         private interface Interface

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 
 namespace json.Objects
 {
-    internal static class TypeHelper
+    internal static class ReflectionHelper
     {
         public static Type GetGenericInterfaceType(this Type derivedType, Type genericType, int typeIndex = 0)
         {
@@ -51,6 +52,11 @@ namespace json.Objects
         public static bool CanBeCastTo(this Type type, Type castTo)
         {
             return castTo.IsAssignableFrom(type);
+        }
+
+        public static bool HasAttribute<T>(this MemberInfo member)
+        {
+            return member.GetCustomAttributes(typeof(T), true).Any();
         }
     }
 

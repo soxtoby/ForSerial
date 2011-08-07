@@ -88,7 +88,10 @@
     <Compile Include="Objects\Output\TypedObjectConstructorOnlyObjectTests.cs" />
     <Compile Include="Objects\Output\TypedObjectConstructorOnlyObject.cs" />
     <Compile Include="Objects\Output\TypedObjectParseObjectBase.cs" />
+    <Compile Include="Objects\SerializeTypeAttribute.cs" />
     <Compile Include="Objects\TypeDefinitions\DictionaryDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\JsonArrayDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\JsonDictionaryDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\EnumerableDefinition.cs" />
     <Compile Include="Objects\Input\ObjectParserValueFactory.cs" />
     <Compile Include="Objects\Input\ParserValueFactory.cs" />
@@ -118,7 +121,7 @@
     <Compile Include="Objects\Output\TypedObjectBuilderTests.cs" />
     <Compile Include="Objects\ReferenceEqualityComparer.cs" />
     <Compile Include="Objects\TypeDefinitionTests.cs" />
-    <Compile Include="Objects\TypeHelper.cs" />
+    <Compile Include="Objects\ReflectionHelper.cs" />
     <Compile Include="Output\ArrayValueFactory.cs" />
     <Compile Include="Output\ContextValueFactory.cs" />
     <Compile Include="Output\ParseArray.cs" />

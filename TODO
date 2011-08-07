@@ -3,3 +3,4 @@ Make PartiallyTypedJsonStringBuilder that only adds type information when necess
  - Should automatically add type info when source is interface or abstract
  - Add attribute that forces type information.
 Allow override of type resolution.
+Test duplicate value types - will probably incorrectly create references at the moment.

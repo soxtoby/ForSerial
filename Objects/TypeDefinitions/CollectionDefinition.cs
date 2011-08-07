@@ -4,15 +4,13 @@ using System.Reflection;
 
 namespace json.Objects
 {
-    public class CollectionDefinition : EnumerableDefinition
+    public class CollectionDefinition : JsonArrayDefinition
     {
-        public TypeDefinition ItemTypeDef { get; private set; }
         private readonly MethodInfo adder;
 
-        private CollectionDefinition(Type collectionType, Type itemType, MethodInfo addMethod)
-            : base(collectionType)
+        protected CollectionDefinition(Type collectionType, Type itemType, MethodInfo addMethod)
+            : base(collectionType, itemType)
         {
-            ItemTypeDef = CurrentTypeHandler.GetTypeDefinition(itemType);
             adder = addMethod;
         }
 
@@ -30,16 +28,10 @@ namespace json.Objects
             return CreateEnumerableDefinition(type);
         }
 
-        public void AddToCollection(object collection, object value)
+        public override void AddToCollection(object collection, object item)
         {
             if (adder != null)
-                adder.Invoke(collection, new[] { ItemTypeDef.ConvertToCorrectType(value) });
-        }
-
-        public override bool PropertyCanBeSerialized(PropertyDefinition property)
-        {
-            // Collections can be populated in-place
-            return property.CanGet;
+                adder.Invoke(collection, new[] { ItemTypeDef.ConvertToCorrectType(item) });
         }
     }
 }

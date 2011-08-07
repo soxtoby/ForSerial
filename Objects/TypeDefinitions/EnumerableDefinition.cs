@@ -14,7 +14,7 @@ namespace json.Objects
                 : null;
         }
 
-        public override bool PropertyCanBeSerialized(PropertyDefinition property)
+        public override bool PropertyOfThisTypeShouldBeSerialized(PropertyDefinition property)
         {
             // No way to deserialize a plain IEnumerable
             return false;

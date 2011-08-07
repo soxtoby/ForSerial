@@ -93,7 +93,7 @@ namespace json.Objects
                 : obj;
         }
 
-        public virtual bool PropertyCanBeSerialized(PropertyDefinition property)
+        public virtual bool PropertyOfThisTypeShouldBeSerialized(PropertyDefinition property)
         {
             return property.CanGet && property.CanSet;
         }
