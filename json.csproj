@@ -149,6 +149,7 @@
     <Compile Include="Json\Input\Token.cs" />
     <Compile Include="Json\Input\TokenReader.cs" />
     <Compile Include="Output\TestParseValues.cs" />
+    <Compile Include="StateStack.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

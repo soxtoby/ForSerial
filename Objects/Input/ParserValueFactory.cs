@@ -4,7 +4,7 @@ namespace json.Objects
     {
         bool SerializeAllTypes { get; }
         ParseValue Parse(object input);
-        void ParseProperty(ParseObject owner, string propertyName, object propertyValue);
+        void ParseProperty(ParseObject owner, string propertyName, TypeDefinition propertyTypeDef, object propertyValue);
         void ParseArrayItem(ParseArray array, object item);
 
         /// <summary>

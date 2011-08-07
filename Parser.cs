@@ -1,37 +1,26 @@
 using System;
-using System.Collections.Generic;
 
 namespace json
 {
     public abstract class Parser
     {
-        private readonly ParseValueFactory baseValueFactory;
-        private readonly Stack<ParseValueFactory> contextValueFactories = new Stack<ParseValueFactory>();
-        protected ParseValueFactory ValueFactory { get { return contextValueFactories.Peek(); } }
+        protected readonly StateStack<ParseValueFactory> valueFactory;
 
         protected Parser(ParseValueFactory baseValueFactory)
         {
-            this.baseValueFactory = baseValueFactory;
-            contextValueFactories.Push(baseValueFactory);
+            valueFactory = new StateStack<ParseValueFactory>(baseValueFactory);
         }
 
         public abstract ParseObject ParseSubObject(ParseValueFactory subParseValueFactory);
 
-        protected void UsingObjectPropertyContext(ParseObject propertyOwner, string propertyName, Action action)
+        protected IDisposable UseObjectPropertyContext(ParseObject propertyOwner, string propertyName)
         {
-            UsingValueFactoryContext(new PropertyValueFactory(baseValueFactory, propertyOwner, propertyName), action);
+            return valueFactory.OverrideState(new PropertyValueFactory(valueFactory.Base, propertyOwner, propertyName));
         }
 
-        protected void UsingArrayContext(ParseArray array, Action action)
+        protected IDisposable UseArrayContext(ParseArray array)
         {
-            UsingValueFactoryContext(new ArrayValueFactory(baseValueFactory, array), action);
-        }
-
-        protected void UsingValueFactoryContext(ParseValueFactory contextValueFactory, Action action)
-        {
-            contextValueFactories.Push(contextValueFactory);
-            action();
-            contextValueFactories.Pop();
+            return valueFactory.OverrideState(new ArrayValueFactory(valueFactory.Base, array));
         }
     }
 }

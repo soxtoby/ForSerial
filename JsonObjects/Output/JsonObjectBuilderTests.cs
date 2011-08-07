@@ -9,7 +9,7 @@ namespace json.JsonObjects
         [Test]
         public void MaintainSingleReference()
         {
-            JsonObject jsonObject = Parse.From.Object(new SameReferenceTwice(new { foo = 5 }), new CustomObjectParsingOptions { SerializeAllTypes = true }).ToJsonObject();
+            JsonObject jsonObject = Parse.From.Object(new SameReferenceTwice(new { foo = 5 }), new ObjectParsingOptions { SerializeAllTypes = true }).ToJsonObject();
             Assert.AreSame(jsonObject["One"], jsonObject["Two"]);
         }
 
@@ -17,7 +17,7 @@ namespace json.JsonObjects
         public void MaintainTwoReferences()
         {
             JsonObject jsonObject = Parse.From
-                .Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 }), new CustomObjectParsingOptions { SerializeAllTypes = true })
+                .Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 }), new ObjectParsingOptions { SerializeAllTypes = true })
                 .ToJsonObject();
             Assert.AreSame(jsonObject["One"], jsonObject["Three"]);
             Assert.AreSame(jsonObject["Two"], jsonObject["Four"]);

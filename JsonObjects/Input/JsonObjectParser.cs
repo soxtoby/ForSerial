@@ -27,7 +27,7 @@ namespace json.JsonObjects
         private ParseValue ParseValue(object input)
         {
             if (input == null)
-                return ValueFactory.CreateValue(null);
+                return valueFactory.Current.CreateValue(null);
 
             switch (input.GetType().GetTypeCodeType())
             {
@@ -44,7 +44,7 @@ namespace json.JsonObjects
                 case TypeCodeType.Boolean:
                 case TypeCodeType.String:
                 case TypeCodeType.Number:
-                    return ValueFactory.CreateValue(input);
+                    return valueFactory.Current.CreateValue(input);
 
                 default:
                     throw new UnknownTypeCode(input);
@@ -63,19 +63,19 @@ namespace json.JsonObjects
         {
             currentObject = obj;
 
-            ParseObject parseObject = objectReferences[obj] = ValueFactory.CreateObject();
+            ParseObject parseObject = objectReferences[obj] = valueFactory.Current.CreateObject();
 
             foreach (var property in obj)
             {
                 string name = property.Key;
                 object value = property.Value;
-                UsingObjectPropertyContext(parseObject, name, () =>
-                    {
-                        if (name == TypeKey)
-                            parseObject.SetType((string)obj[TypeKey], this);
-                        else
-                            ParseValue(value).AddToObject(parseObject, name);
-                    });
+                using (UseObjectPropertyContext(parseObject, name))
+                {
+                    if (name == TypeKey)
+                        parseObject.SetType((string)obj[TypeKey], this);
+                    else
+                        ParseValue(value).AddToObject(parseObject, name);
+                }
             }
 
             return parseObject;
@@ -83,18 +83,18 @@ namespace json.JsonObjects
 
         private ParseObject ReferenceObject(ParseObject existingReference)
         {
-            return ValueFactory.CreateReference(existingReference);
+            return valueFactory.Current.CreateReference(existingReference);
         }
 
         private ParseArray ParseArray(IEnumerable enumerable)
         {
-            ParseArray array = ValueFactory.CreateArray();
+            ParseArray array = valueFactory.Current.CreateArray();
 
-            UsingArrayContext(array, () =>
-                {
-                    foreach (object item in enumerable)
-                        ParseValue(item).AddToArray(array);
-                });
+            using (UseArrayContext(array))
+            {
+                foreach (object item in enumerable)
+                    ParseValue(item).AddToArray(array);
+            }
 
             return array;
         }

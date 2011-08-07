@@ -7,17 +7,19 @@ namespace json.Objects
     {
         private readonly ObjectParsingOptions options;
         private object currentObject;
+        private readonly StateStack<ParserValueFactory> parserValueFactory;
         private readonly Dictionary<object, ParseObject> objectReferences = new Dictionary<object, ParseObject>(new ReferenceEqualityComparer<object>());
 
         private ObjectParser(ParseValueFactory valueFactory, ObjectParsingOptions options)
             : base(valueFactory)
         {
             this.options = options;
+            parserValueFactory = new StateStack<ParserValueFactory>(new ObjectParserValueFactory(this));
         }
 
         public static ParseValue Parse(object obj, ParseValueFactory valueFactory, ObjectParsingOptions options = null)
         {
-            ObjectParser parser = new ObjectParser(valueFactory, options ?? DefaultObjectParsingOptions.Instance);
+            ObjectParser parser = new ObjectParser(valueFactory, options ?? new ObjectParsingOptions());
 
             return parser.ParseValue(obj);
         }
@@ -30,14 +32,14 @@ namespace json.Objects
         private ParseValue ParseValue(object input)
         {
             if (input == null)
-                return ValueFactory.CreateValue(null);
+                return valueFactory.Current.CreateValue(null);
 
             Type inputType = input.GetType();
 
             ParseValue output = null;
 
             if (IsValueType(inputType))
-                output = ValueFactory.CreateValue(input);
+                output = valueFactory.Current.CreateValue(input);
 
             if (output == null)
             {
@@ -59,24 +61,12 @@ namespace json.Objects
         {
             currentObject = input;
             TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(input.GetType());
-            return typeDef.ParseObject(input, new ObjectParserValueFactory(this));
-        }
-
-        private static string GetTypeIdentifier(Type type)
-        {
-            return CurrentTypeHandler.GetTypeIdentifier(type);
+            return typeDef.ParseObject(input, parserValueFactory.Current);
         }
 
         private ParseObject ReferenceObject(ParseObject parseObject)
         {
-            return ValueFactory.CreateReference(parseObject);
-        }
-
-        internal class UnknownTypeCode : Exception
-        {
-            public UnknownTypeCode(object obj)
-                : base("Type {0} has unknown TypeCode.".FormatWith(obj.GetType().FullName))
-            { }
+            return valueFactory.Current.CreateReference(parseObject);
         }
     }
 }

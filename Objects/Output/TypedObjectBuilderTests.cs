@@ -285,11 +285,11 @@ namespace json.Objects
         }
 
         [Test]
-        [ExpectedException(typeof(TypedObjectRegularObject.PropertyTypeMismatch))]
+        [ExpectedException(typeof(TypedObjectParseObjectBase.PropertyTypeMismatch))]
         public void PropertyTypeMismatch()
         {
             string json = Parse.From
-                .Object(new { Property = new BooleanPropertyClass() }, new CustomObjectParsingOptions { SerializeAllTypes = true })
+                .Object(new { Property = new BooleanPropertyClass() }, new ObjectParsingOptions { SerializeAllTypes = true, SerializeAllTypeInformation = true})
                 .ToTypedJson();
             Parse.From.Json(json).ToObject<InterfacePropertyClass>();
         }
@@ -429,7 +429,7 @@ namespace json.Objects
         {
             InterfacePropertyClass obj = Parse.From
                 .Object(new InterfacePropertyClass { Property = new InterfaceImplementation { Value = 5 } },
-                        new CustomObjectParsingOptions { SerializeAllTypes = true })
+                        new ObjectParsingOptions { SerializeAllTypes = true })
                 .ToObject<InterfacePropertyClass>();
 
             Assert.NotNull(obj.Property);
@@ -604,7 +604,7 @@ namespace json.Objects
 
         private static T Clone<T>(T obj)
         {
-            return Parse.From.Object(obj, new CustomObjectParsingOptions { SerializeAllTypes = true }).ToObject<T>();
+            return Parse.From.Object(obj, new ObjectParsingOptions { SerializeAllTypes = true }).ToObject<T>();
         }
     }
 }

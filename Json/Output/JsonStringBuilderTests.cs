@@ -37,7 +37,7 @@ namespace json.Json
         [Test]
         public void MaintainSingleReference()
         {
-            string json = Parse.From.Object(new SameReferenceTwice(new { foo = 5 }), new CustomObjectParsingOptions { SerializeAllTypes = true })
+            string json = Parse.From.Object(new SameReferenceTwice(new { foo = 5 }), new ObjectParsingOptions { SerializeAllTypes = true })
                 .ToJson(JsonStringBuilder.Options.MaintainObjectReferences);
             Assert.AreEqual(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}", json);
         }
@@ -45,7 +45,7 @@ namespace json.Json
         [Test]
         public void MaintainTwoReferences()
         {
-            string json = Parse.From.Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 }), new CustomObjectParsingOptions { SerializeAllTypes = true })
+            string json = Parse.From.Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 }), new ObjectParsingOptions { SerializeAllTypes = true })
                 .ToJson(JsonStringBuilder.Options.MaintainObjectReferences);
             Assert.AreEqual(@"{""One"":{""foo"":5},""Two"":{""bar"":6},""Three"":{""_ref"":1},""Four"":{""_ref"":2}}", json);
         }

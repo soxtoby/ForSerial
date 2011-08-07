@@ -71,15 +71,15 @@ namespace json.Json
                     {
                         case "true":
                             NextToken();
-                            return ValueFactory.CreateValue(true);
+                            return valueFactory.Current.CreateValue(true);
 
                         case "false":
                             NextToken();
-                            return ValueFactory.CreateValue(false);
+                            return valueFactory.Current.CreateValue(false);
 
                         case "null":
                             NextToken();
-                            return ValueFactory.CreateValue(null);
+                            return valueFactory.Current.CreateValue(null);
 
                         default:
                             throw new ParseException("Expected value.", CurrentToken);
@@ -106,7 +106,7 @@ namespace json.Json
             if (CurrentToken.TokenType != TokenType.Numeric)
                 throw new ParseException("Expected number.", CurrentToken);
 
-            ParseValue number = ValueFactory.CreateValue(CurrentToken.NumericValue);
+            ParseValue number = valueFactory.Current.CreateValue(CurrentToken.NumericValue);
             NextToken();
             return number;
         }
@@ -116,7 +116,7 @@ namespace json.Json
             if (CurrentToken.TokenType != TokenType.String)
                 throw new ParseException("Expected string.", CurrentToken);
 
-            ParseValue str = ValueFactory.CreateValue(CurrentToken.StringValue);
+            ParseValue str = valueFactory.Current.CreateValue(CurrentToken.StringValue);
             NextToken();
             return str;
         }
@@ -129,7 +129,7 @@ namespace json.Json
 
             if (IsSymbol("}"))
             {
-                obj = ValueFactory.CreateObject();
+                obj = valueFactory.Current.CreateObject();
             }
             else
             {
@@ -201,7 +201,7 @@ namespace json.Json
                     return;
                 }
 
-                ParseObject = parser.ValueFactory.CreateObject();
+                ParseObject = parser.valueFactory.Current.CreateObject();
 
                 if (name == "_type")
                 {
@@ -243,16 +243,15 @@ namespace json.Json
 
             public override void ParsePropertyValue(string name)
             {
-                parser.UsingObjectPropertyContext(ParseObject, name,
-                    () => parser.ParseValue().AddToObject(ParseObject, name)
-                );
+                using (parser.UseObjectPropertyContext(ParseObject, name))
+                    parser.ParseValue().AddToObject(ParseObject, name);
             }
         }
 
         private ParseObject ReferenceObject()
         {
             int referenceId = Convert.ToInt32(GetNumber());
-            return ValueFactory.CreateReference(objectReferences[referenceId]);
+            return valueFactory.Current.CreateReference(objectReferences[referenceId]);
         }
 
         private bool SetObjectType(ParseObject obj)
@@ -289,17 +288,17 @@ namespace json.Json
         {
             ExpectSymbol("[");
 
-            ParseArray array = ValueFactory.CreateArray();
+            ParseArray array = valueFactory.Current.CreateArray();
 
             if (!IsSymbol("]"))
             {
-                UsingArrayContext(array, () =>
+                using (UseArrayContext(array))
                 {
                     do
                     {
                         ParseValue().AddToArray(array);
                     } while (MoveNextIfSymbol(","));
-                });
+                }
             }
 
             ExpectSymbol("]");

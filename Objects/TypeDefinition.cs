@@ -28,15 +28,13 @@ namespace json.Objects
 
         private bool DetermineIfSerializable()
         {
-            return Type.IsSerializable
-                || HasDefaultConstructor;
+            return !Type.IsAbstract
+                && (Type.IsSerializable || HasDefaultConstructor);
         }
 
         protected virtual bool DetermineIfDeserializable()
         {
-            return Type.IsPrimitive
-                || Type == typeof(string)   // Strings are objects
-                || !Type.IsAbstract
+            return !Type.IsAbstract
                     && HasDefaultConstructor;
         }
 
@@ -118,15 +116,7 @@ namespace json.Objects
 
         public abstract ParseValue ParseObject(object input, ParserValueFactory valueFactory);
 
-        protected IEnumerable<KeyValuePair<string, object>> GetSerializableProperties(object obj, bool serializeAllTypes)
-        {
-            return Properties.Values
-                .Where(p => serializeAllTypes || p.IsSerializable)
-                .Select(p => new KeyValuePair<string, object>(p.Name, p.GetFrom(obj)))
-                .Where(p => serializeAllTypes || ValueIsSerializable(p.Value));
-        }
-
-        private static bool ValueIsSerializable(object value)
+        protected static bool ValueIsSerializable(object value)
         {
             if (value == null) return true;
 

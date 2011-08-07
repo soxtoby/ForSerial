@@ -36,6 +36,9 @@ namespace json.Objects
 
             ParseObject output = valueFactory.CreateObject(input);
 
+            Type valueType = Type.GetGenericInterfaceType(typeof(IDictionary<,>), 1);
+            TypeDefinition valueTypeDef = CurrentTypeHandler.GetTypeDefinition(valueType);
+
             foreach (object key in dictionary.Keys)
             {
                 // Convert.ToString is in case the keys are numbers, which are represented
@@ -43,7 +46,7 @@ namespace json.Objects
                 string name = Convert.ToString(key, CultureInfo.InvariantCulture);
                 object value = dictionary[key];
 
-                valueFactory.ParseProperty(output, name, value);
+                valueFactory.ParseProperty(output, name, valueTypeDef, value);
             }
 
             return output;
