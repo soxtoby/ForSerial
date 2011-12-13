@@ -80,6 +80,12 @@ namespace json.Objects
             Assert.AreEqual(5, Clone(new ObjectPropertyClass { Object = new IntPropertyClass { Integer = 5 } }).Object.Integer);
         }
 
+        [Test]
+        public void NullProperty()
+        {
+            Assert.IsNull(Clone(new ObjectPropertyClass()).Object);
+        }
+
         private class ObjectPropertyClass
         {
             public IntPropertyClass Object { get; set; }
@@ -289,7 +295,7 @@ namespace json.Objects
         public void PropertyTypeMismatch()
         {
             string json = Parse.From
-                .Object(new { Property = new BooleanPropertyClass() }, new ObjectParsingOptions { SerializeAllTypes = true, SerializeAllTypeInformation = true})
+                .Object(new { Property = new BooleanPropertyClass() }, new ObjectParsingOptions { SerializeAllTypes = true, SerializeAllTypeInformation = true })
                 .ToTypedJson();
             Parse.From.Json(json).ToObject<InterfacePropertyClass>();
         }
