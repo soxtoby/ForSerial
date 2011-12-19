@@ -126,6 +126,7 @@ namespace json.Objects
 
         public virtual ParseValue CreateValue(ParseValueFactory valueFactory, object value)
         {
+            if (value == null) return TypedObjectNull.Value;
             throw new NotAValue(Type);
         }
 
