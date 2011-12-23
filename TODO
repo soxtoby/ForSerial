@@ -1,6 +1,6 @@
-Investigate deserializing value types and anonymous types. http://stackoverflow.com/questions/1650681
 Make PartiallyTypedJsonStringBuilder that only adds type information when necessary.
  - Should automatically add type info when source is interface or abstract
  - Add attribute that forces type information.
 Allow override of type resolution.
 Test duplicate value types - will probably incorrectly create references at the moment.
+Generate and cache DynamicMethods for getting and setting properties. http://www.codeproject.com/KB/cs/Dynamic_Code_Generation.aspx

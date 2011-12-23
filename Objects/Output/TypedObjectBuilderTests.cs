@@ -607,6 +607,13 @@ namespace json.Objects
             Assert.AreEqual(5, kv.Value);
         }
 
+        [Test]
+        public void ParseAnonymousObject()
+        {
+            var obj = new { Property = 5 };
+            var result = Clone(obj);
+            Assert.AreEqual(5, result.Property);
+        }
 
         private static T Clone<T>(T obj)
         {
