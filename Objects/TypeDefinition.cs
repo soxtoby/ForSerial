@@ -14,28 +14,34 @@ namespace json.Objects
 
         public Type Type { get; private set; }
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
-        public bool IsSerializable { get; private set; }
-        public bool IsDeserializable { get; private set; }
 
         protected TypeDefinition(Type type)
         {
             Type = type;
             Properties = new Dictionary<string, PropertyDefinition>();
-            IsSerializable = DetermineIfSerializable();
-            IsDeserializable = DetermineIfDeserializable();
             typeCode = Type.GetTypeCode(type);
         }
 
-        private bool DetermineIfSerializable()
+        private bool? isSerializable;
+        public virtual bool IsSerializable
         {
-            return !Type.IsAbstract
-                && (Type.IsSerializable || HasDefaultConstructor);
+            get
+            {
+                return isSerializable ?? (bool)(isSerializable =
+                    !Type.IsAbstract
+                    && (Type.IsSerializable || HasDefaultConstructor));
+            }
         }
 
-        protected virtual bool DetermineIfDeserializable()
+        private bool? isDeserializable;
+        public virtual bool IsDeserializable
         {
-            return !Type.IsAbstract
-                    && HasDefaultConstructor;
+            get
+            {
+                return isDeserializable ?? (bool)(isDeserializable =
+                    !Type.IsAbstract
+                    && HasDefaultConstructor);
+            }
         }
 
         private bool HasDefaultConstructor

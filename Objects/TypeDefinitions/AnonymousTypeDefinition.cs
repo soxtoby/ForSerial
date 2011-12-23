@@ -28,9 +28,9 @@ namespace json.Objects
             return type.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Length > 0;
         }
 
-        protected override bool DetermineIfDeserializable()
+        public override bool IsDeserializable
         {
-            return true;
+            get { return true; }
         }
 
         public override TypedObjectParseObject CreateObject()

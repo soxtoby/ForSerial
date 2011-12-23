@@ -19,9 +19,9 @@ namespace json.Objects
                 || type == typeof(string);  // string is considered a primitive for purposes of JSON serialization
         }
 
-        protected override bool DetermineIfDeserializable()
+        public override bool IsDeserializable
         {
-            return true;
+            get { return true; }
         }
 
         public override ParseValue ParseObject(object input, ParserValueFactory valueFactory)
