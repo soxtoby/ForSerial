@@ -13,11 +13,5 @@ namespace json.Objects
         }
 
         public abstract void AddToCollection(object collection, object item);
-
-        public override bool PropertyOfThisTypeShouldBeSerialized(PropertyDefinition property)
-        {
-            // Collections can be populated in-place
-            return property.CanGet;
-        }
     }
 }

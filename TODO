@@ -4,3 +4,21 @@ Make PartiallyTypedJsonStringBuilder that only adds type information when necess
 Allow override of type resolution.
 Test duplicate value types - will probably incorrectly create references at the moment.
 Generate and cache DynamicMethods for getting and setting properties. http://www.codeproject.com/KB/cs/Dynamic_Code_Generation.aspx
+
+New Serialization Rules:
+ - Defaults
+   - Serialize public properties with getters
+   - Deserialize public properties with setters or where type can deserialize into existing object
+ - Serializable attribute with flags for
+   - Serialize properties
+   - Serialize fields
+   - Serialize publics
+   - Serialize privates
+   - Serialize when can't be deserialized
+ - Other attributes:
+   - Deserialization constructor function - takes in dictionary of property values
+   - Deserialization constructor - parameters automatically resolved
+   - Serialize property/field - enum for serialization/deserialization only
+   - Do not serialize property/field
+   - Custom property/field serialization/deserialization
+   - Custom property name - separate serialize/deserialize (and allow multiple names to deserialize from)?

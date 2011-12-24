@@ -33,14 +33,9 @@ namespace json.Objects
         private IEnumerable<KeyValuePair<PropertyDefinition, object>> GetSerializableProperties(object obj, bool serializeAllTypes)
         {
             return Properties.Values
-                .Where(p => serializeAllTypes || ShouldSerializeProperty(p))
+                .Where(p => p.CanGet)
                 .Select(p => new KeyValuePair<PropertyDefinition, object>(p, p.GetFrom(obj)))
                 .Where(p => serializeAllTypes || ValueIsSerializable(p.Value));
-        }
-
-        protected virtual bool ShouldSerializeProperty(PropertyDefinition property)
-        {
-            return property.IsSerializable;
         }
     }
 }

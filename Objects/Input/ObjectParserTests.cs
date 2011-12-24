@@ -232,20 +232,6 @@ namespace json.Objects
         }
 
         [Test]
-        public void UnserializablePropertyIsNotGotten()
-        {
-            Assert.AreEqual("{}", ParseToJson(new PropertyThrowsOnGet(), false));
-        }
-
-        private class PropertyThrowsOnGet
-        {
-            public int Property
-            {
-                get { throw new InvalidOperationException(); }
-            }
-        }
-
-        [Test]
         public void ParseGuid()
         {
             Guid guid = new Guid("{ceac23f4-9a28-4dc5-856a-1411511a0a88}");

@@ -24,11 +24,6 @@ namespace json.Objects
                 || typeCodeType == TypeCodeType.Number;
         }
 
-        public override bool PropertyOfThisTypeShouldBeSerialized(PropertyDefinition property)
-        {
-            return property.CanGet;
-        }
-
         public override ParseValue ParseObject(object input, ParserValueFactory valueFactory)
         {
             IDictionary dictionary = input as IDictionary;

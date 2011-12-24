@@ -38,11 +38,6 @@ namespace json.Objects
             return new TypedObjectConstructorOnlyObject(this);
         }
 
-        protected override bool ShouldSerializeProperty(PropertyDefinition property)
-        {
-            return true;
-        }
-
         public override ParseValue CreateValue(ParseValueFactory valueFactory, object value)
         {
             return value.GetType() == Type

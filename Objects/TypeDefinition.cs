@@ -99,11 +99,6 @@ namespace json.Objects
                 : obj;
         }
 
-        public virtual bool PropertyOfThisTypeShouldBeSerialized(PropertyDefinition property)
-        {
-            return property.CanGet && property.CanSet;
-        }
-
         public static void IgnorePropertiesMarkedWithAttribute(Type attributeType)
         {
             if (!attributeType.CanBeCastTo(typeof(Attribute)))
@@ -127,7 +122,7 @@ namespace json.Objects
             if (value == null) return true;
 
             TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(value.GetType());
-            return typeDef.IsSerializable && typeDef.IsDeserializable;
+            return typeDef.IsSerializable;
         }
 
         public virtual ParseValue CreateValue(ParseValueFactory valueFactory, object value)
