@@ -44,6 +44,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -54,16 +55,13 @@
     <ConsolePause>false</ConsolePause>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>packages\NUnit.2.5.10.11092\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.mocks">
-      <HintPath>packages\NUnit.2.5.10.11092\lib\nunit.mocks.dll</HintPath>
-    </Reference>
-    <Reference Include="pnunit.framework">
-      <HintPath>packages\NUnit.2.5.10.11092\lib\pnunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -71,10 +69,8 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GeneralExtensions.cs" />
     <Compile Include="JsonObjects\Input\JsonObjectParser.cs" />
-    <Compile Include="JsonObjects\Input\JsonObjectParserTests.cs" />
     <Compile Include="JsonObjects\JsonObject.cs" />
     <Compile Include="JsonObjects\Output\JsonObjectBuilder.cs" />
-    <Compile Include="JsonObjects\Output\JsonObjectBuilderTests.cs" />
     <Compile Include="JsonObjects\PreDeserializeAttribute.cs" />
     <Compile Include="Json\Output\JsonStringArray.cs" />
     <Compile Include="Json\Output\JsonStringBoolean.cs" />
@@ -85,7 +81,6 @@
     <Compile Include="Json\Output\JsonStringString.cs" />
     <Compile Include="Objects\DefaultTypeHandler.cs" />
     <Compile Include="Objects\ObjectParsingOptions.cs" />
-    <Compile Include="Objects\Output\TypedObjectConstructorOnlyObjectTests.cs" />
     <Compile Include="Objects\Output\TypedObjectConstructorOnlyObject.cs" />
     <Compile Include="Objects\Output\TypedObjectParseObjectBase.cs" />
     <Compile Include="Objects\SerializeTypeAttribute.cs" />
@@ -117,11 +112,8 @@
     <Compile Include="Objects\TypeHandler.cs" />
     <Compile Include="Output\NullParseValues.cs" />
     <Compile Include="Objects\Input\ObjectParser.cs" />
-    <Compile Include="Objects\Input\ObjectParserTests.cs" />
     <Compile Include="Objects\Output\TypedObjectBuilder.cs" />
-    <Compile Include="Objects\Output\TypedObjectBuilderTests.cs" />
     <Compile Include="Objects\ReferenceEqualityComparer.cs" />
-    <Compile Include="Objects\TypeDefinitionTests.cs" />
     <Compile Include="Objects\ReflectionHelper.cs" />
     <Compile Include="Output\ArrayValueFactory.cs" />
     <Compile Include="Output\ContextValueFactory.cs" />
@@ -143,16 +135,12 @@
     <Compile Include="Objects\PropertyDefinition.cs" />
     <Compile Include="Objects\TypeDefinition.cs" />
     <Compile Include="Json\Input\JsonParser.cs" />
-    <Compile Include="Json\Input\JsonParserTests.cs" />
     <Compile Include="Json\Output\JsonStringBuilder.cs" />
-    <Compile Include="Json\Output\JsonStringBuilderTests.cs" />
     <Compile Include="Json\Input\ParseException.cs" />
     <Compile Include="Json\PreDeserializeJsonAttribute.cs" />
     <Compile Include="Json\Input\Scanner.cs" />
-    <Compile Include="Json\Input\ScannerTests.cs" />
     <Compile Include="Json\Input\Token.cs" />
     <Compile Include="Json\Input\TokenReader.cs" />
-    <Compile Include="Output\TestParseValues.cs" />
     <Compile Include="StateStack.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -173,9 +161,4 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="TODO" />
-  </ItemGroup>
-  <ItemGroup />
 </Project>

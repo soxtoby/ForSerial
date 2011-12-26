@@ -19,7 +19,7 @@ namespace json.Objects
             Type itemType = type.GetGenericInterfaceType(typeof(ICollection<>));
             if (itemType != null)
             {
-                var addMethod = type.GetMethod("Add", new[] { itemType });
+                MethodInfo addMethod = type.GetMethod("Add", new[] { itemType });
                 if (addMethod != null)
                 {
                     return new CollectionDefinition(type, itemType, addMethod);
