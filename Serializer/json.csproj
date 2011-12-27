@@ -82,7 +82,10 @@
     <Compile Include="Objects\DefaultTypeHandler.cs" />
     <Compile Include="Objects\ObjectParsingOptions.cs" />
     <Compile Include="Objects\Output\TypedObjectConstructorOnlyObject.cs" />
+    <Compile Include="Objects\Output\TypedObjectEnumerable.cs" />
     <Compile Include="Objects\Output\TypedObjectParseObjectBase.cs" />
+    <Compile Include="Objects\Output\TypedObjectPrimitive.cs" />
+    <Compile Include="Objects\Output\TypedObjectValue.cs" />
     <Compile Include="Objects\SerializeTypeAttribute.cs" />
     <Compile Include="Objects\TypeDefinitions\AnonymousTypeDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\DictionaryDefinition.cs" />

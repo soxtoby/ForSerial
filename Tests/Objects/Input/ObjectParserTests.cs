@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using json.Json;
 using NUnit.Framework;
 
@@ -101,6 +102,15 @@ namespace json.Objects
         public void MixedArray()
         {
             Assert.AreEqual("{\"foo\":[1,\"two\",{},[]]}", ParseToJson(new { foo = new object[] { 1, "two", new { }, new object[] { } } }));
+        }
+
+        [Test]
+        public void IEnumerable()
+        {
+            string json = Parse.From
+                .Object(new { Property = Enumerable.Range(0, 3) })
+                .ToJson();
+            Assert.AreEqual(@"{""Property"":[0,1,2]}", json);
         }
 
         [Test]

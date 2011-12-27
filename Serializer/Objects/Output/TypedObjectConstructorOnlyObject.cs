@@ -71,19 +71,9 @@ namespace json.Objects
             return parameter.ParameterType.IsByRef;
         }
 
-        public override void AddProperty(string name, object value)
+        public override void AddProperty(string name, TypedObjectValue value)
         {
-            properties[name] = value;
-        }
-
-        public override void AddObject(string name, TypedObjectObject value)
-        {
-            properties[name] = value.Object;
-        }
-
-        public override void AddArray(string name, TypedObjectArray array)
-        {
-            properties[name] = array.GetTypedArray();
+            properties[name] = value.GetTypedValue();
         }
 
         internal class NoMatchingConstructor : Exception

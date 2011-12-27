@@ -33,5 +33,10 @@ namespace json.Objects
             if (adder != null)
                 adder.Invoke(collection, new[] { ItemTypeDef.ConvertToCorrectType(item) });
         }
+
+        public override TypedObjectArray CreateArray()
+        {
+            return new TypedObjectTypedArray(this);
+        }
     }
 }

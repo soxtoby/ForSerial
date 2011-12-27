@@ -615,6 +615,20 @@ namespace json.Objects
             Assert.AreEqual(5, result.Property);
         }
 
+        [Test]
+        public void ParseToIEnumerable()
+        {
+            EnumerablePropertyClass obj = Parse.From
+                .Json(@"{""Property"":[0,1,2]}")
+                .ToObject<EnumerablePropertyClass>();
+            CollectionAssert.AreEqual(new[] { 0, 1, 2 }, obj.Property);
+        }
+
+        private class EnumerablePropertyClass
+        {
+            public IEnumerable<int> Property { get; set; }
+        }
+
         private static T Clone<T>(T obj)
         {
             return Parse.From.Object(obj, new ObjectParsingOptions { SerializeAllTypes = true }).ToObject<T>();

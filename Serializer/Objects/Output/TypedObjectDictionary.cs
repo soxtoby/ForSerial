@@ -18,21 +18,9 @@ namespace json.Objects
             valueTypeDef = CurrentTypeHandler.GetTypeDefinition(TypeDef.Type.GetGenericInterfaceType(typeof(IDictionary<,>), 1));
         }
 
-        public void AddProperty(string name, object value)
+        public void AddProperty(string name, TypedObjectValue value)
         {
-            dictionary[name] = value;
-        }
-
-        public void AddObject(string name, TypedObjectObject value)
-        {
-            TypedObjectObject objectValue = TypedObjectObject.GetObjectAsTypedObjectObject(value);
-            dictionary[name] = objectValue.Object;
-        }
-
-        public void AddArray(string name, TypedObjectArray value)
-        {
-            TypedObjectArray arrayValue = value.GetArrayAsTypedObjectArray();
-            dictionary[name] = arrayValue.GetTypedArray();
+            dictionary[name] = value.GetTypedValue();
         }
 
         public ParseValue CreateValue(string name, ParseValueFactory valueFactory, object value)
@@ -47,7 +35,7 @@ namespace json.Objects
 
         public ParseArray CreateArray(string name, ParseValueFactory valueFactory)
         {
-            return new TypedObjectTypedArray(valueTypeDef.Type);
+            return valueTypeDef.CreateArray();
         }
 
         public void AssignToProperty(object owner, PropertyDefinition property)

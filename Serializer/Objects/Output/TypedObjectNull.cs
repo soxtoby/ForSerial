@@ -17,7 +17,7 @@
 
         public override void AddToObject(ParseObject obj, string name)
         {
-            ((TypedObjectObject)obj).AddProperty(name, null);
+            ((TypedObjectObject)obj).AddProperty(name, new TypedObjectPrimitive(null));
         }
 
         public override void AddToArray(ParseArray array)

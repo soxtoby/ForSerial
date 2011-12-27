@@ -136,6 +136,11 @@ namespace json.Objects
             throw new NotAnObject(Type);
         }
 
+        public virtual TypedObjectArray CreateArray()
+        {
+            throw new NotAnArray(Type);
+        }
+
         private class NotAValue : Exception
         {
             public NotAValue(Type type) : base("Cannot create value for type {0}.".FormatWith(type.FullName)) { }
@@ -144,6 +149,11 @@ namespace json.Objects
         private class NotAnObject : Exception
         {
             public NotAnObject(Type type) : base("Cannot create object for type {0}".FormatWith(type.FullName)) { }
+        }
+
+        protected class NotAnArray : Exception
+        {
+            public NotAnArray(Type type) : base("Cannot create array for type {0}".FormatWith(type.FullName)) { }
         }
     }
 }

@@ -77,7 +77,7 @@ namespace json.Objects
             if (baseType == null)
                 throw new UnknownRootArrayType();
 
-            var array = new TypedObjectTypedArray(baseType);
+            TypedObjectArray array = CurrentTypeHandler.GetTypeDefinition(baseType).CreateArray();
             baseType = null;    // Only needed for first object
             return array;
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 
 namespace json.Objects
 {
@@ -21,8 +22,13 @@ namespace json.Objects
         {
         }
 
-        public void PopulateCollection(object collection)
+        public void AssignToProperty(object obj, PropertyDefinition property)
         {
+        }
+
+        public object GetTypedValue()
+        {
+            return Enumerable.Empty<object>();
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace json.Objects
 {
-    public class TypedObjectObject : ParseObjectBase
+    public class TypedObjectObject : ParseObjectBase, TypedObjectValue
     {
         private TypedObjectParseObject parseObject;
 
@@ -63,22 +63,10 @@ namespace json.Objects
             return regularObject;
         }
 
-        public void AddProperty(string name, object value)
+        public void AddProperty(string name, TypedObjectValue value)
         {
             AssertObjectInitialized();
             parseObject.AddProperty(name, value);
-        }
-
-        public void AddObject(string name, TypedObjectObject value)
-        {
-            AssertObjectInitialized();
-            parseObject.AddObject(name, value);
-        }
-
-        public void AddArray(string name, TypedObjectArray array)
-        {
-            AssertObjectInitialized();
-            parseObject.AddArray(name, array);
         }
 
         public override ParseValue CreateValue(string name, ParseValueFactory valueFactory, object value)
@@ -110,6 +98,11 @@ namespace json.Objects
             parseObject.AssignToProperty(owner, property);
         }
 
+        public object GetTypedValue()
+        {
+            return Object;
+        }
+
         internal static TypedObjectObject GetObjectAsTypedObjectObject(ParseObject value)
         {
             TypedObjectObject objectValue = value as TypedObjectObject;
@@ -132,7 +125,7 @@ namespace json.Objects
 
         public override void AddToObject(ParseObject obj, string name)
         {
-            ((TypedObjectObject)obj).AddObject(name, this);
+            ((TypedObjectObject)obj).AddProperty(name, this);
         }
 
         public override void AddToArray(ParseArray array)

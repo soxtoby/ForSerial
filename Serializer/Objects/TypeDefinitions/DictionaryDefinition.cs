@@ -36,5 +36,10 @@ namespace json.Objects
 
             ((IDictionary)collection).Add(key, value);
         }
+
+        public override TypedObjectArray CreateArray()
+        {
+            throw new NotAnArray(Type);
+        }
     }
 }

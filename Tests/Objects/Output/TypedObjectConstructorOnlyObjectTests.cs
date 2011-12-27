@@ -10,7 +10,7 @@ namespace json.Objects
         public void SingleMatchingParameter()
         {
             var value = Construct<SingleMatchingParamStruct>(parseObject =>
-                parseObject.AddProperty("Value", 5));
+                parseObject.AddProperty("Value", new TypedObjectPrimitive(5)));
             Assert.AreEqual(5, value.Value);
         }
 
@@ -18,7 +18,7 @@ namespace json.Objects
         public void MatchDifferentNumberTypes()
         {
             var value = Construct<SingleMatchingParamStruct>(parseObject =>
-                parseObject.AddProperty("Value", 5d));
+                parseObject.AddProperty("Value", new TypedObjectPrimitive(5d)));
             Assert.AreEqual(5, value.Value);
         }
 
@@ -27,7 +27,7 @@ namespace json.Objects
         public void SingleParameterNameMismatch()
         {
             Construct<SingleMatchingParamStruct>(parseObject =>
-                parseObject.AddProperty("foo", 5));
+                parseObject.AddProperty("foo", new TypedObjectPrimitive(5)));
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace json.Objects
         public void SingleParameterTypeMismatch()
         {
             Construct<SingleMatchingParamStruct>(parseObject =>
-                parseObject.AddProperty("Value", "foo"));
+                parseObject.AddProperty("Value", new TypedObjectPrimitive("foo")));
         }
 
         private struct SingleMatchingParamStruct
@@ -54,8 +54,8 @@ namespace json.Objects
         {
             var value = Construct<TwoMatchingParameterStruct>(parseObject =>
                 {
-                    parseObject.AddProperty("IntValue", 4);
-                    parseObject.AddProperty("StringValue", "foo");
+                    parseObject.AddProperty("IntValue", new TypedObjectPrimitive(4));
+                    parseObject.AddProperty("StringValue", new TypedObjectPrimitive("foo"));
                 });
 
             Assert.AreEqual(4, value.IntValue);
@@ -79,7 +79,7 @@ namespace json.Objects
         public void SingleMatchingGenericParameter()
         {
             var value = Construct<SingleGenericParamStruct<int>>(parseObject =>
-                parseObject.AddProperty("Value", 5));
+                parseObject.AddProperty("Value", new TypedObjectPrimitive(5)));
 
             Assert.AreEqual(5, value.Value);
         }
@@ -89,7 +89,7 @@ namespace json.Objects
         public void SingleGenericParameterTypeMismatch()
         {
             var value = Construct<SingleGenericParamStruct<int>>(parseObject =>
-                parseObject.AddProperty("Value", "foo"));
+                parseObject.AddProperty("Value", new TypedObjectPrimitive("foo")));
 
             Assert.AreEqual("foo", value.Value);
         }
@@ -109,7 +109,7 @@ namespace json.Objects
         public void SingleBaseClassParameter()
         {
             var value = Construct<SingleBaseClassParamStruct>(parseObject =>
-                parseObject.AddProperty("property", new SubClass { BaseProperty = 5 }));
+                parseObject.AddProperty("property", new TypedObjectPrimitive(new SubClass { BaseProperty = 5 })));
 
             Assert.AreEqual(5, value.Property.BaseProperty);
         }

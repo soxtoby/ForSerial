@@ -2,11 +2,10 @@
 
 namespace json.Objects
 {
-    public interface TypedObjectArray : ParseArray
+    public interface TypedObjectArray : ParseArray, TypedObjectValue
     {
-        IEnumerable GetTypedArray();
+        IEnumerable GetTypedArray(); // TODO replace with GetTypedValue
         void AddItem(object item);
-        void PopulateCollection(object collection);
     }
 
     internal static class TypedObjectArrayExtensions

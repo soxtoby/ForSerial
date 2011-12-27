@@ -5,21 +5,13 @@ namespace json.Objects
 {
     internal class TypedObjectTypedArray : ParseArrayBase, TypedObjectArray
     {
-        private readonly JsonArrayDefinition jsonArrayDef;
+        private readonly CollectionDefinition collectionDef;
         private readonly IEnumerable typedArray;
 
-        public TypedObjectTypedArray(Type collectionType)
+        public TypedObjectTypedArray(CollectionDefinition collectionDefinition)
         {
-            jsonArrayDef = GetCollectionDefinition(collectionType);
-            typedArray = (IEnumerable)Activator.CreateInstance(collectionType);
-        }
-
-        private static JsonArrayDefinition GetCollectionDefinition(Type collectionType)
-        {
-            JsonArrayDefinition jsonArrayDef = CurrentTypeHandler.GetTypeDefinition(collectionType) as CollectionDefinition;
-            if (jsonArrayDef == null)
-                throw new InvalidCollectionType(collectionType);
-            return jsonArrayDef;
+            this.collectionDef = collectionDefinition;
+            typedArray = (IEnumerable)Activator.CreateInstance(collectionDefinition.Type);
         }
 
         public IEnumerable GetTypedArray()
@@ -27,9 +19,22 @@ namespace json.Objects
             return typedArray;
         }
 
-        public void PopulateCollection(object collection)
+        private void PopulateCollection(object collection)
         {
-            PopulateCollection(jsonArrayDef, typedArray, () => collection);
+            PopulateCollection(collectionDef, typedArray, () => collection);
+        }
+
+        public void AssignToProperty(object obj, PropertyDefinition property)
+        {
+            if (property.CanSet)
+                property.SetOn(obj, GetTypedArray());
+            else if (property.CanGet)
+                PopulateCollection(property.GetFrom(obj));
+        }
+
+        public object GetTypedValue()
+        {
+            return GetTypedArray();
         }
 
         public override ParseObject AsObject()
@@ -39,22 +44,22 @@ namespace json.Objects
 
         public void AddItem(object item)
         {
-            jsonArrayDef.AddToCollection(typedArray, item);
+            collectionDef.AddToCollection(typedArray, item);
         }
 
         public override ParseValue CreateValue(ParseValueFactory valueFactory, object value)
         {
-            return jsonArrayDef.ItemTypeDef.CreateValue(valueFactory, value);
+            return collectionDef.ItemTypeDef.CreateValue(valueFactory, value);
         }
 
         public override ParseObject CreateObject(ParseValueFactory valueFactory)
         {
-            return new TypedObjectObject(jsonArrayDef.ItemTypeDef);
+            return new TypedObjectObject(collectionDef.ItemTypeDef);
         }
 
         public override ParseArray CreateArray(ParseValueFactory valueFactory)
         {
-            return new TypedObjectTypedArray(jsonArrayDef.ItemTypeDef.Type);
+            return collectionDef.ItemTypeDef.CreateArray();
         }
 
         private static IEnumerable PopulateCollection(TypeDefinition collectionType, IEnumerable items, Func<object> getCollection)
@@ -90,7 +95,7 @@ namespace json.Objects
 
         public override void AddToObject(ParseObject obj, string name)
         {
-            ((TypedObjectObject)obj).AddArray(name, this);
+            ((TypedObjectObject)obj).AddProperty(name, this);
         }
 
         public override void AddToArray(ParseArray array)

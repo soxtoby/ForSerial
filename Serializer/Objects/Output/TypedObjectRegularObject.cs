@@ -22,42 +22,11 @@ namespace json.Objects
             }
         }
 
-        public override void AddObject(string name, TypedObjectObject value)
-        {
-            TypedObjectObject objectValue = TypedObjectObject.GetObjectAsTypedObjectObject(value);
-
-            PropertyDefinition property = TypeDef.Properties.Get(name);
-            if (property != null)
-                objectValue.AssignToProperty(Object, property);
-        }
-
-        public override void AddArray(string name, TypedObjectArray array)
+        public override void AddProperty(string name, TypedObjectValue value)
         {
             PropertyDefinition property = TypeDef.Properties.Get(name);
             if (property != null)
-            {
-                if (property.CanSet)
-                    SetArrayProperty(property, array);
-                else if (property.CanGet)
-                    PopulateArrayProperty(property, array);
-            }
-        }
-
-        private void SetArrayProperty(PropertyDefinition property, TypedObjectArray array)
-        {
-            property.SetOn(Object, array.GetTypedArray());
-        }
-
-        private void PopulateArrayProperty(PropertyDefinition property, TypedObjectArray array)
-        {
-            array.PopulateCollection(property.GetFrom(Object));
-        }
-
-        public override void AddProperty(string name, object value)
-        {
-            PropertyDefinition property = TypeDef.Properties.Get(name);
-            if (property != null)
-                property.SetOn(Object, value);
+                value.AssignToProperty(Object, property);
         }
 
         public void PreBuild(PreBuildInfo preBuildInfo, Parser parser)

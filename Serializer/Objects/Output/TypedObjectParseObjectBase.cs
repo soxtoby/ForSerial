@@ -6,9 +6,7 @@ namespace json.Objects
     {
         public TypeDefinition TypeDef { get; protected set; }
         public abstract object Object { get; }
-        public abstract void AddProperty(string name, object value);
-        public abstract void AddObject(string name, TypedObjectObject value);
-        public abstract void AddArray(string name, TypedObjectArray array);
+        public abstract void AddProperty(string name, TypedObjectValue value);
 
         public void AssignToProperty(object owner, PropertyDefinition property)
         {
@@ -43,8 +41,8 @@ namespace json.Objects
         {
             PropertyDefinition property = TypeDef.Properties.Get(name);
             return property == null
-                ? (ParseArray)TypedObjectNullArray.Instance     // No property - don't care what's in the array
-                : new TypedObjectTypedArray(property.TypeDef.Type);
+                ? TypedObjectNullArray.Instance // No property - don't care what's in the array
+                : property.TypeDef.CreateArray();
         }
 
         internal class PropertyTypeMismatch : Exception

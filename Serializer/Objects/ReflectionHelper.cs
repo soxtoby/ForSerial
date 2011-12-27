@@ -9,6 +9,7 @@ namespace json.Objects
         public static Type GetGenericInterfaceType(this Type derivedType, Type genericType, int typeIndex = 0)
         {
             return derivedType.GetInterfaces()
+                .Append(derivedType)
                 .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == genericType)
                 .Select(i => i.GetGenericArguments().ElementAtOrDefault(typeIndex)).FirstOrDefault();
         }

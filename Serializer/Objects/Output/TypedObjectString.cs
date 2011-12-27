@@ -13,7 +13,7 @@
 
             public override void AddToObject(ParseObject obj, string name)
             {
-                ((TypedObjectObject)obj).AddProperty(name, value);
+                ((TypedObjectObject)obj).AddProperty(name, new TypedObjectPrimitive(value));
             }
 
             public override void AddToArray(ParseArray array)
