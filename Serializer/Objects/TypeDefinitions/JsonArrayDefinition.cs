@@ -3,7 +3,7 @@ using System;
 namespace json.Objects
 {
     // TODO check if this class is actually necessary
-    public abstract class JsonArrayDefinition : EnumerableDefinition
+    public abstract class JsonArrayDefinition : SequenceDefinition
     {
         protected JsonArrayDefinition(Type type, Type itemType)
             : base(type, itemType)

@@ -24,6 +24,7 @@ namespace json.Objects
             {
                 DefaultTypeDefinition.CreateDefaultTypeDefinition,
                 AnonymousTypeDefinition.CreateAnonymousTypeDefinition,
+                EnumerableDefinition.CreateEnumerableDefinition,
                 CollectionDefinition.CreateCollectionDefinition,
                 DictionaryDefinition.CreateDictionaryDefinition,
                 JsonDictionaryDefinition.CreateDictionaryDefinition,

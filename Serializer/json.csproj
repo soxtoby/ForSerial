@@ -91,7 +91,7 @@
     <Compile Include="Objects\TypeDefinitions\DictionaryDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\JsonArrayDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\JsonDictionaryDefinition.cs" />
-    <Compile Include="Objects\TypeDefinitions\EnumerableDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\SequenceDefinition.cs" />
     <Compile Include="Objects\Input\ObjectParserValueFactory.cs" />
     <Compile Include="Objects\Input\ParserValueFactory.cs" />
     <Compile Include="Objects\Output\TypedObjectNull.cs" />

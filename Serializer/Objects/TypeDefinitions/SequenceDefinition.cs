@@ -4,31 +4,14 @@ using System.Collections.Generic;
 
 namespace json.Objects
 {
-    public class EnumerableDefinition : TypeDefinition
+    public class SequenceDefinition : TypeDefinition
     {
         public TypeDefinition ItemTypeDef { get; private set; }
 
-        protected EnumerableDefinition(Type type, Type itemType)
+        protected SequenceDefinition(Type type, Type itemType)
             : base(type)
         {
             ItemTypeDef = CurrentTypeHandler.GetTypeDefinition(itemType);
-        }
-
-        protected static EnumerableDefinition CreateEnumerableDefinition(Type type)
-        {
-            return type.CanBeCastTo(typeof(IEnumerable))
-                ? new EnumerableDefinition(type, GetIEnumerableItemType(type))
-                : null;
-        }
-
-        private static Type GetIEnumerableItemType(Type type)
-        {
-            return type.GetGenericInterfaceType(typeof(IEnumerable<>)) ?? typeof(object);
-        }
-
-        public override bool IsSerializable
-        {
-            get { return true; }// TODO this sort of thing should really be in a derived type
         }
 
         public override ParseValue ParseObject(object input, ParserValueFactory valueFactory)
@@ -44,6 +27,31 @@ namespace json.Objects
             }
 
             return output;
+        }
+    }
+
+    public class EnumerableDefinition : SequenceDefinition
+    {
+        private EnumerableDefinition(Type type, Type itemType)
+            : base(type, itemType)
+        {
+        }
+
+        internal static SequenceDefinition CreateEnumerableDefinition(Type type)
+        {
+            return type.CanBeCastTo(typeof(IEnumerable))
+                       ? new EnumerableDefinition(type, GetIEnumerableItemType(type))
+                       : null;
+        }
+
+        private static Type GetIEnumerableItemType(Type type)
+        {
+            return type.GetGenericInterfaceType(typeof(IEnumerable<>)) ?? typeof(object);
+        }
+
+        public override bool IsSerializable
+        {
+            get { return ItemTypeDef.IsSerializable; }
         }
 
         public override TypedObjectArray CreateArray()

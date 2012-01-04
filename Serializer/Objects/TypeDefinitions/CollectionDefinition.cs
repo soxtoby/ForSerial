@@ -14,7 +14,7 @@ namespace json.Objects
             adder = addMethod;
         }
 
-        internal static EnumerableDefinition CreateCollectionDefinition(Type type)
+        internal static SequenceDefinition CreateCollectionDefinition(Type type)
         {
             Type itemType = type.GetGenericInterfaceType(typeof(ICollection<>));
             if (itemType != null)
@@ -25,7 +25,7 @@ namespace json.Objects
                     return new CollectionDefinition(type, itemType, addMethod);
                 }
             }
-            return CreateEnumerableDefinition(type);
+            return null;
         }
 
         public override void AddToCollection(object collection, object item)
