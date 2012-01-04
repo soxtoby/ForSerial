@@ -14,11 +14,6 @@ namespace json.Objects
             typedArray = (IEnumerable)Activator.CreateInstance(collectionDefinition.Type);
         }
 
-        public IEnumerable GetTypedArray()
-        {
-            return typedArray;
-        }
-
         private void PopulateCollection(object collection)
         {
             PopulateCollection(collectionDef, typedArray, () => collection);
@@ -27,14 +22,14 @@ namespace json.Objects
         public void AssignToProperty(object obj, PropertyDefinition property)
         {
             if (property.CanSet)
-                property.SetOn(obj, GetTypedArray());
+                property.SetOn(obj, GetTypedValue());
             else if (property.CanGet)
                 PopulateCollection(property.GetFrom(obj));
         }
 
         public object GetTypedValue()
         {
-            return GetTypedArray();
+            return typedArray;
         }
 
         public override ParseObject AsObject()
@@ -64,8 +59,8 @@ namespace json.Objects
 
         private static IEnumerable PopulateCollection(TypeDefinition collectionType, IEnumerable items, Func<object> getCollection)
         {
-            JsonArrayDefinition jsonArrayDef = collectionType as CollectionDefinition;
-            if (jsonArrayDef == null) return null;
+            CollectionDefinition collectionDef = collectionType as CollectionDefinition;
+            if (collectionDef == null) return null;
 
             IEnumerable collection = getCollection() as IEnumerable;
 
@@ -73,8 +68,8 @@ namespace json.Objects
             {
                 foreach (object item in items)
                 {
-                    object itemToAdd = TypeInnerCollection(jsonArrayDef.ItemTypeDef, item);
-                    jsonArrayDef.AddToCollection(collection, itemToAdd);
+                    object itemToAdd = TypeInnerCollection(collectionDef.ItemTypeDef, item);
+                    collectionDef.AddToCollection(collection, itemToAdd);
                 }
             }
 

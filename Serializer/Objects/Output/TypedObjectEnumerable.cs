@@ -23,26 +23,21 @@ namespace json.Objects
 
         public override void AddToArray(ParseArray array)
         {
-            array.GetArrayAsTypedObjectArray().AddItem(GetTypedArray());
+            array.GetArrayAsTypedObjectArray().AddItem(GetTypedValue());
         }
 
         public override ParseObject AsObject()
         {
-            return new TypedObjectObject(GetTypedArray());
+            return new TypedObjectObject(GetTypedValue());
         }
 
         public void AssignToProperty(object obj, PropertyDefinition property)
         {
             if (property.CanSet)
-                property.SetOn(obj, GetTypedArray());
+                property.SetOn(obj, GetTypedValue());
         }
 
         public object GetTypedValue()
-        {
-            return GetTypedArray();
-        }
-
-        public IEnumerable GetTypedArray()
         {
             return collection;
         }

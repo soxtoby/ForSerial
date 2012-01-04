@@ -23,7 +23,7 @@ namespace json.Objects
         {
             TypedObjectArray array = value as TypedObjectArray;
             if (array != null)
-                return (T)array.GetTypedArray();
+                return (T)array.GetTypedValue();
 
             TypedObjectObject obj = value.AsObject() as TypedObjectObject;
             if (obj == null)

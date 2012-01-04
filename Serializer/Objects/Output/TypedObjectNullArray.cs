@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Linq;
+﻿using System.Linq;
 
 namespace json.Objects
 {
@@ -11,11 +10,6 @@ namespace json.Objects
         public new static TypedObjectNullArray Instance
         {
             get { return instance ?? (instance = new TypedObjectNullArray()); }
-        }
-
-        public IEnumerable GetTypedArray()
-        {
-            yield break;
         }
 
         public void AddItem(object item)

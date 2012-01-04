@@ -4,11 +4,11 @@ using System.Reflection;
 
 namespace json.Objects
 {
-    public class CollectionDefinition : JsonArrayDefinition
+    public class CollectionDefinition : SequenceDefinition
     {
         private readonly MethodInfo adder;
 
-        protected CollectionDefinition(Type collectionType, Type itemType, MethodInfo addMethod)
+        private CollectionDefinition(Type collectionType, Type itemType, MethodInfo addMethod)
             : base(collectionType, itemType)
         {
             adder = addMethod;
@@ -28,7 +28,7 @@ namespace json.Objects
             return null;
         }
 
-        public override void AddToCollection(object collection, object item)
+        public void AddToCollection(object collection, object item)
         {
             if (adder != null)
                 adder.Invoke(collection, new[] { ItemTypeDef.ConvertToCorrectType(item) });
