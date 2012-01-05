@@ -31,19 +31,19 @@ namespace json.Objects
             bool useCurrentType = CurrentTypeIsNotCompatible(typeDef);
             if (useCurrentType)
                 typeDef = typedObject.TypeDef;
-
-            PreBuildInfo preBuildInfo = typeDef.GetPreBuildInfo(reader);
-
-            if (preBuildInfo != null)
-            {
-                typedObject = PreBuildRegularObject(reader, preBuildInfo, typeDef);
-                return true;
-            }
-
-            if (!useCurrentType)
+            else
                 SetType(typeDef);
 
-            return false;
+            return PreBuild(reader, typeDef);
+        }
+
+        private bool PreBuild(Reader reader, TypeDefinition typeDef)
+        {
+            PreBuildInfo preBuildInfo = typeDef.GetPreBuildInfo(reader);
+            if (preBuildInfo == null) return false;
+
+            preBuildInfo.PreBuild(Object, reader, new TypedObjectBuilder.TypedObjectSubBuilder(Object));
+            return true;
         }
 
         private bool CurrentTypeIsNotCompatible(TypeDefinition typeDef)
@@ -54,13 +54,6 @@ namespace json.Objects
         private void SetType(TypeDefinition typeDef)
         {
             typedObject = typeDef.CreateStructure();
-        }
-
-        private static TypedObject PreBuildRegularObject(Reader reader, PreBuildInfo preBuildInfo, TypeDefinition typeDef)
-        {
-            TypedRegularObject regularObject = new TypedRegularObject(typeDef);
-            regularObject.PreBuild(preBuildInfo, reader);
-            return regularObject;
         }
 
         public void AddProperty(string name, TypedValue value)

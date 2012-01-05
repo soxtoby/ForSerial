@@ -28,10 +28,5 @@ namespace json.Objects
             if (property != null)
                 value.AssignToProperty(Object, property);
         }
-
-        public void PreBuild(PreBuildInfo preBuildInfo, Reader reader)
-        {
-            preBuildInfo.PreBuild(Object, reader, new TypedObjectBuilder.TypedObjectSubBuilder(Object));
-        }
     }
 }
