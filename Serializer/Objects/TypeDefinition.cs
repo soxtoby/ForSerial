@@ -95,7 +95,7 @@ namespace json.Objects
         public object ConvertToCorrectType(object obj)
         {
             return typeCode.GetTypeCodeType() == TypeCodeType.Number
-                ? Convert.ChangeType(obj, typeCode)
+                ? System.Convert.ChangeType(obj, typeCode)
                 : obj;
         }
 
@@ -110,12 +110,12 @@ namespace json.Objects
             }
         }
 
-        internal PreBuildInfo GetPreBuildInfo(Parser parser)
+        internal PreBuildInfo GetPreBuildInfo(Reader reader)
         {
-            return parser == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ParserMatches(parser));
+            return reader == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ReaderMatches(reader));
         }
 
-        public abstract ParseValue ParseObject(object input, ParserValueFactory valueFactory);
+        public abstract Output ReadObject(object input, ReaderWriter valueFactory);
 
         protected static bool ValueIsSerializable(object value)
         {
@@ -125,18 +125,18 @@ namespace json.Objects
             return typeDef.IsSerializable;
         }
 
-        public virtual ParseValue CreateValue(ParseValueFactory valueFactory, object value)
+        public virtual Output CreateValue(object value)
         {
-            if (value == null) return TypedObjectNull.Value;
+            if (value == null) return TypedNull.Value;
             throw new NotAValue(Type);
         }
 
-        public virtual TypedObjectParseObject CreateObject()
+        public virtual TypedObject CreateStructure()
         {
             throw new NotAnObject(Type);
         }
 
-        public virtual TypedObjectArray CreateArray()
+        public virtual TypedSequence CreateSequence()
         {
             throw new NotAnArray(Type);
         }
@@ -151,9 +151,9 @@ namespace json.Objects
             public NotAnObject(Type type) : base("Cannot create object for type {0}".FormatWith(type.FullName)) { }
         }
 
-        protected class NotAnArray : Exception
+        private class NotAnArray : Exception
         {
-            public NotAnArray(Type type) : base("Cannot create array for type {0}".FormatWith(type.FullName)) { }
+            public NotAnArray(Type type) : base("Cannot create sequence for type {0}".FormatWith(type.FullName)) { }
         }
     }
 }

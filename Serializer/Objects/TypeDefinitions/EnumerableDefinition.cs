@@ -28,9 +28,9 @@ namespace json.Objects
             get { return ItemTypeDef.IsSerializable; }
         }
 
-        public override TypedObjectArray CreateArray()
+        public override TypedSequence CreateSequence()
         {
-            return new TypedObjectEnumerable(ItemTypeDef);
+            return new TypedEnumerable(ItemTypeDef);
         }
     }
 }

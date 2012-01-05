@@ -2,7 +2,7 @@ namespace json.Json
 {
     public partial class JsonStringBuilder
     {
-        private class JsonStringBoolean : ParseBoolean
+        private class JsonStringBoolean : BooleanOutput
         {
             private JsonStringBoolean(bool value) : base(value) { }
 
@@ -18,21 +18,21 @@ namespace json.Json
                 get { return falseValue = falseValue ?? new JsonStringBoolean(false); }
             }
 
-            public override ParseObject AsObject()
+            public override OutputStructure AsStructure()
             {
                 JsonStringObject obj = new JsonStringObject();
                 obj.AddBoolean("value", value);
                 return obj;
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonStringObject)obj).AddBoolean(name, value);
+                ((JsonStringObject)structure).AddBoolean(name, value);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonStringArray)array).AddBoolean(value);
+                ((JsonStringArray)sequence).AddBoolean(value);
             }
         }
     }

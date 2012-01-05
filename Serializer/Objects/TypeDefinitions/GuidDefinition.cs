@@ -18,7 +18,7 @@ namespace json.Objects
             get { return true; }
         }
 
-        public override ParseValue ParseObject(object input, ParserValueFactory valueFactory)
+        public override Output ReadObject(object input, ReaderWriter valueFactory)
         {
             Guid? guid = input as Guid?;
             return guid == null
@@ -26,9 +26,9 @@ namespace json.Objects
                 : valueFactory.CreateValue(guid.ToString());
         }
 
-        public override ParseValue CreateValue(ParseValueFactory valueFactory, object value)
+        public override Output CreateValue(object value)
         {
-            return valueFactory.CreateValue(new Guid(value.ToString()));
+            return new TypedObjectOutputStructure(new Guid(value.ToString()));
         }
     }
 }

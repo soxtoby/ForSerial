@@ -8,19 +8,19 @@ namespace json.JsonObjects
     {
         public PreDeserializeAttribute() : base(typeof(JsonParser), typeof(JsonObject)) { }
 
-        public override ParseValueFactory GetBuilder()
+        public override Writer GetWriter()
         {
             return JsonObjectBuilder.Instance;
         }
 
-        public override object GetContextValue(ParseObject parsedContext)
+        public override object GetContextValue(OutputStructure parsedContext)
         {
             return JsonObjectBuilder.GetResult(parsedContext);
         }
 
-        public override void ParsePreBuildResult(object preBuildResult, ParseValueFactory valueFactory)
+        public override void ReadPreBuildResult(object preBuildResult, Writer valueFactory)
         {
-            JsonObjectParser.Parse((JsonObject)preBuildResult, valueFactory);
+            JsonObjectReader.Read((JsonObject)preBuildResult, valueFactory);
         }
     }
 }

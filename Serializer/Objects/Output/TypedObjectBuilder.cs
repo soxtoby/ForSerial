@@ -2,7 +2,7 @@ using System;
 
 namespace json.Objects
 {
-    public partial class TypedObjectBuilder : ParseValueFactory
+    public partial class TypedObjectBuilder : Writer
     {
         private Type baseType;
 
@@ -19,72 +19,55 @@ namespace json.Objects
             get { return instance ?? (instance = new TypedObjectBuilder()); }
         }
 
-        public static T GetResult<T>(ParseValue value)
+        public static T GetResult<T>(Output value)
         {
-            TypedObjectArray array = value as TypedObjectArray;
+            TypedSequence array = value as TypedSequence;
             if (array != null)
                 return (T)array.GetTypedValue();
 
-            TypedObjectObject obj = value.AsObject() as TypedObjectObject;
+            TypedObjectOutputStructure obj = value.AsStructure() as TypedObjectOutputStructure;
             if (obj == null)
                 throw new InvalidResultObject();
 
             return (T)obj.Object;
         }
 
-        public ParseValue CreateValue(object value)
+        public Output CreateValue(object value)
         {
             if (value == null)
-                return TypedObjectNull.Value;
+                return TypedNull.Value;
 
-            switch (value.GetType().GetTypeCodeType())
-            {
-                case TypeCodeType.Object:
-                    return new TypedObjectObject(value);
-
-                case TypeCodeType.Boolean:
-                    return (bool)value
-                        ? TypedObjectBoolean.True
-                        : TypedObjectBoolean.False;
-
-                case TypeCodeType.String:
-                    return new TypedObjectString((string)value);
-
-                case TypeCodeType.Number:
-                    return new TypedObjectNumber(Convert.ToDouble(value));
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            TypeDefinition valueTypeDef = CurrentTypeHandler.GetTypeDefinition(value.GetType());
+            return valueTypeDef.CreateValue(value);
         }
 
-        public virtual ParseObject CreateObject()
+        public virtual OutputStructure CreateStructure()
         {
             if (baseType == null)
-                return new TypedObjectObject();
+                return new TypedObjectOutputStructure();
 
             TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(baseType);
             if (!typeDef.IsDeserializable)
-                return new TypedObjectObject();
+                return new TypedObjectOutputStructure();
 
-            TypedObjectObject obj = new TypedObjectObject(typeDef);
+            TypedObjectOutputStructure obj = new TypedObjectOutputStructure(typeDef);
             baseType = null;    // Only needed for first object
             return obj;
         }
 
-        public ParseArray CreateArray()
+        public SequenceOutput CreateSequence()
         {
             if (baseType == null)
                 throw new UnknownRootArrayType();
 
-            TypedObjectArray array = CurrentTypeHandler.GetTypeDefinition(baseType).CreateArray();
+            TypedSequence array = CurrentTypeHandler.GetTypeDefinition(baseType).CreateSequence();
             baseType = null;    // Only needed for first object
             return array;
         }
 
-        public ParseObject CreateReference(ParseObject parseObject)
+        public OutputStructure CreateReference(OutputStructure outputStructure)
         {
-            return parseObject;
+            return outputStructure;
         }
 
         internal class TypedObjectSubBuilder : TypedObjectBuilder
@@ -97,24 +80,24 @@ namespace json.Objects
                 this.baseObject = baseObject;
             }
 
-            public override ParseObject CreateObject()
+            public override OutputStructure CreateStructure()
             {
                 if (!isBase)
-                    return base.CreateObject();
+                    return base.CreateStructure();
 
                 isBase = false;
-                return new TypedObjectObject(baseObject);
+                return new TypedObjectOutputStructure(baseObject);
             }
         }
 
-        internal class UnsupportedParseArray : Exception
+        internal class UnsupportedSequenceOutput : Exception
         {
-            public UnsupportedParseArray() : base("Can only add ParseArrays of type TypedObjectArray.") { }
+            public UnsupportedSequenceOutput() : base("Can only add SequenceOutput of type TypedObjectArray.") { }
         }
 
         internal class InvalidResultObject : Exception
         {
-            public InvalidResultObject() : base("Invalid ParseObject type. Object must be constructed using a TypedObjectBuilder.") { }
+            public InvalidResultObject() : base("Invalid OutputStructure type. Object must be constructed using a TypedObjectBuilder.") { }
         }
 
         internal class UnknownRootArrayType : Exception

@@ -14,7 +14,7 @@ namespace json.Objects
         {
             Boolean isAnonymousType = NameContainsAnonymousType(type) && HasCompilerGeneratedAttribute(type);
             return isAnonymousType
-                ? new AnonymousTypeDefinition(type) 
+                ? new AnonymousTypeDefinition(type)
                 : null;
         }
 
@@ -33,16 +33,9 @@ namespace json.Objects
             get { return true; }
         }
 
-        public override TypedObjectParseObject CreateObject()
+        public override TypedObject CreateStructure()
         {
-            return new TypedObjectConstructorOnlyObject(this);
-        }
-
-        public override ParseValue CreateValue(ParseValueFactory valueFactory, object value)
-        {
-            return value.GetType() == Type
-                ? new TypedObjectObject(value)
-                : base.CreateValue(valueFactory, value);
+            return new ConstructorOnlyObject(this);
         }
     }
 }

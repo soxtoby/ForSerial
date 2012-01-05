@@ -2,25 +2,25 @@ namespace json.Json
 {
     public partial class JsonStringBuilder
     {
-        private class JsonStringNumber : ParseNumber
+        private class JsonStringNumber : NumericOutput
         {
             public JsonStringNumber(double value) : base(value) { }
 
-            public override ParseObject AsObject()
+            public override OutputStructure AsStructure()
             {
                 JsonStringObject obj = new JsonStringObject();
                 obj.AddRegularProperty("value", value);
                 return obj;
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonStringObject)obj).AddRegularProperty(name, value);
+                ((JsonStringObject)structure).AddRegularProperty(name, value);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonStringArray)array).AddRegularValue(value);
+                ((JsonStringArray)sequence).AddRegularValue(value);
             }
         }
     }

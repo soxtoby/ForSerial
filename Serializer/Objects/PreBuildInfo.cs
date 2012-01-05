@@ -13,20 +13,20 @@ namespace json.Objects
             this.method = method;
         }
 
-        public void PreBuild(object target, Parser parser, ParseValueFactory objectPopulator)
+        public void PreBuild(object target, Reader reader, Writer objectPopulator)
         {
-            ParseValueFactory contextBuilder = attribute.GetBuilder();
-            ParseObject parsedContext = parser.ParseSubObject(contextBuilder);
-            object context = attribute.GetContextValue(parsedContext);
+            Writer writerForContext = attribute.GetWriter();
+            OutputStructure contextOutput = reader.ReadSubStructure(writerForContext);
+            object context = attribute.GetContextValue(contextOutput);
 
             object preBuildResult = method.Invoke(target, new[] { context });
 
-            attribute.ParsePreBuildResult(preBuildResult, objectPopulator);
+            attribute.ReadPreBuildResult(preBuildResult, objectPopulator);
         }
 
-        public bool ParserMatches(Parser parser)
+        public bool ReaderMatches(Reader reader)
         {
-            return attribute.ParserMatches(parser);
+            return attribute.ReaderMatches(reader);
         }
     }
 }

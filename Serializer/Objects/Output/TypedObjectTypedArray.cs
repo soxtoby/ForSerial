@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace json.Objects
 {
-    internal class TypedObjectTypedArray : ParseArrayBase, TypedObjectArray
+    internal class TypedObjectTypedArray : SequenceOutputBase, TypedSequence
     {
         private readonly CollectionDefinition collectionDef;
         private readonly IEnumerable typedArray;
@@ -32,9 +32,9 @@ namespace json.Objects
             return typedArray;
         }
 
-        public override ParseObject AsObject()
+        public override OutputStructure AsStructure()
         {
-            return new TypedObjectObject(typedArray);
+            return new TypedObjectOutputStructure(typedArray);
         }
 
         public void AddItem(object item)
@@ -42,19 +42,19 @@ namespace json.Objects
             collectionDef.AddToCollection(typedArray, item);
         }
 
-        public override ParseValue CreateValue(ParseValueFactory valueFactory, object value)
+        public override Output CreateValue(Writer valueFactory, object value)
         {
-            return collectionDef.ItemTypeDef.CreateValue(valueFactory, value);
+            return collectionDef.ItemTypeDef.CreateValue(value);
         }
 
-        public override ParseObject CreateObject(ParseValueFactory valueFactory)
+        public override OutputStructure CreateStructure(Writer valueFactory)
         {
-            return new TypedObjectObject(collectionDef.ItemTypeDef);
+            return new TypedObjectOutputStructure(collectionDef.ItemTypeDef);
         }
 
-        public override ParseArray CreateArray(ParseValueFactory valueFactory)
+        public override SequenceOutput CreateSequence(Writer valueFactory)
         {
-            return collectionDef.ItemTypeDef.CreateArray();
+            return collectionDef.ItemTypeDef.CreateSequence();
         }
 
         private static IEnumerable PopulateCollection(TypeDefinition collectionType, IEnumerable items, Func<object> getCollection)
@@ -88,14 +88,14 @@ namespace json.Objects
             public InvalidCollectionType(Type type) : base("Cannot create collection of type {0}.".FormatWith(type.FullName)) { }
         }
 
-        public override void AddToObject(ParseObject obj, string name)
+        public override void AddToStructure(OutputStructure structure, string name)
         {
-            ((TypedObjectObject)obj).AddProperty(name, this);
+            ((TypedObjectOutputStructure)structure).AddProperty(name, this);
         }
 
-        public override void AddToArray(ParseArray array)
+        public override void AddToSequence(SequenceOutput sequence)
         {
-            ((TypedObjectArray)array).AddItem(typedArray);
+            ((TypedSequence)sequence).AddItem(typedArray);
         }
     }
 }

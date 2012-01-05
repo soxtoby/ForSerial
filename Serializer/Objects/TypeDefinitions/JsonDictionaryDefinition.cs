@@ -24,12 +24,12 @@ namespace json.Objects
                 || typeCodeType == TypeCodeType.Number;
         }
 
-        public override ParseValue ParseObject(object input, ParserValueFactory valueFactory)
+        public override Output ReadObject(object input, ReaderWriter valueFactory)
         {
             IDictionary dictionary = input as IDictionary;
             if (dictionary == null) return null;
 
-            ParseObject output = valueFactory.CreateObject(input);
+            OutputStructure output = valueFactory.CreateStructure(input);
 
             Type valueType = Type.GetGenericInterfaceType(typeof(IDictionary<,>), 1);
             TypeDefinition valueTypeDef = CurrentTypeHandler.GetTypeDefinition(valueType);
@@ -38,18 +38,18 @@ namespace json.Objects
             {
                 // Convert.ToString is in case the keys are numbers, which are represented
                 // as strings when used as keys, but can be indexed with numbers in JavaScript
-                string name = Convert.ToString(key, CultureInfo.InvariantCulture);
+                string name = System.Convert.ToString(key, CultureInfo.InvariantCulture);
                 object value = dictionary[key];
 
-                valueFactory.ParseProperty(valueTypeDef, name, value, output);
+                valueFactory.ReadProperty(valueTypeDef, name, value, output);
             }
 
             return output;
         }
 
-        public override TypedObjectParseObject CreateObject()
+        public override TypedObject CreateStructure()
         {
-            return new TypedObjectDictionary(this);
+            return new TypedDictionary(this);
         }
     }
 }

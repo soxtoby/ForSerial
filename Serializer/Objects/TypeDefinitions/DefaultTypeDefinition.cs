@@ -13,21 +13,21 @@ namespace json.Objects
             return new DefaultTypeDefinition(type);
         }
 
-        public override ParseValue ParseObject(object input, ParserValueFactory valueFactory)
+        public override Output ReadObject(object input, ReaderWriter valueFactory)
         {
-            ParseObject output = valueFactory.CreateObject(input);
+            OutputStructure output = valueFactory.CreateStructure(input);
 
             foreach (KeyValuePair<PropertyDefinition, object> property in GetSerializableProperties(input, valueFactory.SerializeAllTypes))
             {
-                valueFactory.ParseProperty(input, property.Key, output);
+                valueFactory.ReadProperty(input, property.Key, output);
             }
 
             return output;
         }
 
-        public override TypedObjectParseObject CreateObject()
+        public override TypedObject CreateStructure()
         {
-            return new TypedObjectRegularObject(this);
+            return new TypedRegularObject(this);
         }
 
         private IEnumerable<KeyValuePair<PropertyDefinition, object>> GetSerializableProperties(object obj, bool serializeAllTypes)

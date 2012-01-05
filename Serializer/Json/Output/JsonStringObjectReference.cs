@@ -3,7 +3,7 @@ namespace json.Json
 {
     public partial class JsonStringBuilder
     {
-        private class JsonStringObjectReference : ParseObjectBase
+        private class JsonStringObjectReference : OutputStructureBase
         {
             private readonly uint referenceId;
 
@@ -17,14 +17,14 @@ namespace json.Json
                 return @"{""_ref"":" + referenceId + "}";
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonStringObject)obj).AddRegularProperty(name, this);
+                ((JsonStringObject)structure).AddRegularProperty(name, this);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonStringArray)array).AddRegularValue(this);
+                ((JsonStringArray)sequence).AddRegularValue(this);
             }
         }
     }

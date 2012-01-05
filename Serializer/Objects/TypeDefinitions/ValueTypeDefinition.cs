@@ -18,16 +18,14 @@ namespace json.Objects
             get { return true; }
         }
 
-        public override TypedObjectParseObject CreateObject()
+        public override TypedObject CreateStructure()
         {
-            return new TypedObjectConstructorOnlyObject(this);
+            return new ConstructorOnlyObject(this);
         }
 
-        public override ParseValue CreateValue(ParseValueFactory valueFactory, object value)
+        public override Output CreateValue(object value)
         {
-            return value.GetType() == Type
-                ? new TypedObjectObject(value)
-                : base.CreateValue(valueFactory, value);
+            return new TypedObjectOutputStructure(value);
         }
     }
 }

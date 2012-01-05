@@ -4,10 +4,10 @@ using json.Objects;
 
 namespace json.Json
 {
-    public partial class JsonStringBuilder : ParseValueFactory
+    public partial class JsonStringBuilder : Writer
     {
         private readonly Options options;
-        private readonly Dictionary<ParseObject, uint> objectReferences = new Dictionary<ParseObject, uint>();
+        private readonly Dictionary<OutputStructure, uint> objectReferences = new Dictionary<OutputStructure, uint>();
         private uint currentReferenceId;
 
         public JsonStringBuilder(Options options = Options.Default)
@@ -22,7 +22,7 @@ namespace json.Json
             get { return defaultInstance ?? (defaultInstance = new JsonStringBuilder()); }
         }
 
-        public static string GetResult(ParseObject obj)
+        public static string GetResult(OutputStructure obj)
         {
             if (obj == null)
                 return null;
@@ -34,7 +34,7 @@ namespace json.Json
             return stringObj.ToString();
         }
 
-        public ParseValue CreateValue(object value)
+        public Output CreateValue(object value)
         {
             if (value == null)
                 return JsonStringNull.Value;
@@ -53,29 +53,29 @@ namespace json.Json
                     return new JsonStringString((string)value);
 
                 case TypeCodeType.Number:
-                    return new JsonStringNumber(Convert.ToDouble(value));
+                    return new JsonStringNumber(System.Convert.ToDouble(value));
 
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        public virtual ParseObject CreateObject()
+        public virtual OutputStructure CreateStructure()
         {
             JsonStringObject newObject = new JsonStringObject();
             objectReferences[newObject] = currentReferenceId++;
             return newObject;
         }
 
-        public ParseArray CreateArray()
+        public SequenceOutput CreateSequence()
         {
             return new JsonStringArray();
         }
 
-        public ParseObject CreateReference(ParseObject parseObject)
+        public OutputStructure CreateReference(OutputStructure outputStructure)
         {
             return MaintainObjectReferences
-                ? (ParseObject)new JsonStringObjectReference(objectReferences[parseObject])
+                ? (OutputStructure)new JsonStringObjectReference(objectReferences[outputStructure])
                 : new JsonStringObject();
         }
 
@@ -87,7 +87,7 @@ namespace json.Json
         internal class InvalidResultObject : Exception
         {
             public InvalidResultObject()
-                : base("Invalid ParseObject type. Object must be constructed using a JsonStringBuilder.")
+                : base("Invalid OutputStructure type. Object must be constructed using a JsonStringBuilder.")
             {
             }
         }
@@ -110,14 +110,14 @@ namespace json.Json
             get { return instance ?? (instance = new TypedJsonStringBuilder()); }
         }
 
-        public override ParseObject CreateObject()
+        public override OutputStructure CreateStructure()
         {
             return new TypedJsonStringObject();
         }
 
         private class TypedJsonStringObject : JsonStringObject
         {
-            public override bool SetType(string typeIdentifier, Parser parser)
+            public override bool SetType(string typeIdentifier, Reader reader)
             {
                 AddString("_type", typeIdentifier);
                 return false;

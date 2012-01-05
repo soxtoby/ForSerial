@@ -13,16 +13,16 @@ namespace json.Objects
             ItemTypeDef = CurrentTypeHandler.GetTypeDefinition(itemType);
         }
 
-        public override ParseValue ParseObject(object input, ParserValueFactory valueFactory)
+        public override Output ReadObject(object input, ReaderWriter valueFactory)
         {
             IEnumerable inputArray = input as IEnumerable;
             if (inputArray == null) return null;
 
-            ParseArray output = valueFactory.CreateArray();
+            SequenceOutput output = valueFactory.CreateSequence();
 
             foreach (object item in inputArray)
             {
-                valueFactory.ParseArrayItem(output, item);
+                valueFactory.ReadArrayItem(output, item);
             }
 
             return output;

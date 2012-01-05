@@ -1,0 +1,22 @@
+﻿namespace json.Objects
+{
+    internal class TypedString : StringOutput
+    {
+        public TypedString(string value) : base(value) { }
+
+        public override OutputStructure AsStructure()
+        {
+            return new TypedObjectOutputStructure(value);
+        }
+
+        public override void AddToStructure(OutputStructure structure, string name)
+        {
+            ((TypedObjectOutputStructure)structure).AddProperty(name, new TypedPrimitiveValue(value));
+        }
+
+        public override void AddToSequence(SequenceOutput sequence)
+        {
+            ((TypedSequence)sequence).AddItem(value);
+        }
+    }
+}

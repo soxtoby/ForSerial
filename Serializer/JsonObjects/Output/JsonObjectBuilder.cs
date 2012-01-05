@@ -4,7 +4,7 @@ using json.Objects;
 
 namespace json.JsonObjects
 {
-    public class JsonObjectBuilder : ParseValueFactory
+    public class JsonObjectBuilder : Writer
     {
         private JsonObjectBuilder() { }
 
@@ -14,7 +14,7 @@ namespace json.JsonObjects
             get { return instance ?? (instance = new JsonObjectBuilder()); }
         }
 
-        public static JsonObject GetResult(ParseObject obj)
+        public static JsonObject GetResult(OutputStructure obj)
         {
             if (obj == null)
                 return null;
@@ -26,7 +26,7 @@ namespace json.JsonObjects
             return objObject.Object;
         }
 
-        public ParseValue CreateValue(object value)
+        public Output CreateValue(object value)
         {
             if (value == null)
                 return JsonObjectNull.Value;
@@ -40,28 +40,28 @@ namespace json.JsonObjects
                 case TypeCodeType.String:
                     return new JsonObjectString((string)value);
                 case TypeCodeType.Number:
-                    return new JsonObjectNumber(Convert.ToDouble(value));
+                    return new JsonObjectNumber(System.Convert.ToDouble(value));
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        public ParseObject CreateObject()
+        public OutputStructure CreateStructure()
         {
             return new JsonObjectObject();
         }
 
-        public ParseArray CreateArray()
+        public SequenceOutput CreateSequence()
         {
             return new JsonObjectArray();
         }
 
-        public ParseObject CreateReference(ParseObject parseObject)
+        public OutputStructure CreateReference(OutputStructure outputStructure)
         {
-            return parseObject;
+            return outputStructure;
         }
 
-        private class JsonObjectObject : ParseObjectBase
+        private class JsonObjectObject : OutputStructureBase
         {
             public JsonObject Object { get; private set; }
 
@@ -70,7 +70,7 @@ namespace json.JsonObjects
                 Object = new JsonObject();
             }
 
-            public override bool SetType(string typeIdentifier, Parser parser)
+            public override bool SetType(string typeIdentifier, Reader reader)
             {
                 Object.TypeIdentifier = typeIdentifier;
                 return false;
@@ -81,18 +81,18 @@ namespace json.JsonObjects
                 Object[name] = value;
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonObjectObject)obj).AddProperty(name, Object);
+                ((JsonObjectObject)structure).AddProperty(name, Object);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonObjectArray)array).AddValue(Object);
+                ((JsonObjectArray)sequence).AddValue(Object);
             }
         }
 
-        private class JsonObjectArray : ParseArrayBase
+        private class JsonObjectArray : SequenceOutputBase
         {
             private readonly List<object> values;
 
@@ -106,25 +106,25 @@ namespace json.JsonObjects
                 values.Add(value);
             }
 
-            public override ParseObject AsObject()
+            public override OutputStructure AsStructure()
             {
                 JsonObjectObject obj = new JsonObjectObject();
                 obj.AddProperty("items", this);
                 return obj;
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonObjectObject)obj).AddProperty(name, values);
+                ((JsonObjectObject)structure).AddProperty(name, values);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonObjectArray)array).AddValue(values);
+                ((JsonObjectArray)sequence).AddValue(values);
             }
         }
 
-        private class JsonObjectNull : ParseNull
+        private class JsonObjectNull : NullOutput
         {
             private JsonObjectNull() { }
 
@@ -134,25 +134,25 @@ namespace json.JsonObjects
                 get { return value = value ?? new JsonObjectNull(); }
             }
 
-            public override ParseObject AsObject()
+            public override OutputStructure AsStructure()
             {
                 JsonObjectObject obj = new JsonObjectObject();
                 obj.AddProperty("value", null);
                 return obj;
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonObjectObject)obj).AddProperty(name, null);
+                ((JsonObjectObject)structure).AddProperty(name, null);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonObjectArray)array).AddValue(null);
+                ((JsonObjectArray)sequence).AddValue(null);
             }
         }
 
-        private class JsonObjectBoolean : ParseBoolean
+        private class JsonObjectBoolean : BooleanOutput
         {
             private JsonObjectBoolean(bool value) : base(value) { }
 
@@ -168,81 +168,71 @@ namespace json.JsonObjects
                 get { return falseValue = falseValue ?? new JsonObjectBoolean(false); }
             }
 
-            public override ParseObject AsObject()
+            public override OutputStructure AsStructure()
             {
                 JsonObjectObject obj = new JsonObjectObject();
                 obj.AddProperty("value", value);
                 return obj;
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonObjectObject)obj).AddProperty(name, value);
+                ((JsonObjectObject)structure).AddProperty(name, value);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonObjectArray)array).AddValue(value);
+                ((JsonObjectArray)sequence).AddValue(value);
             }
         }
 
-        private class JsonObjectNumber : ParseNumber
+        private class JsonObjectNumber : NumericOutput
         {
             public JsonObjectNumber(double value) : base(value) { }
 
-            public override ParseObject AsObject()
+            public override OutputStructure AsStructure()
             {
                 JsonObjectObject obj = new JsonObjectObject();
                 obj.AddProperty("value", value);
                 return obj;
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonObjectObject)obj).AddProperty(name, value);
+                ((JsonObjectObject)structure).AddProperty(name, value);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonObjectArray)array).AddValue(value);
+                ((JsonObjectArray)sequence).AddValue(value);
             }
         }
 
-        private class JsonObjectString : ParseString
+        private class JsonObjectString : StringOutput
         {
             public JsonObjectString(string value) : base(value) { }
 
-            public override ParseObject AsObject()
+            public override OutputStructure AsStructure()
             {
                 JsonObjectObject obj = new JsonObjectObject();
                 obj.AddProperty("value", value);
                 return obj;
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonObjectObject)obj).AddProperty(name, value);
+                ((JsonObjectObject)structure).AddProperty(name, value);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonObjectArray)array).AddValue(value);
+                ((JsonObjectArray)sequence).AddValue(value);
             }
-        }
-
-        internal class UnsupportedParseObject : Exception
-        {
-            public UnsupportedParseObject() : base("Can only add ParseObjects of type JsonObjectObject.") { }
-        }
-
-        internal class UnsupportedParseArray : Exception
-        {
-            public UnsupportedParseArray() : base("Can only add ParseArrays of type JsonObjectArray.") { }
         }
 
         internal class InvalidResultObject : Exception
         {
-            public InvalidResultObject() : base("Invalid ParseObject type. Object must be constructed using a JsonObjectBuilder.") { }
+            public InvalidResultObject() : base("Invalid OutputStructure type. Object must be constructed using a JsonObjectBuilder.") { }
         }
     }
 }

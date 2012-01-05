@@ -5,18 +5,18 @@ namespace json.Objects
 {
     public abstract class PreBuildAttribute : Attribute
     {
-        private readonly Type parserType;
+        private readonly Type readerType;
         private readonly Type preBuildContextType;
 
-        protected PreBuildAttribute(Type parserType, Type preBuildContextType)
+        protected PreBuildAttribute(Type readerType, Type preBuildContextType)
         {
-            this.parserType = parserType;
+            this.readerType = readerType;
             this.preBuildContextType = preBuildContextType;
         }
 
-        public bool ParserMatches(Parser parser)
+        public bool ReaderMatches(Reader reader)
         {
-            return parser.GetType() == parserType;
+            return reader.GetType() == readerType;
         }
 
         public void AssertValidMethod(MethodInfo method)
@@ -28,11 +28,11 @@ namespace json.Objects
             }
         }
 
-        public abstract ParseValueFactory GetBuilder();
+        public abstract Writer GetWriter();
 
-        public abstract object GetContextValue(ParseObject parsedContext);
+        public abstract object GetContextValue(OutputStructure parsedContext);
 
-        public abstract void ParsePreBuildResult(object preBuildResult, ParseValueFactory valueFactory);
+        public abstract void ReadPreBuildResult(object preBuildResult, Writer valueFactory);
 
         private class InvalidMethodSignature : Exception
         {

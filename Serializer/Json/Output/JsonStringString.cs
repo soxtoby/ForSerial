@@ -4,7 +4,7 @@ namespace json.Json
 {
     public partial class JsonStringBuilder
     {
-        private class JsonStringString : ParseString
+        private class JsonStringString : StringOutput
         {
             public JsonStringString(string value) : base(EscapeForJson(value)) { }
 
@@ -16,21 +16,21 @@ namespace json.Json
                 return CharactersToEscape.Replace(value, @"\$0");
             }
 
-            public override ParseObject AsObject()
+            public override OutputStructure AsStructure()
             {
                 JsonStringObject obj = new JsonStringObject();
                 obj.AddString("value", value);
                 return obj;
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonStringObject)obj).AddString(name, value);
+                ((JsonStringObject)structure).AddString(name, value);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonStringArray)array).AddString(value);
+                ((JsonStringArray)sequence).AddString(value);
             }
         }
     }

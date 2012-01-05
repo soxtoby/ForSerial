@@ -2,7 +2,7 @@ namespace json.Json
 {
     public partial class JsonStringBuilder
     {
-        private class JsonStringNull : ParseNull
+        private class JsonStringNull : NullOutput
         {
             private JsonStringNull() { }
 
@@ -12,21 +12,21 @@ namespace json.Json
                 get { return value = value ?? new JsonStringNull(); }
             }
 
-            public override ParseObject AsObject()
+            public override OutputStructure AsStructure()
             {
                 JsonStringObject obj = new JsonStringObject();
                 obj.AddNull("value");
                 return obj;
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonStringObject)obj).AddNull(name);
+                ((JsonStringObject)structure).AddNull(name);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonStringArray)array).AddNull();
+                ((JsonStringArray)sequence).AddNull();
             }
         }
     }

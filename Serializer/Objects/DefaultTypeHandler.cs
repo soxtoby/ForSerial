@@ -28,7 +28,7 @@ namespace json.Objects
                 CollectionDefinition.CreateCollectionDefinition,
                 JsonDictionaryDefinition.CreateDictionaryDefinition,
                 ValueTypeDefinition.CreateValueTypeDefinition,
-                PrimitiveTypeDefinition.CreatePrimitiveTypeDefinition,
+                PrimitiveDefinition.CreatePrimitiveTypeDefinition,
                 GuidDefinition.CreateGuidDefinition,
             };
 

@@ -4,7 +4,7 @@ namespace json.Json
 {
     public partial class JsonStringBuilder
     {
-        protected class JsonStringObject : ParseObjectBase
+        protected class JsonStringObject : OutputStructureBase
         {
             private readonly StringBuilder json = new StringBuilder();
             private bool isFirstProperty = true;
@@ -56,14 +56,14 @@ namespace json.Json
                 return json + "}";
             }
 
-            public override void AddToObject(ParseObject obj, string name)
+            public override void AddToStructure(OutputStructure structure, string name)
             {
-                ((JsonStringObject)obj).AddRegularProperty(name, this);
+                ((JsonStringObject)structure).AddRegularProperty(name, this);
             }
 
-            public override void AddToArray(ParseArray array)
+            public override void AddToSequence(SequenceOutput sequence)
             {
-                ((JsonStringArray)array).AddRegularValue(this);
+                ((JsonStringArray)sequence).AddRegularValue(this);
             }
         }
     }

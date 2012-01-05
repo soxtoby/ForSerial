@@ -44,16 +44,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JsonObjects\Input\JsonObjectParserTests.cs" />
+    <Compile Include="JsonObjects\Input\JsonObjectReaderTests.cs" />
     <Compile Include="JsonObjects\Output\JsonObjectBuilderTests.cs" />
-    <Compile Include="Json\Input\JsonParserTests.cs" />
+    <Compile Include="Json\Input\JsonReaderTests.cs" />
     <Compile Include="Json\Input\ScannerTests.cs" />
     <Compile Include="Json\Output\JsonStringBuilderTests.cs" />
-    <Compile Include="Objects\Input\ObjectParserTests.cs" />
+    <Compile Include="Objects\Input\ObjectReaderTests.cs" />
     <Compile Include="Objects\Output\TypedObjectBuilderTests.cs" />
     <Compile Include="Objects\Output\TypedObjectConstructorOnlyObjectTests.cs" />
     <Compile Include="Objects\TypeDefinitionTests.cs" />
-    <Compile Include="Output\TestParseValues.cs" />
+    <Compile Include="Output\TestOutputs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

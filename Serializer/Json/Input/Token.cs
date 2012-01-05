@@ -53,7 +53,7 @@ namespace json.Json
                 case TokenType.EOF:
                     return "End Of File";
                 default:
-                    throw new NotImplementedException("No ToString implemented for TokenType " + TokenType.ToString());
+                    throw new InvalidOperationException("No ToString implemented for TokenType " + TokenType.ToString());
             }
         }
     }

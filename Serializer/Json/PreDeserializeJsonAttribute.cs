@@ -1,4 +1,3 @@
-using json.Json;
 using json.Objects;
 
 namespace json.Json
@@ -7,17 +6,17 @@ namespace json.Json
     {
         public PreDeserializeJsonAttribute() : base(typeof(JsonParser), typeof(string)) { }
 
-        public override ParseValueFactory GetBuilder()
+        public override Writer GetWriter()
         {
             return JsonStringBuilder.Default;
         }
 
-        public override object GetContextValue(ParseObject parsedContext)
+        public override object GetContextValue(OutputStructure parsedContext)
         {
             return JsonStringBuilder.GetResult(parsedContext);
         }
 
-        public override void ParsePreBuildResult(object preBuildResult, ParseValueFactory valueFactory)
+        public override void ReadPreBuildResult(object preBuildResult, Writer valueFactory)
         {
             JsonParser.Parse((string)preBuildResult, valueFactory);
         }

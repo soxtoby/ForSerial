@@ -34,7 +34,7 @@ namespace json.Objects
                 adder.Invoke(collection, new[] { ItemTypeDef.ConvertToCorrectType(item) });
         }
 
-        public override TypedObjectArray CreateArray()
+        public override TypedSequence CreateSequence()
         {
             return new TypedObjectTypedArray(this);
         }

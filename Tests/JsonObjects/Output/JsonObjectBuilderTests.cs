@@ -9,14 +9,14 @@ namespace json.JsonObjects
         [Test]
         public void MaintainSingleReference()
         {
-            JsonObject jsonObject = Parse.From.Object(new SameReferenceTwice(new { foo = 5 }), new ObjectParsingOptions { SerializeAllTypes = true }).ToJsonObject();
+            JsonObject jsonObject = Convert.From.Object(new SameReferenceTwice(new { foo = 5 }), new ObjectParsingOptions { SerializeAllTypes = true }).ToJsonObject();
             Assert.AreSame(jsonObject["One"], jsonObject["Two"]);
         }
 
         [Test]
         public void MaintainTwoReferences()
         {
-            JsonObject jsonObject = Parse.From
+            JsonObject jsonObject = Convert.From
                 .Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 }), new ObjectParsingOptions { SerializeAllTypes = true })
                 .ToJsonObject();
             Assert.AreSame(jsonObject["One"], jsonObject["Three"]);
@@ -27,7 +27,7 @@ namespace json.JsonObjects
         [ExpectedException(typeof(JsonObjectBuilder.InvalidResultObject))]
         public void InvalidResultObject()
         {
-            JsonObjectBuilder.GetResult(NullParseObject.Instance);
+            JsonObjectBuilder.GetResult(NullOutputStructure.Instance);
         }
     }
 }
