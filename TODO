@@ -5,6 +5,8 @@ Allow override of type resolution.
 Test duplicate value types - will probably incorrectly create references at the moment.
 Generate and cache DynamicMethods for getting and setting properties. http://www.codeproject.com/KB/cs/Dynamic_Code_Generation.aspx
 Test nullable value type properties.
+Turn all singleton properties into public readonly fields.
+Don't require output to be an object. Get rid of AsStructure if possible.
 
 New Serialization Rules:
  - Defaults

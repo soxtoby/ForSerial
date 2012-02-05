@@ -14,6 +14,11 @@ namespace json.Objects
         public bool CanGet { get { return getter != null; } }
         public bool CanSet { get { return setter != null; } }
 
+        public Writer Writer
+        {
+            get { return new TypedObjectBuilder(TypeDef.Type); }
+        }
+
         public PropertyDefinition(PropertyInfo property)
         {
             Name = property.Name;

@@ -141,6 +141,14 @@ namespace json.Objects
             throw new NotAnArray(Type);
         }
 
+        public Writer GetWriterForProperty(string name)
+        {
+            PropertyDefinition property = Properties.Get(name);
+            if (property != null)
+                return property.Writer;
+            return NullTypedWriter.Instance;
+        }
+
         private class NotAValue : Exception
         {
             public NotAValue(Type type) : base("Cannot create value for type {0}.".FormatWith(type.FullName)) { }

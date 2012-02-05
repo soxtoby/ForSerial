@@ -55,4 +55,27 @@ namespace json
         {
         }
     }
+
+    /// <summary>
+    /// Null object for 'null' values.
+    /// </summary>
+    public class NullNullOutput : NullOutput
+    {
+        private NullNullOutput() { }
+
+        public static readonly NullNullOutput Value = new NullNullOutput();
+
+        public override void AddToStructure(OutputStructure structure, string name)
+        {
+        }
+
+        public override void AddToSequence(SequenceOutput sequence)
+        {
+        }
+
+        public override OutputStructure AsStructure()
+        {
+            return NullOutputStructure.Instance;
+        }
+    }
 }

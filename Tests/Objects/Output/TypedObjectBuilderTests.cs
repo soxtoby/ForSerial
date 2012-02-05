@@ -25,7 +25,7 @@ namespace json.Objects
         [Test]
         public void Number()
         {
-            Assert.AreEqual(5, Clone((object)5));
+            Assert.AreEqual(5, Clone(5));
         }
 
         [Test]

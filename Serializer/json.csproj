@@ -84,6 +84,7 @@
     <Compile Include="Objects\ObjectParsingOptions.cs" />
     <Compile Include="Objects\Output\ConstructorOnlyObject.cs" />
     <Compile Include="Objects\Output\NullTypedObject.cs" />
+    <Compile Include="Objects\Output\NullTypedWriter.cs" />
     <Compile Include="Objects\Output\TypedEnumerable.cs" />
     <Compile Include="Objects\Output\TypedObjectBase.cs" />
     <Compile Include="Objects\Output\TypedPrimitiveValue.cs" />

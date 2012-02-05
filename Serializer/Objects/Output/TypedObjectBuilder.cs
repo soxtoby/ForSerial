@@ -2,7 +2,7 @@ using System;
 
 namespace json.Objects
 {
-    public partial class TypedObjectBuilder : Writer
+    public class TypedObjectBuilder : Writer
     {
         private Type baseType;
 
@@ -29,13 +29,21 @@ namespace json.Objects
             if (obj == null)
                 throw new InvalidResultObject();
 
-            return (T)obj.Object;
+            TypeDefinition outputTypeDef = CurrentTypeHandler.GetTypeDefinition(typeof (T));
+            return (T)outputTypeDef.ConvertToCorrectType( obj.Object);
         }
 
         public Output CreateValue(object value)
         {
             if (value == null)
                 return TypedNull.Value;
+
+            if (baseType != null)
+            {
+                TypeDefinition baseTypeDef = CurrentTypeHandler.GetTypeDefinition(baseType);
+                baseType = null;
+                return baseTypeDef.CreateValue(value);
+            }
 
             TypeDefinition valueTypeDef = CurrentTypeHandler.GetTypeDefinition(value.GetType());
             return valueTypeDef.CreateValue(value);
@@ -47,10 +55,10 @@ namespace json.Objects
                 return new TypedObjectOutputStructure();
 
             TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(baseType);
-            if (!typeDef.IsDeserializable)
-                return new TypedObjectOutputStructure();
+            TypedObjectOutputStructure obj = typeDef.IsDeserializable
+                ? new TypedObjectOutputStructure(typeDef)
+                : new TypedObjectOutputStructure();
 
-            TypedObjectOutputStructure obj = new TypedObjectOutputStructure(typeDef);
             baseType = null;    // Only needed for first object
             return obj;
         }

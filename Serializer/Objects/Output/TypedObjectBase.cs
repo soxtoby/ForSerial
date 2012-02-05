@@ -18,33 +18,20 @@ namespace json.Objects
 
         public Output CreateValue(string name, object value)
         {
-            PropertyDefinition property = TypeDef.Properties.Get(name);
-            return property != null
-                ? property.TypeDef.CreateValue(value)
-                : TypedNull.Value;
+            Writer propertyWriter = TypeDef.GetWriterForProperty(name);
+            return propertyWriter.CreateValue(value);
         }
 
         public OutputStructure CreateStructure(string name)
         {
-            PropertyDefinition property = TypeDef.Properties.Get(name);
-            return property != null
-                ? CanCreateNewPropertyInstance(property)
-                        ? new TypedObjectOutputStructure(property.TypeDef)
-                        : new TypedObjectOutputStructure()
-                : new TypedObjectOutputStructure(NullTypedObject.Instance);
-        }
-
-        private static bool CanCreateNewPropertyInstance(PropertyDefinition property)
-        {
-            return property.TypeDef.IsDeserializable;
+            Writer propertyWriter = TypeDef.GetWriterForProperty(name);
+            return propertyWriter.CreateStructure();
         }
 
         public SequenceOutput CreateSequence(string name)
         {
-            PropertyDefinition property = TypeDef.Properties.Get(name);
-            return property != null
-                ? property.TypeDef.CreateSequence()
-                : TypedNullArray.Instance;
+            Writer propertyWriter = TypeDef.GetWriterForProperty(name);
+            return propertyWriter.CreateSequence();
         }
 
         internal class PropertyTypeMismatch : Exception
