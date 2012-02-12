@@ -1,9 +1,8 @@
 using json.JsonObjects;
 using json.Objects;
-using json.Tests.Output;
 using NUnit.Framework;
 
-namespace json.Tests.JsonObjects.Output
+namespace json.Tests.JsonObjects
 {
     [TestFixture]
     public class JsonObjectBuilderTests

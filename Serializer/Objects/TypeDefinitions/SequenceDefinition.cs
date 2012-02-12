@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace json.Objects
+namespace json.Objects.TypeDefinitions
 {
     public class SequenceDefinition : TypeDefinition
     {

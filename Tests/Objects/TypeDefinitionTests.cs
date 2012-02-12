@@ -1,5 +1,5 @@
-﻿using NUnit.Framework;
-using json.Objects;
+﻿using json.Objects;
+using NUnit.Framework;
 
 namespace json.Tests.Objects
 {

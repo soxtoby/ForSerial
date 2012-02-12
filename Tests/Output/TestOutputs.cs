@@ -1,8 +1,8 @@
 using NUnit.Framework;
 
-namespace json.Tests.Output
+namespace json.Tests
 {
-    internal class TestOutput : json.Output
+    internal class TestOutput : Output
     {
         public void AddToStructure(OutputStructure structure, string name)
         {
@@ -20,7 +20,7 @@ namespace json.Tests.Output
 
     internal class TestWriter : Writer
     {
-        public virtual json.Output CreateValue(object value)
+        public virtual Output CreateValue(object value)
         {
             return new TestOutput();
         }

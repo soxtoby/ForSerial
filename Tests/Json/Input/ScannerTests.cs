@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
 using json.Json;
+using NUnit.Framework;
 
-namespace json.Tests.Json.Input
+namespace json.Tests.Json
 {
     [TestFixture]
     public class ScannerTests

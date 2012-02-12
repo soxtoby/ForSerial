@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace json.Objects
+namespace json.Objects.TypeDefinitions
 {
     public class EnumerableDefinition : SequenceDefinition
     {

@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
 using json.Json;
 using json.Objects;
-using json.Tests.Output;
+using NUnit.Framework;
 
-namespace json.Tests.Objects.Input
+namespace json.Tests.Objects
 {
     [TestFixture]
     public class ObjectReaderTests

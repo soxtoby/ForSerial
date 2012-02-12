@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace json.Objects
+namespace json.Objects.TypeDefinitions
 {
     public class AnonymousTypeDefinition : DefaultTypeDefinition
     {

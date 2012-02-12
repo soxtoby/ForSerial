@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace json.Objects
+namespace json.Objects.TypeDefinitions
 {
     internal class PrimitiveDefinition : TypeDefinition
     {
