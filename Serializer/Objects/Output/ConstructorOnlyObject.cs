@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace json.Objects
 {
@@ -18,57 +17,57 @@ namespace json.Objects
         {
             get
             {
-                ConstructorInfo[] constructors = TypeDef.Type.GetConstructors();
-                ConstructorInfo matchingConstructor = constructors.FirstOrDefault(ConstructorParametersMatchProperties);
+                IEnumerable<ConstructorDefinition> constructors = TypeDef.Constructors;
+                ConstructorDefinition matchingConstructor = constructors.FirstOrDefault(ConstructorParametersMatchProperties);
 
                 if (matchingConstructor == null)
                     throw new NoMatchingConstructor(TypeDef.Type, properties);
 
-                object[] parameters = matchingConstructor.GetParameters()
+                object[] parameters = matchingConstructor.Parameters
                     .Select(GetParameterPropertyValue)
                     .ToArray();
-                return matchingConstructor.Invoke(parameters);
+                return matchingConstructor.Construct(parameters);
             }
         }
 
-        private object GetParameterPropertyValue(ParameterInfo parameter)
+        private object GetParameterPropertyValue(ParameterDefinition parameter)
         {
-            TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(parameter.ParameterType);
+            TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(parameter.Type);
             return typeDef.ConvertToCorrectType(properties.Get(parameter.Name));
         }
 
-        private bool ConstructorParametersMatchProperties(ConstructorInfo constructor)
+        private bool ConstructorParametersMatchProperties(ConstructorDefinition constructor)
         {
-            return constructor.GetParameters()
+            return constructor.Parameters
                 .All(CanBeAssignedFromProperty);
         }
 
-        private bool CanBeAssignedFromProperty(ParameterInfo parameter)
+        private bool CanBeAssignedFromProperty(ParameterDefinition parameter)
         {
             return HavePropertyValue(parameter)
                 ? ParameterTypeMatchesPropertyValue(parameter)
                 : ParameterCanBeNull(parameter);
         }
 
-        private bool HavePropertyValue(ParameterInfo parameter)
+        private bool HavePropertyValue(ParameterDefinition parameter)
         {
             return properties.ContainsKey(parameter.Name)
                 && properties[parameter.Name] != null;
         }
 
-        private bool ParameterTypeMatchesPropertyValue(ParameterInfo parameter)
+        private bool ParameterTypeMatchesPropertyValue(ParameterDefinition parameter)
         {
             Type propertyValueType = properties[parameter.Name].GetType();
             TypeCodeType propertyValueTypeCodeType = propertyValueType.GetTypeCodeType();
 
             return propertyValueTypeCodeType == TypeCodeType.Object
-                ? propertyValueType.CanBeCastTo(parameter.ParameterType)
-                : propertyValueTypeCodeType == parameter.ParameterType.GetTypeCodeType();
+                ? propertyValueType.CanBeCastTo(parameter.Type)
+                : propertyValueTypeCodeType == parameter.Type.GetTypeCodeType();
         }
 
-        private static bool ParameterCanBeNull(ParameterInfo parameter)
+        private static bool ParameterCanBeNull(ParameterDefinition parameter)
         {
-            return parameter.ParameterType.IsByRef;
+            return parameter.Type.IsByRef;
         }
 
         public override void AddProperty(string name, TypedValue value)

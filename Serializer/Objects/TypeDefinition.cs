@@ -15,10 +15,13 @@ namespace json.Objects
         public Type Type { get; private set; }
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
 
+        public List<ConstructorDefinition> Constructors { get; private set; }
+
         protected TypeDefinition(Type type)
         {
             Type = type;
             Properties = new Dictionary<string, PropertyDefinition>();
+            Constructors = new List<ConstructorDefinition>();
             typeCode = Type.GetTypeCode(type);
         }
 
@@ -51,8 +54,24 @@ namespace json.Objects
 
         internal void Populate()
         {
+            PopulateConstructors();
             PopulateProperties();
             PopulatePreBuildMethods();
+        }
+
+        private void PopulateConstructors()
+        {
+            Constructors.AddRange(Type.GetConstructors().Select(BuildConstructorDefinition));
+        }
+
+        private static ConstructorDefinition BuildConstructorDefinition(ConstructorInfo constructorInfo)
+        {
+            ObjectInterfaceProvider interfaceProvider = new ReflectionInterfaceProvider();
+            IEnumerable<ParameterDefinition> parameters = constructorInfo
+                .GetParameters()
+                .Select(p => new ParameterDefinition(p.Name, p.ParameterType));
+            Constructor constructorMethod = interfaceProvider.GetConstructor(constructorInfo);
+            return new ConstructorDefinition(constructorMethod, parameters);
         }
 
         private void PopulateProperties()
@@ -86,8 +105,9 @@ namespace json.Objects
 
         private static PreBuildInfo ValidateAndCreatePreBuildInfo(PreBuildAttribute preBuildAttribute, MethodInfo method)
         {
+            ObjectInterfaceProvider interfaceProvider = new ReflectionInterfaceProvider();
             preBuildAttribute.AssertValidMethod(method);
-            return new PreBuildInfo(preBuildAttribute, method);
+            return new PreBuildInfo(preBuildAttribute, interfaceProvider.GetMethod(method));
         }
 
         /// <summary>

@@ -6,9 +6,9 @@ namespace json.Objects.TypeDefinitions
 {
     public class CollectionDefinition : SequenceDefinition
     {
-        private readonly MethodInfo adder;
+        private readonly Method adder;
 
-        private CollectionDefinition(Type collectionType, Type itemType, MethodInfo addMethod)
+        private CollectionDefinition(Type collectionType, Type itemType, Method addMethod)
             : base(collectionType, itemType)
         {
             adder = addMethod;
@@ -22,7 +22,8 @@ namespace json.Objects.TypeDefinitions
                 MethodInfo addMethod = type.GetMethod("Add", new[] { itemType });
                 if (addMethod != null)
                 {
-                    return new CollectionDefinition(type, itemType, addMethod);
+                    ObjectInterfaceProvider interfaceProvider = new ReflectionInterfaceProvider();
+                    return new CollectionDefinition(type, itemType, interfaceProvider.GetMethod(addMethod));
                 }
             }
             return null;

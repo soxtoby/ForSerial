@@ -20,14 +20,14 @@ namespace json.Objects
                        : (t, v) => setMethod.Invoke(t, new[] { v });
         }
 
-        public GetMethod GetFieldGetter(FieldInfo field)
+        public Method GetMethod(MethodInfo method)
         {
-            return s => field.GetValue(s);
+            return (o, args) => method.Invoke(o, args);
         }
 
-        public SetMethod GetFieldSetter(FieldInfo field)
+        public Constructor GetConstructor(ConstructorInfo constructor)
         {
-            return (t, v) => field.SetValue(t, v);
+            return args => constructor.Invoke(args);
         }
     }
 }
