@@ -1,7 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
+using json.Objects;
 
-namespace json.Objects
+namespace json.Tests.Objects.Output
 {
     [TestFixture]
     public class TypedObjectConstructorOnlyObjectTests

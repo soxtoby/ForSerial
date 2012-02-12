@@ -1,8 +1,10 @@
 using System;
 using json.Json;
+using json.JsonObjects;
+using json.Tests.Output;
 using NUnit.Framework;
 
-namespace json.JsonObjects
+namespace json.Tests.JsonObjects.Input
 {
     [TestFixture]
     public class JsonObjectReaderTests
@@ -103,8 +105,8 @@ namespace json.JsonObjects
 
             public override bool SetType(string typeIdentifier, Reader reader)
             {
-                OutputStructure jsonStringObject = reader.ReadSubStructure(JsonStringBuilder.Default);
-                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(jsonStringObject);
+                json.Output jsonStringValue = reader.ReadSubStructure(JsonStringBuilder.Default);
+                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(jsonStringValue);
                 return true;
             }
         }

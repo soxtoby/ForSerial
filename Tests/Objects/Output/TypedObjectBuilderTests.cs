@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using json.JsonObjects;
 using NUnit.Framework;
+using json.JsonObjects;
+using json.Objects;
+using json.Tests.Output;
 
-namespace json.Objects
+namespace json.Tests.Objects.Output
 {
     [TestFixture]
     public class TypedObjectBuilderTests

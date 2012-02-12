@@ -1,7 +1,9 @@
-using json.Objects;
 using NUnit.Framework;
+using json.Json;
+using json.Objects;
+using json.Tests.Output;
 
-namespace json.Json
+namespace json.Tests.Json.Output
 {
     [TestFixture]
     public class JsonStringBuilderTests
@@ -9,21 +11,21 @@ namespace json.Json
         [Test]
         public void StringIsEscaped()
         {
-            Output parseString = JsonStringBuilder.Default.CreateValue("\"foo\\bar\"");
+            json.Output parseString = JsonStringBuilder.Default.CreateValue("\"foo\\bar\"");
             Assert.AreEqual(@"{""value"":""\""foo\\bar\""""}", JsonStringBuilder.GetResult(parseString.AsStructure()));
         }
 
         [Test]
         public void NumberIsWrappedInObject()
         {
-            Output number = JsonStringBuilder.Default.CreateValue(5);
+            json.Output number = JsonStringBuilder.Default.CreateValue(5);
             Assert.AreEqual("{\"value\":5}", JsonStringBuilder.GetResult(number.AsStructure()));
         }
 
         [Test]
         public void StringIsWrappedInObject()
         {
-            Output str = JsonStringBuilder.Default.CreateValue("foo");
+            json.Output str = JsonStringBuilder.Default.CreateValue("foo");
             Assert.AreEqual("{\"value\":\"foo\"}", JsonStringBuilder.GetResult(str.AsStructure()));
         }
 

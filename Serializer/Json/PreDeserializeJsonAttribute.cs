@@ -11,7 +11,7 @@ namespace json.Json
             return JsonStringBuilder.Default;
         }
 
-        public override object GetContextValue(OutputStructure parsedContext)
+        public override object GetContextValue(Output parsedContext)
         {
             return JsonStringBuilder.GetResult(parsedContext);
         }

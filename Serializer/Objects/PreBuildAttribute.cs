@@ -30,7 +30,7 @@ namespace json.Objects
 
         public abstract Writer GetWriter();
 
-        public abstract object GetContextValue(OutputStructure parsedContext);
+        public abstract object GetContextValue(Output parsedContext);
 
         public abstract void ReadPreBuildResult(object preBuildResult, Writer valueFactory);
 

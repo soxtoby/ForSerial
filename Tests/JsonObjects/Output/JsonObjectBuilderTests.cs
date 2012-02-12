@@ -1,22 +1,31 @@
+using json.JsonObjects;
 using json.Objects;
+using json.Tests.Output;
 using NUnit.Framework;
 
-namespace json.JsonObjects
+namespace json.Tests.JsonObjects.Output
 {
     [TestFixture]
     public class JsonObjectBuilderTests
     {
         [Test]
+        public void GetResult_JsonObjectNull_ReturnsNull()
+        {
+            object result = JsonObjectBuilder.GetResult(JsonObjectNull.Value);
+            Assert.IsNull(result);
+        }
+
+        [Test]
         public void MaintainSingleReference()
         {
-            JsonObject jsonObject = Convert.From.Object(new SameReferenceTwice(new { foo = 5 }), new ObjectParsingOptions { SerializeAllTypes = true }).ToJsonObject();
+            JsonObject jsonObject = (JsonObject)Convert.From.Object(new SameReferenceTwice(new { foo = 5 }), new ObjectParsingOptions { SerializeAllTypes = true }).ToJsonObject();
             Assert.AreSame(jsonObject["One"], jsonObject["Two"]);
         }
 
         [Test]
         public void MaintainTwoReferences()
         {
-            JsonObject jsonObject = Convert.From
+            JsonObject jsonObject = (JsonObject)Convert.From
                 .Object(new TwoReferencesTwice(new { foo = 5 }, new { bar = 6 }), new ObjectParsingOptions { SerializeAllTypes = true })
                 .ToJsonObject();
             Assert.AreSame(jsonObject["One"], jsonObject["Three"]);

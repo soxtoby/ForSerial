@@ -1,8 +1,10 @@
 using System.Collections;
+using json.Json;
 using json.JsonObjects;
+using json.Tests.Output;
 using NUnit.Framework;
 
-namespace json.Json
+namespace json.Tests.Json.Input
 {
     [TestFixture]
     public class JsonReaderTests
@@ -16,7 +18,7 @@ namespace json.Json
         [Test]
         public void EmptyObject()
         {
-            JsonObject obj = ParseJson("{}");
+            JsonObject obj = (JsonObject)ParseJson("{}");
             Assert.IsEmpty(obj);
         }
 
@@ -42,7 +44,7 @@ namespace json.Json
         [Test]
         public void NullProperty()
         {
-            Assert.IsNull(ParseJson("{ \"foo\": null }")["foo"]);
+            Assert.IsNull(((JsonObject)ParseJson("{ \"foo\": null }"))["foo"]);
         }
 
         [Test]
@@ -54,7 +56,7 @@ namespace json.Json
         [Test]
         public void ObjectThenNumberProperty()
         {
-            JsonObject obj = ParseJson("{ \"foo\": { }, \"bar\": 4 }");
+            JsonObject obj = (JsonObject)ParseJson("{ \"foo\": { }, \"bar\": 4 }");
             Assert.IsInstanceOf<JsonObject>(obj["foo"]);
             Assert.AreEqual(4, obj["bar"]);
         }
@@ -136,13 +138,6 @@ namespace json.Json
 
         [Test]
         [ExpectedException(typeof(ParseException))]
-        public void NoOpenBrace_ThrowsParseException()
-        {
-            ParseJson("5");
-        }
-
-        [Test]
-        [ExpectedException(typeof(ParseException))]
         public void InvalidName_ThrowsParseException()
         {
             ParseJson("{ foo: 0 }");
@@ -199,12 +194,12 @@ namespace json.Json
 
         private static T ParseFooProperty<T>(string json)
         {
-            JsonObject obj = ParseJson(json);
+            JsonObject obj = (JsonObject)ParseJson(json);
             Assert.IsInstanceOf<T>(obj["foo"]);
             return (T)obj["foo"];
         }
 
-        private static JsonObject ParseJson(string json)
+        private static object ParseJson(string json)
         {
             return Convert.From.Json(json).ToJsonObject();
         }

@@ -24,7 +24,7 @@ namespace json.Objects
             return reader.ReadValue(obj);
         }
 
-        public override OutputStructure ReadSubStructure(Writer subWriter)
+        public override Output ReadSubStructure(Writer subWriter)
         {
             return Read(currentObject, subWriter, options).AsStructure();
         }

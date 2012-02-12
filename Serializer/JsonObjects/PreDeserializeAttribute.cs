@@ -1,5 +1,4 @@
 using json.Json;
-using json.JsonObjects;
 using json.Objects;
 
 namespace json.JsonObjects
@@ -13,7 +12,7 @@ namespace json.JsonObjects
             return JsonObjectBuilder.Instance;
         }
 
-        public override object GetContextValue(OutputStructure parsedContext)
+        public override object GetContextValue(Output parsedContext)
         {
             return JsonObjectBuilder.GetResult(parsedContext);
         }

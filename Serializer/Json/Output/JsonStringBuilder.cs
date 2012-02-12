@@ -22,7 +22,7 @@ namespace json.Json
             get { return defaultInstance ?? (defaultInstance = new JsonStringBuilder()); }
         }
 
-        public static string GetResult(OutputStructure obj)
+        public static string GetResult(Output obj)
         {
             if (obj == null)
                 return null;

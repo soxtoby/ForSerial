@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
+using json.Objects;
 
-namespace json.Objects
+namespace json.Tests.Objects
 {
     [TestFixture]
     public class TypeDefinitionTests

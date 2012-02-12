@@ -11,7 +11,7 @@ namespace json
             writer = new StateStack<Writer>(baseWriter);
         }
 
-        public abstract OutputStructure ReadSubStructure(Writer subWriter);
+        public abstract Output ReadSubStructure(Writer subWriter);
 
         protected IDisposable UseObjectPropertyContext(OutputStructure propertyOwner, string propertyName)
         {

@@ -9,7 +9,7 @@ namespace json.Json
 
         private JsonParser(Writer writer) : base(writer) { }
 
-        public static OutputStructure Parse(string json, Writer valueFactory)
+        public static Output Parse(string json, Writer valueFactory)
         {
             try
             {
@@ -21,13 +21,13 @@ namespace json.Json
             }
         }
 
-        private static OutputStructure Parse(IEnumerable<Token> tokens, Writer valueFactory)
+        private static Output Parse(IEnumerable<Token> tokens, Writer valueFactory)
         {
             JsonParser parser = new JsonParser(valueFactory);
             return parser.ParseTokens(tokens);
         }
 
-        public override OutputStructure ReadSubStructure(Writer subWriter)
+        public override Output ReadSubStructure(Writer subWriter)
         {
             MoveNextIfSymbol(",");
             return Parse(GetSubObjectTokens(), subWriter);
@@ -43,7 +43,7 @@ namespace json.Json
                 yield return tokenEnumerator.Current;
         }
 
-        private OutputStructure ParseTokens(IEnumerable<Token> tokens)
+        private Output ParseTokens(IEnumerable<Token> tokens)
         {
             using (tokenEnumerator = tokens.GetEnumerator())
             {
@@ -51,7 +51,7 @@ namespace json.Json
 
                 return CurrentToken.TokenType == TokenType.EOF
                     ? null
-                    : ParseObject();
+                    : ParseValue();
             }
         }
 
