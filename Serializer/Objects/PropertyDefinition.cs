@@ -1,15 +1,23 @@
-using System.Reflection;
 
 namespace json.Objects
 {
     public class PropertyDefinition
     {
+        public PropertyDefinition(TypeDefinition typeDef, string name, GetMethod getter, SetMethod setter, bool forceTypeIdentifierSerialization)
+        {
+            this.getter = getter;
+            this.setter = setter;
+            Name = name;
+            TypeDef = typeDef;
+            ForceTypeIdentifierSerialization = forceTypeIdentifierSerialization;
+        }
+
         public string Name { get; private set; }
         public TypeDefinition TypeDef { get; private set; }
         public bool ForceTypeIdentifierSerialization { get; private set; }
 
-        private readonly MethodInfo getter;
-        private readonly MethodInfo setter;
+        private readonly GetMethod getter;
+        private readonly SetMethod setter;
 
         public bool CanGet { get { return getter != null; } }
         public bool CanSet { get { return setter != null; } }
@@ -19,24 +27,15 @@ namespace json.Objects
             get { return new TypedObjectBuilder(TypeDef.Type); }
         }
 
-        public PropertyDefinition(PropertyInfo property)
+        public object GetFrom(object source)
         {
-            Name = property.Name;
-            TypeDef = CurrentTypeHandler.GetTypeDefinition(property.PropertyType);
-            getter = property.GetGetMethod();
-            setter = property.GetSetMethod();
-            ForceTypeIdentifierSerialization = property.HasAttribute<SerializeTypeAttribute>();
+            return getter(source);
         }
 
-        public object GetFrom(object obj)
-        {
-            return getter.Invoke(obj, new object[] { });
-        }
-
-        public void SetOn(object obj, object value)
+        public void SetOn(object target, object value)
         {
             if (CanSet)
-                setter.Invoke(obj, new[] { TypeDef.ConvertToCorrectType(value) });
+                setter(target, TypeDef.ConvertToCorrectType(value));
         }
     }
 }

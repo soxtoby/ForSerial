@@ -57,9 +57,10 @@ namespace json.Objects
 
         private void PopulateProperties()
         {
+            PropertyDefinitionBuilder propBuilder = new PropertyDefinitionBuilder(new ReflectionInterfaceProvider());
             IEnumerable<PropertyDefinition> properties = Type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
                 .Where(NotMarkedWithIgnoreAttribute)
-                .Select(p => new PropertyDefinition(p));
+                .Select(propBuilder.Build);
 
             foreach (PropertyDefinition property in properties)
             {
