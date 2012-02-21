@@ -7,25 +7,26 @@ namespace json.Objects
         public GetMethod GetPropertyGetter(PropertyInfo property)
         {
             MethodInfo getMethod = property.GetGetMethod();
-            return getMethod == null
-                       ? (GetMethod)null
-                       : s => getMethod.Invoke(s, new object[] { });
+            return s => getMethod.Invoke(s, new object[] { });
         }
 
         public SetMethod GetPropertySetter(PropertyInfo property)
         {
             MethodInfo setMethod = property.GetSetMethod();
-            return setMethod == null
-                       ? (SetMethod)null
-                       : (t, v) => setMethod.Invoke(t, new[] { v });
+            return (t, v) => setMethod.Invoke(t, new[] { v });
         }
 
-        public Method GetMethod(MethodInfo method)
+        public FuncMethod GetFunc(MethodInfo method)
         {
             return (o, args) => method.Invoke(o, args);
         }
 
-        public Constructor GetConstructor(ConstructorInfo constructor)
+        public ActionMethod GetAction(MethodInfo method)
+        {
+            return (o, args) => method.Invoke(o, args);
+        }
+
+        public ConstructorMethod GetConstructor(ConstructorInfo constructor)
         {
             return args => constructor.Invoke(args);
         }

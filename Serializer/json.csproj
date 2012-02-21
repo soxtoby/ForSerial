@@ -81,6 +81,7 @@
     <Compile Include="Json\Output\JsonStringString.cs" />
     <Compile Include="Objects\ConstructorDefinition.cs" />
     <Compile Include="Objects\DefaultTypeHandler.cs" />
+    <Compile Include="Objects\DynamicMethodProvider.cs" />
     <Compile Include="Objects\ObjectInterfaceProvider.cs" />
     <Compile Include="Objects\NullTypeDefinition.cs" />
     <Compile Include="Objects\ObjectParsingOptions.cs" />

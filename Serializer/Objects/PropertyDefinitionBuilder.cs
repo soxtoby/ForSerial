@@ -36,12 +36,14 @@ namespace json.Objects
 
         private GetMethod GetGetter(PropertyInfo property)
         {
-            return interfaceProvider.GetPropertyGetter(property);
+            return property.GetGetMethod(true) == null ? null
+                : interfaceProvider.GetPropertyGetter(property);
         }
 
         private SetMethod GetSetter(PropertyInfo property)
         {
-            return interfaceProvider.GetPropertySetter(property);
+            return property.GetSetMethod(true) == null ? null
+                : interfaceProvider.GetPropertySetter(property);
         }
 
         private static bool GetShouldForceTypeIdentifierSerialization(PropertyInfo property)

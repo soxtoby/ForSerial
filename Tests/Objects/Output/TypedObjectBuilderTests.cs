@@ -375,8 +375,8 @@ namespace json.Tests.Objects
             [PreDeserialize]
             public JsonObject PreDeserialize(JsonObject json)
             {
-                int one = (int)((double?)json.Get("One") ?? 0);
-                int two = (int)((double?)json.Get("Two") ?? 0);
+                int one = (int)(json.Get("One") as double? ?? 0);
+                int two = (int)(json.Get("Two") as double? ?? 0);
                 json["One"] = two;
                 json["Two"] = one;
                 return json;

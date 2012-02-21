@@ -5,9 +5,9 @@ namespace json.Objects
     internal class PreBuildInfo
     {
         private readonly PreBuildAttribute attribute;
-        private readonly Method preBuild;
+        private readonly FuncMethod preBuild;
 
-        public PreBuildInfo(PreBuildAttribute attribute, Method preBuild)
+        public PreBuildInfo(PreBuildAttribute attribute, FuncMethod preBuild)
         {
             if (preBuild == null) throw new ArgumentNullException("preBuild");
             this.attribute = attribute;

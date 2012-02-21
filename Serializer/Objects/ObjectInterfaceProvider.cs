@@ -6,12 +6,14 @@ namespace json.Objects
     {
         GetMethod GetPropertyGetter(PropertyInfo property);
         SetMethod GetPropertySetter(PropertyInfo property);
-        Method GetMethod(MethodInfo method);
-        Constructor GetConstructor(ConstructorInfo constructor);
+        FuncMethod GetFunc(MethodInfo method);
+        ActionMethod GetAction(MethodInfo method);
+        ConstructorMethod GetConstructor(ConstructorInfo constructor);
     }
 
     public delegate object GetMethod(object source);
     public delegate void SetMethod(object target, object value);
-    public delegate object Method(object target, object[] args);
-    public delegate object Constructor(object[] args);
+    public delegate object FuncMethod(object target, object[] args);
+    public delegate void ActionMethod(object target, object[] args);
+    public delegate object ConstructorMethod(object[] args);
 }

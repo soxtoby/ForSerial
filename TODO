@@ -7,6 +7,7 @@ Generate and cache DynamicMethods for getting and setting properties. http://www
 Test nullable value type properties.
 Turn all singleton properties into public readonly fields.
 Don't require output to be an object. Get rid of AsStructure if possible.
+Simple struct serialization with ToString & Parse.
 
 New Serialization Rules:
  - Defaults

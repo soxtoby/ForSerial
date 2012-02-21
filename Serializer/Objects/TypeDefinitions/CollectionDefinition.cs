@@ -6,9 +6,9 @@ namespace json.Objects.TypeDefinitions
 {
     public class CollectionDefinition : SequenceDefinition
     {
-        private readonly Method adder;
+        private readonly ActionMethod adder;
 
-        private CollectionDefinition(Type collectionType, Type itemType, Method addMethod)
+        private CollectionDefinition(Type collectionType, Type itemType, ActionMethod addMethod)
             : base(collectionType, itemType)
         {
             adder = addMethod;
@@ -22,8 +22,7 @@ namespace json.Objects.TypeDefinitions
                 MethodInfo addMethod = type.GetMethod("Add", new[] { itemType });
                 if (addMethod != null)
                 {
-                    ObjectInterfaceProvider interfaceProvider = new ReflectionInterfaceProvider();
-                    return new CollectionDefinition(type, itemType, interfaceProvider.GetMethod(addMethod));
+                    return new CollectionDefinition(type, itemType, ObjectInterfaceProvider.GetAction(addMethod));
                 }
             }
             return null;
@@ -32,7 +31,7 @@ namespace json.Objects.TypeDefinitions
         public void AddToCollection(object collection, object item)
         {
             if (adder != null)
-                adder.Invoke(collection, new[] { ItemTypeDef.ConvertToCorrectType(item) });
+                adder(collection, new[] { ItemTypeDef.ConvertToCorrectType(item) });
         }
 
         public override TypedSequence CreateSequence()

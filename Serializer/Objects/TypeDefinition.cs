@@ -17,6 +17,8 @@ namespace json.Objects
 
         public List<ConstructorDefinition> Constructors { get; private set; }
 
+        protected static readonly ObjectInterfaceProvider ObjectInterfaceProvider = new DynamicMethodProvider();
+
         protected TypeDefinition(Type type)
         {
             Type = type;
@@ -66,17 +68,19 @@ namespace json.Objects
 
         private static ConstructorDefinition BuildConstructorDefinition(ConstructorInfo constructorInfo)
         {
-            ObjectInterfaceProvider interfaceProvider = new ReflectionInterfaceProvider();
             IEnumerable<ParameterDefinition> parameters = constructorInfo
                 .GetParameters()
                 .Select(p => new ParameterDefinition(p.Name, p.ParameterType));
-            Constructor constructorMethod = interfaceProvider.GetConstructor(constructorInfo);
+            ConstructorMethod constructorMethod = ObjectInterfaceProvider.GetConstructor(constructorInfo);
             return new ConstructorDefinition(constructorMethod, parameters);
         }
 
         private void PopulateProperties()
         {
-            PropertyDefinitionBuilder propBuilder = new PropertyDefinitionBuilder(new ReflectionInterfaceProvider());
+            if (Type.IsInterface)
+                return;
+
+            PropertyDefinitionBuilder propBuilder = new PropertyDefinitionBuilder(ObjectInterfaceProvider);
             IEnumerable<PropertyDefinition> properties = Type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
                 .Where(NotMarkedWithIgnoreAttribute)
                 .Select(propBuilder.Build);
@@ -105,9 +109,8 @@ namespace json.Objects
 
         private static PreBuildInfo ValidateAndCreatePreBuildInfo(PreBuildAttribute preBuildAttribute, MethodInfo method)
         {
-            ObjectInterfaceProvider interfaceProvider = new ReflectionInterfaceProvider();
             preBuildAttribute.AssertValidMethod(method);
-            return new PreBuildInfo(preBuildAttribute, interfaceProvider.GetMethod(method));
+            return new PreBuildInfo(preBuildAttribute, ObjectInterfaceProvider.GetFunc(method));
         }
 
         /// <summary>
