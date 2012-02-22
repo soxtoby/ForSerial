@@ -41,9 +41,6 @@ namespace json.Json
 
             switch (value.GetType().GetTypeCodeType())
             {
-                case TypeCodeType.Object:
-                    return null;
-
                 case TypeCodeType.Boolean:
                     return (bool)value
                         ? JsonStringBoolean.True
@@ -56,7 +53,7 @@ namespace json.Json
                     return new JsonStringNumber(System.Convert.ToDouble(value));
 
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    return null;
             }
         }
 

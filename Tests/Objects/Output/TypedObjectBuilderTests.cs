@@ -599,6 +599,13 @@ namespace json.Tests.Objects
         }
 
         [Test]
+        public void BuildDateTimeFromNumber()
+        {
+            DateTime result = Convert.From.Json("981137106007").ToObject<DateTime>();
+            Assert.AreEqual(new DateTime(2001, 2, 3, 4, 5, 6, 7), result);
+        }
+
+        [Test]
         public void BuildKeyValuePair()
         {
             KeyValuePair<string, int> kv = Convert.From

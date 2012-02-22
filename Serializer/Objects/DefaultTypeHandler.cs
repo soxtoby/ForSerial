@@ -31,6 +31,7 @@ namespace json.Objects
                 ValueTypeDefinition.CreateValueTypeDefinition,
                 PrimitiveDefinition.CreatePrimitiveTypeDefinition,
                 GuidDefinition.CreateGuidDefinition,
+                DateTimeDefinition.CreateDateTimeDefinition,    // TODO why not just put these in the dictionary directly?
             };
 
         public TypeDefinition GetTypeDefinition(string assemblyQualifiedName)

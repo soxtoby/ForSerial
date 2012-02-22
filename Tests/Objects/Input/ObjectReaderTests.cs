@@ -270,6 +270,13 @@ namespace json.Tests.Objects
         }
 
         [Test]
+        public void DateTimeParsedToNumber()
+        {
+            DateTime dateTime = new DateTime(2001, 2, 3, 4, 5, 6, 7);
+            Assert.AreEqual(@"{""foo"":981137106007}", ConvertToJson(new { foo = dateTime }));
+        }
+
+        [Test]
         public void ValueTypeParsedToValue()
         {
             Convert.From.Object(new ValueType()).WithBuilder(new ValueOnlyWriter());
