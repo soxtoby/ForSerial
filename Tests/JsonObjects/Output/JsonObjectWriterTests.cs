@@ -1,0 +1,192 @@
+﻿using System.Linq;
+using json.JsonObjects;
+using NUnit.Framework;
+
+namespace json.Tests.JsonObjects
+{
+    [TestFixture]
+    public class JsonObjectWriterTests
+    {
+        private JsonObjectWriter sut;
+
+        [SetUp]
+        public void SetUp()
+        {
+            sut = new JsonObjectWriter();
+        }
+
+        [Test]
+        public void WriteValue_GivenNull_CreatesNullValue()
+        {
+            sut.WriteValue(null);
+            sut.Result
+                .ShouldBe<JsonValue>()
+                .And.Value.ShouldBeNull();
+        }
+
+        [Test]
+        public void WriteValue_GivenNumber_CreatesValueWithNumber()
+        {
+            sut.WriteValue(1);
+            sut.Result
+                .ShouldBe<JsonValue>()
+                .And.Value.ShouldBe(1);
+        }
+
+        [Test]
+        public void WriteValue_GivenString_CreatesValueWithString()
+        {
+            sut.WriteValue("foo");
+            sut.Result
+                .ShouldBe<JsonValue>()
+                .And.Value.ShouldBe("foo");
+        }
+
+        [Test]
+        public void WriteValue_GivenBoolean_CreatesValueWithBoolean()
+        {
+            sut.WriteValue(true);
+            sut.Result
+                .ShouldBe<JsonValue>()
+                .And.Value.ShouldBe(true);
+        }
+
+        [Test]
+        public void EmptyStructure_CreatesEmptyMap()
+        {
+            sut.BeginStructure();
+            sut.EndStructure();
+            sut.Result.ShouldBe<JsonMap>()
+                .And.Count.ShouldBe(0);
+        }
+
+        [Test]
+        public void SinglePropertyStructure()
+        {
+            sut.BeginStructure();
+            sut.AddProperty("foo");
+            sut.WriteValue(1);
+            sut.EndStructure();
+            sut.Result.ShouldBe<JsonMap>()
+                .And["foo"].ShouldBe<JsonValue>()
+                    .And.Value.ShouldBe(1);
+        }
+
+        [Test]
+        public void TwoPropertyStructure()
+        {
+            sut.BeginStructure();
+            sut.AddProperty("foo");
+            sut.WriteValue(1);
+            sut.AddProperty("bar");
+            sut.WriteValue(2);
+            sut.EndStructure();
+
+            sut.Result.ShouldBe<JsonMap>()
+                .And(map => map["foo"].ShouldBe<JsonValue>()
+                    .And.Value.ShouldBe(1))
+                .And(map => map["bar"].ShouldBe<JsonValue>()
+                    .And.Value.ShouldBe(2));
+        }
+
+        [Test]
+        public void NestedStructures()
+        {
+            sut.BeginStructure();
+            sut.AddProperty("foo");
+            sut.BeginStructure();
+            sut.AddProperty("bar");
+            sut.WriteValue(1);
+            sut.EndStructure();
+            sut.AddProperty("baz");
+            sut.WriteValue(2);
+            sut.EndStructure();
+
+            sut.Result.ShouldBe<JsonMap>()
+                .And(map => map["foo"].ShouldBe<JsonMap>()
+                    .And.Value("bar").ShouldBe(1))
+                .And(map => map["baz"].ShouldBe<JsonValue>()
+                    .And.Value.ShouldBe(2));
+        }
+
+        [Test]
+        public void EmptySequence()
+        {
+            sut.BeginSequence();
+            sut.EndSequence();
+
+            sut.Result.ShouldBe<JsonArray>()
+                .And.ShouldBeEmpty();
+        }
+
+        [Test]
+        public void SingleItemSequence()
+        {
+            sut.BeginSequence();
+            sut.WriteValue(1);
+            sut.EndSequence();
+
+            sut.Result.ShouldBe<JsonArray>()
+                .And.Values().ShouldBe(new object[] { 1 });
+        }
+
+        [Test]
+        public void TwoItemSequence()
+        {
+            sut.BeginSequence();
+            sut.WriteValue(1);
+            sut.WriteValue(2);
+            sut.EndSequence();
+
+            sut.Result.ShouldBe<JsonArray>()
+                .And.Values().ShouldBe(new object[] { 1, 2 });
+        }
+
+        [Test]
+        public void NestedSequences()
+        {
+            sut.BeginSequence();
+            sut.BeginSequence();
+            sut.WriteValue(1);
+            sut.EndSequence();
+            sut.WriteValue(2);
+            sut.EndSequence();
+
+            sut.Result.ShouldBe<JsonArray>()
+                .And.ItemsSatisfy(
+                    first => first.ShouldBe<JsonArray>()
+                        .And.Single().Value().ShouldBe(1),
+                    second => second.Value().ShouldBe(2));
+        }
+
+        [Test]
+        public void SequenceInsideStructure()
+        {
+            sut.BeginStructure();
+            sut.AddProperty("foo");
+            sut.BeginSequence();
+            sut.WriteValue(1);
+            sut.EndSequence();
+            sut.EndStructure();
+
+            sut.Result.ShouldBe<JsonMap>()
+                .And["foo"].ShouldBe<JsonArray>()
+                    .And.Single().Value().ShouldBe(1);
+        }
+
+        [Test]
+        public void StructureInsideSequence()
+        {
+            sut.BeginSequence();
+            sut.BeginStructure();
+            sut.AddProperty("foo");
+            sut.WriteValue(1);
+            sut.EndStructure();
+            sut.EndSequence();
+
+            sut.Result.ShouldBe<JsonArray>()
+                .And.Single().ShouldBe<JsonMap>()
+                    .And["foo"].Value().ShouldBe(1);
+        }
+    }
+}

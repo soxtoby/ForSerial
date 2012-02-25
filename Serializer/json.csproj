@@ -71,6 +71,7 @@
     <Compile Include="JsonObjects\Input\JsonObjectReader.cs" />
     <Compile Include="JsonObjects\JsonObject.cs" />
     <Compile Include="JsonObjects\Output\JsonObjectBuilder.cs" />
+    <Compile Include="JsonObjects\Output\JsonObjectWriter.cs" />
     <Compile Include="JsonObjects\PreDeserializeAttribute.cs" />
     <Compile Include="Json\Output\JsonStringArray.cs" />
     <Compile Include="Json\Output\JsonStringBoolean.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Json\Output\JsonStringObject.cs" />
     <Compile Include="Json\Output\JsonStringObjectReference.cs" />
     <Compile Include="Json\Output\JsonStringString.cs" />
+    <Compile Include="Json\Output\JsonStringWriter.cs" />
     <Compile Include="Objects\ConstructorDefinition.cs" />
     <Compile Include="Objects\DefaultTypeHandler.cs" />
     <Compile Include="Objects\DynamicMethodProvider.cs" />
@@ -122,6 +124,7 @@
     </Compile>
     <Compile Include="Objects\TypeDefinitions\ValueTypeDefinition.cs" />
     <Compile Include="Objects\TypeHandler.cs" />
+    <Compile Include="Output\NewWriter.cs" />
     <Compile Include="Output\NullOutputs.cs" />
     <Compile Include="Objects\Input\ObjectReader.cs" />
     <Compile Include="Objects\Output\TypedObjectBuilder.cs" />

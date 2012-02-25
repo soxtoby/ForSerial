@@ -46,9 +46,11 @@
   <ItemGroup>
     <Compile Include="JsonObjects\Input\JsonObjectReaderTests.cs" />
     <Compile Include="JsonObjects\Output\JsonObjectBuilderTests.cs" />
+    <Compile Include="JsonObjects\Output\JsonObjectWriterTests.cs" />
     <Compile Include="Json\Input\JsonReaderTests.cs" />
     <Compile Include="Json\Input\ScannerTests.cs" />
     <Compile Include="Json\Output\JsonStringBuilderTests.cs" />
+    <Compile Include="Json\Output\JsonStringWriterTests.cs" />
     <Compile Include="Objects\Input\ObjectReaderTests.cs" />
     <Compile Include="Objects\Output\DynamicMethodProviderStructTests.cs" />
     <Compile Include="Objects\Output\DynamicMethodProviderClassTests.cs" />
@@ -58,6 +60,7 @@
     <Compile Include="Output\TestOutputs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionTesting.cs" />
+    <Compile Include="EasyAssertions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

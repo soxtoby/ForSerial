@@ -42,7 +42,8 @@ namespace json
     {
         public static ConversionExtensionPoint Json(this Convert convert, string json)
         {
-            return ConversionExtensionPoint.Create(b => JsonParser.Parse(json, b));
+            return null;
+            //return ConversionExtensionPoint.Create(b => JsonParser.Parse(json, b));   // TODO probably just remove all this crappy fluent stuff
         }
 
         public static ConversionExtensionPoint JsonObject(this Convert convert, JsonObject obj)
