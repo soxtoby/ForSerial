@@ -169,7 +169,7 @@ namespace json.Objects
         {
             PropertyDefinition property = Properties.Get(name);
             if (property != null)
-                return property.Writer;
+                return property.GetWriter();
             return NullTypedWriter.Instance;
         }
 

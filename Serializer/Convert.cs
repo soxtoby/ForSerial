@@ -71,7 +71,7 @@ namespace json
         public static string ToJson(this ConversionExtensionPoint parser, JsonStringBuilder.Options options = JsonStringBuilder.Options.Default)
         {
             JsonStringBuilder jsonStringBuilder = options == JsonStringBuilder.Options.Default
-                ? JsonStringBuilder.Default
+                ? JsonStringBuilder.GetDefault()
                 : new JsonStringBuilder(options);
             Output result = parser.WithBuilder(jsonStringBuilder);
             return JsonStringBuilder.GetResult(result.AsStructure());

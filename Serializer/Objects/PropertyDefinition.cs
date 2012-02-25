@@ -22,9 +22,9 @@ namespace json.Objects
         public bool CanGet { get { return getter != null; } }
         public bool CanSet { get { return setter != null; } }
 
-        public Writer Writer
+        public Writer GetWriter()
         {
-            get { return new TypedObjectBuilder(TypeDef.Type); }
+            return new TypedObjectBuilder(TypeDef.Type);
         }
 
         public object GetFrom(object source)

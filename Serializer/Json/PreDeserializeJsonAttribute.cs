@@ -8,7 +8,7 @@ namespace json.Json
 
         public override Writer GetWriter()
         {
-            return JsonStringBuilder.Default;
+            return JsonStringBuilder.GetDefault();
         }
 
         public override object GetContextValue(Output parsedContext)

@@ -10,28 +10,30 @@ namespace json.Tests.Json
         [Test]
         public void StringIsEscaped()
         {
-            Output parseString = JsonStringBuilder.Default.CreateValue("\"foo\\bar\"");
+            Output parseString = JsonStringBuilder.GetDefault().CreateValue("\"foo\\bar\"");
             Assert.AreEqual(@"{""value"":""\""foo\\bar\""""}", JsonStringBuilder.GetResult(parseString.AsStructure()));
         }
 
         [Test]
         public void NumberIsWrappedInObject()
         {
-            Output number = JsonStringBuilder.Default.CreateValue(5);
+            Output number = JsonStringBuilder.GetDefault().CreateValue(5);
             Assert.AreEqual("{\"value\":5}", JsonStringBuilder.GetResult(number.AsStructure()));
         }
 
         [Test]
         public void StringIsWrappedInObject()
         {
-            Output str = JsonStringBuilder.Default.CreateValue("foo");
+            Output str = JsonStringBuilder.GetDefault().CreateValue("foo");
             Assert.AreEqual("{\"value\":\"foo\"}", JsonStringBuilder.GetResult(str.AsStructure()));
         }
 
         [Test]
         public void ArrayIsWrappedInObject()
         {
-            SequenceOutput array = JsonStringBuilder.Default.CreateSequence();
+            JsonStringBuilder sut = JsonStringBuilder.GetDefault();
+            SequenceOutput array = sut.BeginSequence();
+            sut.EndSequence();
             Assert.AreEqual("{\"items\":[]}", JsonStringBuilder.GetResult(array.AsStructure()));
         }
 
@@ -59,4 +61,5 @@ namespace json.Tests.Json
         }
     }
 }
+
 

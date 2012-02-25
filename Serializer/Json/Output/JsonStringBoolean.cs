@@ -22,6 +22,7 @@ namespace json.Json
             {
                 JsonStringObject obj = new JsonStringObject();
                 obj.AddBoolean("value", value);
+                obj.EndStructure();
                 return obj;
             }
 

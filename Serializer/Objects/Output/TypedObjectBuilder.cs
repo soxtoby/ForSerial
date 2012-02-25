@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace json.Objects
 {
@@ -19,6 +20,8 @@ namespace json.Objects
             get { return instance ?? (instance = new TypedObjectBuilder()); }
         }
 
+        private readonly Stack<Output> outputs = new Stack<Output>();
+
         public static T GetResult<T>(Output value)
         {
             TypedSequence array = value as TypedSequence;
@@ -29,8 +32,8 @@ namespace json.Objects
             if (obj == null)
                 throw new InvalidResultObject();
 
-            TypeDefinition outputTypeDef = CurrentTypeHandler.GetTypeDefinition(typeof (T));
-            return (T)outputTypeDef.ConvertToCorrectType( obj.Object);
+            TypeDefinition outputTypeDef = CurrentTypeHandler.GetTypeDefinition(typeof(T));
+            return (T)outputTypeDef.ConvertToCorrectType(obj.Object);
         }
 
         public Output CreateValue(object value)
@@ -49,33 +52,52 @@ namespace json.Objects
             return valueTypeDef.CreateValue(value);
         }
 
-        public virtual OutputStructure CreateStructure()
+        public virtual OutputStructure BeginStructure()
         {
             if (baseType == null)
-                return new TypedObjectOutputStructure();
+            {
+                TypedObjectOutputStructure emptyObj = new TypedObjectOutputStructure();
+                outputs.Push(emptyObj);
+                return emptyObj;
+            }
 
             TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(baseType);
             TypedObjectOutputStructure obj = typeDef.IsDeserializable
                 ? new TypedObjectOutputStructure(typeDef)
                 : new TypedObjectOutputStructure();
 
+            outputs.Push(obj);
+
             baseType = null;    // Only needed for first object
             return obj;
         }
 
-        public SequenceOutput CreateSequence()
+        public SequenceOutput BeginSequence()
         {
             if (baseType == null)
                 throw new UnknownRootArrayType();
 
             TypedSequence array = CurrentTypeHandler.GetTypeDefinition(baseType).CreateSequence();
+            outputs.Push(array);
+
             baseType = null;    // Only needed for first object
+
             return array;
         }
 
         public OutputStructure CreateReference(OutputStructure outputStructure)
         {
             return outputStructure;
+        }
+
+        public void EndStructure()
+        {
+            outputs.Pop();
+        }
+
+        public void EndSequence()
+        {
+            outputs.Pop();
         }
 
         internal class TypedObjectSubBuilder : TypedObjectBuilder
@@ -88,13 +110,15 @@ namespace json.Objects
                 this.baseObject = baseObject;
             }
 
-            public override OutputStructure CreateStructure()
+            public override OutputStructure BeginStructure()
             {
                 if (!isBase)
-                    return base.CreateStructure();
+                    return base.BeginStructure();
 
                 isBase = false;
-                return new TypedObjectOutputStructure(baseObject);
+                TypedObjectOutputStructure obj = new TypedObjectOutputStructure(baseObject);
+                outputs.Push(obj);
+                return obj;
             }
         }
 

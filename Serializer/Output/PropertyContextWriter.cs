@@ -17,14 +17,24 @@ namespace json
             return propertyOwner.CreateValue(propertyName, baseFactory, value);
         }
 
-        public override OutputStructure CreateStructure()
+        public override OutputStructure BeginStructure()
         {
-            return propertyOwner.CreateStructure(propertyName, baseFactory);
+            return propertyOwner.BeginStructure(propertyName, baseFactory);
         }
 
-        public override SequenceOutput CreateSequence()
+        public override SequenceOutput BeginSequence()
         {
-            return propertyOwner.CreateSequence(propertyName, baseFactory);
+            return propertyOwner.BeginSequence(propertyName, baseFactory);
+        }
+
+        public override void EndStructure()
+        {
+            propertyOwner.EndStructure(baseFactory);
+        }
+
+        public override void EndSequence()
+        {
+            propertyOwner.EndSequence(baseFactory);
         }
     }
 }

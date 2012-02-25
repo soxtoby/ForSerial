@@ -10,8 +10,10 @@ namespace json
         }
 
         public abstract Output CreateValue(object value);
-        public abstract OutputStructure CreateStructure();
-        public abstract SequenceOutput CreateSequence();
+        public abstract OutputStructure BeginStructure();
+        public abstract SequenceOutput BeginSequence();
+        public abstract void EndStructure();
+        public abstract void EndSequence();
 
         public OutputStructure CreateReference(OutputStructure outputStructure)
         {

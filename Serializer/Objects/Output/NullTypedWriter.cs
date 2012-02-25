@@ -11,19 +11,27 @@ namespace json.Objects
             return NullNullOutput.Value;
         }
 
-        public OutputStructure CreateStructure()
+        public OutputStructure BeginStructure()
         {
-            return NullTypedObject.Instance.CreateStructure(null);
+            return NullTypedObject.Instance.BeginStructure(null);
         }
 
-        public SequenceOutput CreateSequence()
+        public SequenceOutput BeginSequence()
         {
             return TypedNullArray.Instance;
         }
 
         public OutputStructure CreateReference(OutputStructure outputStructure)
         {
-            return CreateStructure();
+            return BeginStructure();
+        }
+
+        public void EndStructure()
+        {
+        }
+
+        public void EndSequence()
+        {
         }
     }
 }

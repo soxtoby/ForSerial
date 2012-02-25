@@ -63,7 +63,7 @@ namespace json.JsonObjects
         {
             currentObject = obj;
 
-            OutputStructure outputStructure = objectReferences[obj] = writer.Current.CreateStructure();
+            OutputStructure outputStructure = objectReferences[obj] = writer.Current.BeginStructure();
 
             foreach (var property in obj)
             {
@@ -78,6 +78,8 @@ namespace json.JsonObjects
                 }
             }
 
+            writer.Current.EndStructure();
+
             return outputStructure;
         }
 
@@ -88,13 +90,15 @@ namespace json.JsonObjects
 
         private SequenceOutput ReadArray(IEnumerable enumerable)
         {
-            SequenceOutput array = writer.Current.CreateSequence();
+            SequenceOutput array = writer.Current.BeginSequence();
 
             using (UseArrayContext(array))
             {
                 foreach (object item in enumerable)
                     ReadValue(item).AddToSequence(array);
             }
+
+            writer.Current.EndSequence();
 
             return array;
         }

@@ -15,14 +15,24 @@ namespace json
             return sequence.CreateValue(baseFactory, value);
         }
 
-        public override OutputStructure CreateStructure()
+        public override OutputStructure BeginStructure()
         {
-            return sequence.CreateStructure(baseFactory);
+            return sequence.BeginStructure(baseFactory);
         }
 
-        public override SequenceOutput CreateSequence()
+        public override SequenceOutput BeginSequence()
         {
-            return sequence.CreateSequence(baseFactory);
+            return sequence.BeginSequence(baseFactory);
+        }
+
+        public override void EndStructure()
+        {
+            sequence.EndStructure(baseFactory);
+        }
+
+        public override void EndSequence()
+        {
+            sequence.EndSequence(baseFactory);
         }
     }
 }

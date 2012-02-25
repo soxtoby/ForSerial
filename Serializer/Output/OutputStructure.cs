@@ -10,7 +10,9 @@ namespace json
         /// </returns>
         bool SetType(string typeIdentifier, Reader reader);
         Output CreateValue(string name, Writer valueFactory, object value);
-        OutputStructure CreateStructure(string name, Writer valueFactory);
-        SequenceOutput CreateSequence(string name, Writer valueFactory);
+        OutputStructure BeginStructure(string name, Writer valueFactory);
+        SequenceOutput BeginSequence(string name, Writer valueFactory);
+        void EndStructure(Writer baseFactory);
+        void EndSequence(Writer baseFactory);
     }
 }

@@ -7,7 +7,9 @@
         object Object { get; }
         void AddProperty(string name, TypedValue value);
         Output CreateValue(string name, object value);
-        OutputStructure CreateStructure(string name);
-        SequenceOutput CreateSequence(string name);
+        OutputStructure BeginStructure(string name);
+        SequenceOutput BeginSequence(string name);
+        void EndStructure();
+        void EndSequence();
     }
 }

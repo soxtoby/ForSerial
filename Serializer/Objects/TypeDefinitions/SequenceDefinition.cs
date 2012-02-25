@@ -18,12 +18,14 @@ namespace json.Objects.TypeDefinitions
             IEnumerable inputArray = input as IEnumerable;
             if (inputArray == null) return null;
 
-            SequenceOutput output = valueFactory.CreateSequence();
+            SequenceOutput output = valueFactory.BeginSequence();
 
             foreach (object item in inputArray)
             {
                 valueFactory.ReadArrayItem(output, item);
             }
+
+            valueFactory.EndSequence();
 
             return output;
         }

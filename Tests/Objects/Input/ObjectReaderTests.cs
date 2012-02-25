@@ -127,7 +127,7 @@ namespace json.Tests.Objects
         {
             public string SubStructureJson { get; set; }
 
-            public override OutputStructure CreateStructure()
+            public override OutputStructure BeginStructure()
             {
                 return new ReadSubStructureObject(this);
             }
@@ -286,12 +286,12 @@ namespace json.Tests.Objects
 
         private class ValueOnlyWriter : TestWriter
         {
-            public override OutputStructure CreateStructure()
+            public override OutputStructure BeginStructure()
             {
                 throw new AssertionException("Tried to create an object.");
             }
 
-            public override SequenceOutput CreateSequence()
+            public override SequenceOutput BeginSequence()
             {
                 throw new AssertionException("Tried to create an array.");
             }

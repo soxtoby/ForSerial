@@ -10,6 +10,7 @@ namespace json.Objects
         public TypeDefinition TypeDef { get; private set; }
         private readonly TypeDefinition keyTypeDef;
         private readonly TypeDefinition valueTypeDef;
+        private readonly Stack<Output> outputs = new Stack<Output>();
 
         public TypedDictionary(TypeDefinition typeDef)
         {
@@ -28,14 +29,28 @@ namespace json.Objects
             return valueTypeDef.CreateValue(value);
         }
 
-        public OutputStructure CreateStructure(string name)
+        public OutputStructure BeginStructure(string name)
         {
-            return new TypedObjectOutputStructure(valueTypeDef);
+            TypedObjectOutputStructure obj = new TypedObjectOutputStructure(valueTypeDef);
+            outputs.Push(obj);
+            return obj;
         }
 
-        public SequenceOutput CreateSequence(string name)
+        public SequenceOutput BeginSequence(string name)
         {
-            return valueTypeDef.CreateSequence();
+            TypedSequence array = valueTypeDef.CreateSequence();
+            outputs.Push(array);
+            return array;
+        }
+
+        public void EndStructure()
+        {
+            outputs.Pop();
+        }
+
+        public void EndSequence()
+        {
+            outputs.Pop();
         }
 
         public void AssignToProperty(object owner, PropertyDefinition property)

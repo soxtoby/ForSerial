@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using json.Objects.TypeDefinitions;
 
 namespace json.Objects
@@ -8,6 +9,7 @@ namespace json.Objects
     {
         private readonly CollectionDefinition collectionDef;
         private readonly IEnumerable typedArray;
+        private readonly Stack<Output> outputs = new Stack<Output>();
 
         public TypedObjectTypedArray(CollectionDefinition collectionDefinition)
         {
@@ -48,14 +50,28 @@ namespace json.Objects
             return collectionDef.ItemTypeDef.CreateValue(value);
         }
 
-        public override OutputStructure CreateStructure(Writer valueFactory)
+        public override OutputStructure BeginStructure(Writer valueFactory)
         {
-            return new TypedObjectOutputStructure(collectionDef.ItemTypeDef);
+            TypedObjectOutputStructure obj = new TypedObjectOutputStructure(collectionDef.ItemTypeDef);
+            outputs.Push(obj);
+            return obj;
         }
 
-        public override SequenceOutput CreateSequence(Writer valueFactory)
+        public override SequenceOutput BeginSequence(Writer valueFactory)
         {
-            return collectionDef.ItemTypeDef.CreateSequence();
+            TypedSequence array = collectionDef.ItemTypeDef.CreateSequence();
+            outputs.Push(array);
+            return array;
+        }
+
+        public override void EndStructure(Writer writer)
+        {
+            outputs.Pop();
+        }
+
+        public override void EndSequence(Writer writer)
+        {
+            outputs.Pop();
         }
 
         private static IEnumerable PopulateCollection(TypeDefinition collectionType, IEnumerable items, Func<object> getCollection)

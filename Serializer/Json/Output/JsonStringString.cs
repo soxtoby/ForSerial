@@ -20,6 +20,7 @@ namespace json.Json
             {
                 JsonStringObject obj = new JsonStringObject();
                 obj.AddString("value", value);
+                obj.EndStructure();
                 return obj;
             }
 

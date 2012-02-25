@@ -1,9 +1,14 @@
+I want JsonString output objects to take in a JsonStringWriter for outputting text. Two implementations: one with pretty formatting and one without.
+JsonStringWriter should write to a TextWriter to allow streaming scenarios.
+Current issue is that structures are never 'closed', so the full string can't be built until GetResult is called.
+Investigate not returning Outputs to Reader and having Writer maintain a stack instead.
+
+
 Make PartiallyTypedJsonStringBuilder that only adds type information when necessary.
  - Should automatically add type info when source is interface or abstract
  - Add attribute that forces type information.
 Allow override of type resolution.
 Test duplicate value types - will probably incorrectly create references at the moment.
-Generate and cache DynamicMethods for getting and setting properties. http://www.codeproject.com/KB/cs/Dynamic_Code_Generation.aspx
 Test nullable value type properties.
 Turn all singleton properties into public readonly fields.
 Don't require output to be an object. Get rid of AsStructure if possible.

@@ -33,14 +33,22 @@ namespace json.Objects
             return TypedNull.Value;
         }
 
-        public OutputStructure CreateStructure(string name)
+        public OutputStructure BeginStructure(string name)
         {
             return new TypedObjectOutputStructure(Instance);
         }
 
-        public SequenceOutput CreateSequence(string name)
+        public SequenceOutput BeginSequence(string name)
         {
             return TypedNullArray.Instance;
+        }
+
+        public void EndStructure()
+        {
+        }
+
+        public void EndSequence()
+        {
         }
     }
 }

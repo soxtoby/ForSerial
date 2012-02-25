@@ -8,11 +8,9 @@ namespace json.JsonObjects
     {
         private JsonObjectBuilder() { }
 
-        private static JsonObjectBuilder instance;
-        public static JsonObjectBuilder Instance
-        {
-            get { return instance ?? (instance = new JsonObjectBuilder()); }
-        }
+        public static readonly JsonObjectBuilder Instance = new JsonObjectBuilder();
+
+        private readonly Stack<Output> outputs = new Stack<Output>();
 
         public static object GetResult(Output obj)
         {
@@ -46,19 +44,33 @@ namespace json.JsonObjects
             }
         }
 
-        public OutputStructure CreateStructure()
+        public OutputStructure BeginStructure()
         {
-            return new JsonObjectObject();
+            JsonObjectObject obj = new JsonObjectObject();
+            outputs.Push(obj);
+            return obj;
         }
 
-        public SequenceOutput CreateSequence()
+        public SequenceOutput BeginSequence()
         {
-            return new JsonObjectArray();
+            JsonObjectArray array = new JsonObjectArray();
+            outputs.Push(array);
+            return array;
         }
 
         public OutputStructure CreateReference(OutputStructure outputStructure)
         {
             return outputStructure;
+        }
+
+        public void EndStructure()
+        {
+            outputs.Pop();
+        }
+
+        public void EndSequence()
+        {
+            outputs.Pop();
         }
 
         internal class InvalidResultObject : Exception

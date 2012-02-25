@@ -4,6 +4,7 @@ namespace json.Objects
 {
     internal abstract class TypedObjectBase : TypedObject
     {
+        private Writer currentPropertyWriter;
         public TypeDefinition TypeDef { get; protected set; }
         public abstract object Object { get; }
         public abstract void AddProperty(string name, TypedValue value);
@@ -22,16 +23,26 @@ namespace json.Objects
             return propertyWriter.CreateValue(value);
         }
 
-        public OutputStructure CreateStructure(string name)
+        public OutputStructure BeginStructure(string name)
         {
-            Writer propertyWriter = TypeDef.GetWriterForProperty(name);
-            return propertyWriter.CreateStructure();
+            currentPropertyWriter = TypeDef.GetWriterForProperty(name);
+            return currentPropertyWriter.BeginStructure();
         }
 
-        public SequenceOutput CreateSequence(string name)
+        public SequenceOutput BeginSequence(string name)
         {
-            Writer propertyWriter = TypeDef.GetWriterForProperty(name);
-            return propertyWriter.CreateSequence();
+            currentPropertyWriter = TypeDef.GetWriterForProperty(name);
+            return currentPropertyWriter.BeginSequence();
+        }
+
+        public void EndStructure()
+        {
+            currentPropertyWriter.EndStructure();
+        }
+
+        public void EndSequence()
+        {
+            currentPropertyWriter.EndSequence();
         }
 
         internal class PropertyTypeMismatch : Exception

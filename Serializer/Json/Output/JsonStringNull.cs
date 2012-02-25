@@ -16,6 +16,7 @@ namespace json.Json
             {
                 JsonStringObject obj = new JsonStringObject();
                 obj.AddNull("value");
+                obj.EndStructure();
                 return obj;
             }
 

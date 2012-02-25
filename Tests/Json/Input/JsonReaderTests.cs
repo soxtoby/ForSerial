@@ -102,7 +102,7 @@ namespace json.Tests.Json
 
         private class ParseSubObjectWriter : TestWriter
         {
-            public override OutputStructure CreateStructure()
+            public override OutputStructure BeginStructure()
             {
                 return new ParseSubObjectObject(this);
             }
@@ -121,7 +121,7 @@ namespace json.Tests.Json
 
             public override bool SetType(string typeIdentifier, Reader reader)
             {
-                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(reader.ReadSubStructure(JsonStringBuilder.Default));
+                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(reader.ReadSubStructure(JsonStringBuilder.GetDefault()));
                 return true;
             }
         }

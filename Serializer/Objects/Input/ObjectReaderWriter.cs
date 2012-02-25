@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace json.Objects
 {
     public partial class ObjectReader
@@ -7,6 +9,7 @@ namespace json.Objects
         {
             private readonly ObjectReader reader;
             private readonly bool setType;
+            private readonly Stack<Output> outputs = new Stack<Output>();
 
             public ObjectReaderWriter(ObjectReader reader, bool setType = true)
             {
@@ -52,7 +55,7 @@ namespace json.Objects
 
             public OutputStructure CreateStructure(object input)
             {
-                OutputStructure obj = reader.writer.Current.CreateStructure();
+                OutputStructure obj = reader.writer.Current.BeginStructure();
                 if (reader.options.SerializeAllTypeInformation || setType)
                     obj.SetType(CurrentTypeHandler.GetTypeIdentifier(input.GetType()), reader);
                 reader.objectReferences[input] = obj;
@@ -64,19 +67,29 @@ namespace json.Objects
                 return reader.writer.Current.CreateValue(value);
             }
 
-            public OutputStructure CreateStructure()
+            public OutputStructure BeginStructure()
             {
-                return reader.writer.Current.CreateStructure();
+                return reader.writer.Current.BeginStructure();
             }
 
-            public SequenceOutput CreateSequence()
+            public SequenceOutput BeginSequence()
             {
-                return reader.writer.Current.CreateSequence();
+                return reader.writer.Current.BeginSequence();
             }
 
             public OutputStructure CreateReference(OutputStructure outputStructure)
             {
                 return reader.writer.Current.CreateReference(outputStructure);
+            }
+
+            public void EndStructure()
+            {
+                reader.writer.Current.EndStructure();
+            }
+
+            public void EndSequence()
+            {
+                reader.writer.Current.EndSequence();
             }
         }
     }

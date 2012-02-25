@@ -11,14 +11,24 @@ namespace json
             return valueFactory.CreateValue(value);
         }
 
-        public virtual OutputStructure CreateStructure(Writer valueFactory)
+        public virtual OutputStructure BeginStructure(Writer valueFactory)
         {
-            return valueFactory.CreateStructure();
+            return valueFactory.BeginStructure();
         }
 
-        public virtual SequenceOutput CreateSequence(Writer valueFactory)
+        public virtual SequenceOutput BeginSequence(Writer valueFactory)
         {
-            return valueFactory.CreateSequence();
+            return valueFactory.BeginSequence();
+        }
+
+        public virtual void EndStructure(Writer writer)
+        {
+            writer.EndStructure();
+        }
+
+        public virtual void EndSequence(Writer writer)
+        {
+            writer.EndSequence();
         }
     }
 }

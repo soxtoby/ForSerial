@@ -22,6 +22,8 @@ namespace json.Objects.TypeDefinitions
                 valueFactory.ReadProperty(input, property.Key, output);
             }
 
+            valueFactory.EndStructure();
+
             return output;
         }
 

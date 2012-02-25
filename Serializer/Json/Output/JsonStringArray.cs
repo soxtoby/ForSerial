@@ -36,6 +36,11 @@ namespace json.Json
                 json.Append(value);
             }
 
+            public void EndSequence()
+            {
+                json.Append("]");
+            }
+
             private void AppendComma()
             {
                 if (isFirstItem)
@@ -48,12 +53,13 @@ namespace json.Json
             {
                 JsonStringObject obj = new JsonStringObject();
                 obj.AddRegularProperty("items", this);
+                obj.EndStructure();
                 return obj;
             }
 
             public override string ToString()
             {
-                return json + "]";
+                return json.ToString();
             }
 
             public override void AddToStructure(OutputStructure structure, string name)

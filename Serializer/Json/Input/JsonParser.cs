@@ -128,7 +128,7 @@ namespace json.Json
 
             if (IsSymbol("}"))
             {
-                obj = writer.Current.CreateStructure();
+                obj = writer.Current.BeginStructure();
             }
             else
             {
@@ -153,6 +153,8 @@ namespace json.Json
             }
 
             ExpectSymbol("}");
+
+            writer.Current.EndStructure();
 
             return obj;
         }
@@ -200,7 +202,7 @@ namespace json.Json
                     return;
                 }
 
-                OutputStructure = parser.writer.Current.CreateStructure();
+                OutputStructure = parser.writer.Current.BeginStructure();
 
                 if (name == "_type")
                 {
@@ -287,7 +289,7 @@ namespace json.Json
         {
             ExpectSymbol("[");
 
-            SequenceOutput array = writer.Current.CreateSequence();
+            SequenceOutput array = writer.Current.BeginSequence();
 
             if (!IsSymbol("]"))
             {
@@ -301,6 +303,8 @@ namespace json.Json
             }
 
             ExpectSymbol("]");
+
+            writer.Current.EndSequence();
 
             return array;
         }

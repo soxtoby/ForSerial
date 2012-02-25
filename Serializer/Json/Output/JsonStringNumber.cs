@@ -10,6 +10,7 @@ namespace json.Json
             {
                 JsonStringObject obj = new JsonStringObject();
                 obj.AddRegularProperty("value", value);
+                obj.EndStructure();
                 return obj;
             }
 

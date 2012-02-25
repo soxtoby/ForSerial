@@ -87,7 +87,7 @@ namespace json.Tests.JsonObjects
         {
             public string SubObjectJson { get; set; }
 
-            public override OutputStructure CreateStructure()
+            public override OutputStructure BeginStructure()
             {
                 return new ReadSubStructureObject(this);
             }
@@ -104,7 +104,7 @@ namespace json.Tests.JsonObjects
 
             public override bool SetType(string typeIdentifier, Reader reader)
             {
-                Output jsonStringValue = reader.ReadSubStructure(JsonStringBuilder.Default);
+                Output jsonStringValue = reader.ReadSubStructure(JsonStringBuilder.GetDefault());
                 parentFactory.SubObjectJson = JsonStringBuilder.GetResult(jsonStringValue);
                 return true;
             }

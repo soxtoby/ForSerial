@@ -31,6 +31,11 @@ namespace json.Json
                 json.Append('"').Append(value).Append('"');
             }
 
+            public void EndStructure()
+            {
+                json.Append("}");
+            }
+
             internal void AddRegularProperty(string name, object value)
             {
                 AppendDelimiter();
@@ -53,7 +58,7 @@ namespace json.Json
 
             public override string ToString()
             {
-                return json + "}";
+                return json.ToString();
             }
 
             public override void AddToStructure(OutputStructure structure, string name)

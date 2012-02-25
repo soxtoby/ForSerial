@@ -9,17 +9,16 @@ namespace json.Json
         private readonly Options options;
         private readonly Dictionary<OutputStructure, uint> objectReferences = new Dictionary<OutputStructure, uint>();
         private uint currentReferenceId;
+        private readonly Stack<Output> outputs = new Stack<Output>();
 
         public JsonStringBuilder(Options options = Options.Default)
         {
             this.options = options;
         }
 
-        private static JsonStringBuilder defaultInstance;
-
-        public static JsonStringBuilder Default
+        public static JsonStringBuilder GetDefault()
         {
-            get { return defaultInstance ?? (defaultInstance = new JsonStringBuilder()); }
+            return new JsonStringBuilder();
         }
 
         public static string GetResult(Output obj)
@@ -57,16 +56,24 @@ namespace json.Json
             }
         }
 
-        public virtual OutputStructure CreateStructure()
+        public OutputStructure BeginStructure()
         {
-            JsonStringObject newObject = new JsonStringObject();
+            JsonStringObject newObject = CreateJsonStringStructure();
+            outputs.Push(newObject);
             objectReferences[newObject] = currentReferenceId++;
             return newObject;
         }
 
-        public SequenceOutput CreateSequence()
+        protected virtual JsonStringObject CreateJsonStringStructure()
         {
-            return new JsonStringArray();
+            return new JsonStringObject();
+        }
+
+        public SequenceOutput BeginSequence()
+        {
+            JsonStringArray newArray = new JsonStringArray();
+            outputs.Push(newArray);
+            return newArray;
         }
 
         public OutputStructure CreateReference(OutputStructure outputStructure)
@@ -74,6 +81,18 @@ namespace json.Json
             return MaintainObjectReferences
                 ? (OutputStructure)new JsonStringObjectReference(objectReferences[outputStructure])
                 : new JsonStringObject();
+        }
+
+        public void EndStructure()
+        {
+            JsonStringObject obj = (JsonStringObject)outputs.Pop();// TODO throw exception if not object
+            obj.EndStructure();
+        }
+
+        public void EndSequence()
+        {
+            JsonStringArray array = (JsonStringArray)outputs.Pop(); // TODO throw exception if not array
+            array.EndSequence();
         }
 
         private bool MaintainObjectReferences
@@ -107,7 +126,7 @@ namespace json.Json
             get { return instance ?? (instance = new TypedJsonStringBuilder()); }
         }
 
-        public override OutputStructure CreateStructure()
+        protected override JsonStringObject CreateJsonStringStructure()
         {
             return new TypedJsonStringObject();
         }

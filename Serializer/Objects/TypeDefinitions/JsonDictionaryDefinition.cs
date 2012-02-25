@@ -44,6 +44,8 @@ namespace json.Objects.TypeDefinitions
                 valueFactory.ReadProperty(valueTypeDef, name, value, output);
             }
 
+            valueFactory.EndStructure();
+
             return output;
         }
 

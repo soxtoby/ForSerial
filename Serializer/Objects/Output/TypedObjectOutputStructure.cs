@@ -68,16 +68,26 @@ namespace json.Objects
             return typedObject.CreateValue(name, value);
         }
 
-        public override OutputStructure CreateStructure(string name, Writer valueFactory)
+        public override OutputStructure BeginStructure(string name, Writer valueFactory)
         {
             AssertObjectInitialized();
-            return typedObject.CreateStructure(name);
+            return typedObject.BeginStructure(name);
         }
 
-        public override SequenceOutput CreateSequence(string name, Writer valueFactory)
+        public override void EndStructure(Writer baseFactory)
+        {
+            typedObject.EndStructure();
+        }
+
+        public override void EndSequence(Writer baseFactory)
+        {
+            typedObject.EndSequence();
+        }
+
+        public override SequenceOutput BeginSequence(string name, Writer valueFactory)
         {
             AssertObjectInitialized();
-            return typedObject.CreateSequence(name);
+            return typedObject.BeginSequence(name);
         }
 
         private void AssertObjectInitialized()

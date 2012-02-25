@@ -25,12 +25,12 @@ namespace json.Tests
             return new TestOutput();
         }
 
-        public virtual OutputStructure CreateStructure()
+        public virtual OutputStructure BeginStructure()
         {
             return NullOutputStructure.Instance;
         }
 
-        public virtual SequenceOutput CreateSequence()
+        public virtual SequenceOutput BeginSequence()
         {
             return NullSequence.Instance;
         }
@@ -38,6 +38,14 @@ namespace json.Tests
         public virtual OutputStructure CreateReference(OutputStructure outputStructure)
         {
             throw new AssertionException("CreateReference not implemented.");
+        }
+
+        public void EndStructure()
+        {
+        }
+
+        public void EndSequence()
+        {
         }
     }
 
@@ -83,31 +91,31 @@ namespace json.Tests
 
     internal class CustomCreateObject : NullOutputStructure
     {
-        public override OutputStructure CreateStructure(string name, Writer valueFactory)
+        public override OutputStructure BeginStructure(string name, Writer valueFactory)
         {
             ((CustomCreateWriter)valueFactory).ObjectsCreatedFromProperties++;
-            return base.CreateStructure(name, valueFactory);
+            return base.BeginStructure(name, valueFactory);
         }
 
-        public override SequenceOutput CreateSequence(string name, Writer valueFactory)
+        public override SequenceOutput BeginSequence(string name, Writer valueFactory)
         {
             ((CustomCreateWriter)valueFactory).ArraysCreatedFromProperties++;
-            return base.CreateSequence(name, valueFactory);
+            return base.BeginSequence(name, valueFactory);
         }
     }
 
     internal class CustomCreateArray : NullSequence
     {
-        public override OutputStructure CreateStructure(Writer valueFactory)
+        public override OutputStructure BeginStructure(Writer valueFactory)
         {
             ((CustomCreateWriter)valueFactory).ObjectsCreatedFromArrays++;
-            return base.CreateStructure(valueFactory);
+            return base.BeginStructure(valueFactory);
         }
 
-        public override SequenceOutput CreateSequence(Writer valueFactory)
+        public override SequenceOutput BeginSequence(Writer valueFactory)
         {
             ((CustomCreateWriter)valueFactory).ArraysCreatedFromArrays++;
-            return base.CreateSequence(valueFactory);
+            return base.BeginSequence(valueFactory);
         }
     }
 
@@ -118,12 +126,12 @@ namespace json.Tests
         public int ObjectsCreatedFromArrays { get; set; }
         public int ArraysCreatedFromArrays { get; set; }
 
-        public override OutputStructure CreateStructure()
+        public override OutputStructure BeginStructure()
         {
             return new CustomCreateObject();
         }
 
-        public override SequenceOutput CreateSequence()
+        public override SequenceOutput BeginSequence()
         {
             return new CustomCreateArray();
         }
