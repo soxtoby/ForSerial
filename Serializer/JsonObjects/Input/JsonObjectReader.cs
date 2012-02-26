@@ -4,19 +4,19 @@ namespace json.JsonObjects
 {
     public class JsonObjectReader : JObjectVisitor
     {
-        private readonly NewWriter writer;
+        private readonly Writer writer;
         private const string TypeKey = "_type";
         private JsonMap currentObject;
         //private readonly Dictionary<JsonMap, OutputStructure> objectReferences = new Dictionary<JsonMap, OutputStructure>();
 
-        private JsonObjectReader(NewWriter writer)
+        private JsonObjectReader(Writer writer)
         {
             if (writer == null) throw new ArgumentNullException("writer");
 
             this.writer = writer;
         }
 
-        public static void Read(JObject obj, NewWriter writer)
+        public static void Read(JsonObject obj, Writer writer)
         {
             JsonObjectReader reader = new JsonObjectReader(writer);
             reader.ReadValue(obj);
@@ -28,7 +28,7 @@ namespace json.JsonObjects
         //    return Read(currentObject, subWriter);
         //}
 
-        private void ReadValue(JObject input)
+        private void ReadValue(JsonObject input)
         {
             if (input == null)
             {
@@ -79,7 +79,7 @@ namespace json.JsonObjects
         {
             writer.BeginSequence();
 
-            foreach (JObject item in array)
+            foreach (JsonObject item in array)
                 ReadValue(item);
 
             writer.EndSequence();

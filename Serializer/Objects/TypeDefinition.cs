@@ -131,7 +131,7 @@ namespace json.Objects
             return reader == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ReaderMatches(reader));
         }
 
-        public abstract void ReadObject(object input, ObjectReader reader, NewWriter writer);
+        public abstract void ReadObject(object input, ObjectReader reader, Writer writer);
 
         protected static bool ValueIsSerializable(object value)
         {

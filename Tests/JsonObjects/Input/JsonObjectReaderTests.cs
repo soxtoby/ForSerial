@@ -138,7 +138,7 @@ namespace json.Tests.JsonObjects
         //    }
         //}
 
-        private static string ConvertToJson(JObject jsonObject)
+        private static string ConvertToJson(JsonObject jsonObject)
         {
             StringWriter stringWriter = new StringWriter();
             JsonStringWriter writer = new JsonStringWriter(stringWriter);

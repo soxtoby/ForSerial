@@ -255,14 +255,14 @@ namespace json.Tests.Json
             ParseJson("{ \"foo\": [ 5, ] }");
         }
 
-        private static JObject ParseFooProperty(string json)
+        private static JsonObject ParseFooProperty(string json)
         {
-            JObject result = ParseJson(json);
+            JsonObject result = ParseJson(json);
             result.ShouldBe<JsonMap>();
             return result.Get("foo");
         }
 
-        private static JObject ParseJson(string json)
+        private static JsonObject ParseJson(string json)
         {
             JsonObjectWriter writer = new JsonObjectWriter();
             JsonParser.Parse(json, writer);

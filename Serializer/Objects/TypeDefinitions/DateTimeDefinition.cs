@@ -15,7 +15,7 @@ namespace json.Objects.TypeDefinitions
                 : null;
         }
 
-        public override void ReadObject(object input, ObjectReader reader, NewWriter writer)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer)
         {
             DateTime? dateTime = input as DateTime?;
             writer.Write(dateTime == null

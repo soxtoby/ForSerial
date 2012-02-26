@@ -69,7 +69,12 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GeneralExtensions.cs" />
     <Compile Include="JsonObjects\Input\JsonObjectReader.cs" />
+    <Compile Include="JsonObjects\Output\JObjectVisitor.cs" />
+    <Compile Include="JsonObjects\Output\JsonArray.cs" />
+    <Compile Include="JsonObjects\Output\JsonMap.cs" />
+    <Compile Include="JsonObjects\Output\JsonObject.cs" />
     <Compile Include="JsonObjects\Output\JsonObjectWriter.cs" />
+    <Compile Include="JsonObjects\Output\JsonValue.cs" />
     <Compile Include="JsonObjects\PreDeserializeAttribute.cs" />
     <Compile Include="Json\Output\JsonStringWriter.cs" />
     <Compile Include="Objects\ConstructorDefinition.cs" />
@@ -85,6 +90,13 @@
     <Compile Include="Objects\Output\DefaultObjectValue.cs" />
     <Compile Include="Objects\Output\DictionaryStructure.cs" />
     <Compile Include="Objects\Output\EnumerableSequence.cs" />
+    <Compile Include="Objects\Output\NullObjectSequence.cs" />
+    <Compile Include="Objects\Output\NullObjectStructure.cs" />
+    <Compile Include="Objects\Output\NullObjectValue.cs" />
+    <Compile Include="Objects\Output\ObjectOutput.cs" />
+    <Compile Include="Objects\Output\ObjectSequence.cs" />
+    <Compile Include="Objects\Output\ObjectStructure.cs" />
+    <Compile Include="Objects\Output\ObjectValue.cs" />
     <Compile Include="Objects\Output\ObjectWriter.cs" />
     <Compile Include="Objects\ParameterDefinition.cs" />
     <Compile Include="Objects\PropertyDefinitionBuilder.cs" />
@@ -102,7 +114,7 @@
     </Compile>
     <Compile Include="Objects\TypeDefinitions\ValueTypeDefinition.cs" />
     <Compile Include="Objects\TypeHandler.cs" />
-    <Compile Include="Output\NewWriter.cs" />
+    <Compile Include="Output\Writer.cs" />
     <Compile Include="Objects\Input\ObjectReader.cs" />
     <Compile Include="Objects\ReferenceEqualityComparer.cs" />
     <Compile Include="Objects\ReflectionHelper.cs" />

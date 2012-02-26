@@ -33,7 +33,7 @@ namespace json.Objects.TypeDefinitions
                 || typeCodeType == TypeCodeType.Number;
         }
 
-        public override void ReadObject(object input, ObjectReader reader, NewWriter writer)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer)
         {
             IDictionary dictionary = input as IDictionary;
             if (dictionary == null) return;

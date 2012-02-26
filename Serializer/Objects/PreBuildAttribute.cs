@@ -28,11 +28,11 @@ namespace json.Objects
             }
         }
 
-        public abstract NewWriter GetWriter();
+        public abstract Writer GetWriter();
 
-        public abstract object GetContextValue(NewWriter parsedContext);
+        public abstract object GetContextValue(Writer parsedContext);
 
-        public abstract void ReadPreBuildResult(object preBuildResult, NewWriter writer);
+        public abstract void ReadPreBuildResult(object preBuildResult, Writer writer);
 
         private class InvalidMethodSignature : Exception
         {

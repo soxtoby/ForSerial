@@ -13,7 +13,7 @@ namespace json.Objects.TypeDefinitions
             return new DefaultTypeDefinition(type);
         }
 
-        public override void ReadObject(object input, ObjectReader reader, NewWriter writer)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer)
         {
             writer.BeginStructure();
 

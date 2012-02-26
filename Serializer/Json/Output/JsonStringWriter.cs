@@ -5,7 +5,7 @@ using json.Objects;
 
 namespace json.Json
 {
-    public class JsonStringWriter : NewWriter
+    public class JsonStringWriter : Writer
     {
         private readonly TextWriter json;
         private bool suppressDelimiter = true;

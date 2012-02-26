@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace json.Objects
 {
-    public class ObjectWriter<T> : NewWriter
+    public class ObjectWriter<T> : Writer
     {
         private readonly Stack<ObjectOutput> outputs = new Stack<ObjectOutput>();
         private readonly Stack<string> properties = new Stack<string>();
@@ -87,127 +86,5 @@ namespace json.Objects
                     sequenceAction((ObjectSequence)outputs.Peek());
             }
         }
-    }
-
-    public interface ObjectOutput
-    {
-        void AssignToProperty(object obj, PropertyDefinition property);
-        object GetTypedValue();
-        TypeDefinition TypeDef { get; }
-    }
-
-    public interface ObjectStructure : ObjectOutput
-    {
-        ObjectStructure CreateStructure(string property);
-        ObjectSequence CreateSequence(string property);
-        bool CanCreateValue(string property, object value);
-        ObjectValue CreateValue(string property, object value);
-        void Add(string property, ObjectOutput value);
-    }
-
-    class NullObjectStructure : ObjectStructure
-    {
-        public static readonly NullObjectStructure Instance = new NullObjectStructure();
-
-        private NullObjectStructure() { }
-
-        public void AssignToProperty(object obj, PropertyDefinition property) { }
-
-        public object GetTypedValue()
-        {
-            return null;
-        }
-
-        public ObjectStructure CreateStructure(string property)
-        {
-            return Instance;
-        }
-
-        public ObjectSequence CreateSequence(string property)
-        {
-            return NullObjectSequence.Instance;
-        }
-
-        public void Add(string property, ObjectOutput value) { }
-
-        public bool CanCreateValue(string property, object value)
-        {
-            return true;
-        }
-
-        public ObjectValue CreateValue(string property, object value)
-        {
-            return NullObjectValue.Instance;
-        }
-
-        public TypeDefinition TypeDef { get { return null; } }
-    }
-
-    public interface ObjectSequence : ObjectOutput
-    {
-        ObjectStructure CreateStructure();
-        ObjectSequence CreateSequence();
-        bool CanCreateValue(object value);
-        ObjectValue CreateValue(object value);
-        void Add(ObjectOutput value);
-    }
-
-    class NullObjectSequence : ObjectSequence
-    {
-        public static readonly NullObjectSequence Instance = new NullObjectSequence();
-
-        private NullObjectSequence() { }
-
-        public void AssignToProperty(object obj, PropertyDefinition property) { }
-
-        public object GetTypedValue()
-        {
-            return Enumerable.Empty<object>();
-        }
-
-        public TypeDefinition TypeDef { get { throw new NotImplementedException(); } }
-
-        public ObjectStructure CreateStructure()
-        {
-            return NullObjectStructure.Instance;
-        }
-
-        public ObjectSequence CreateSequence()
-        {
-            return Instance;
-        }
-
-        public bool CanCreateValue(object value)
-        {
-            return true;
-        }
-
-        public void Add(ObjectOutput value) { }
-
-        public ObjectValue CreateValue(object value)
-        {
-            return NullObjectValue.Instance;
-        }
-    }
-
-    public interface ObjectValue : ObjectOutput
-    {
-
-    }
-
-    class NullObjectValue : ObjectValue
-    {
-        public static readonly NullObjectValue Instance = new NullObjectValue();
-
-        private NullObjectValue() { }
-
-        public void AssignToProperty(object obj, PropertyDefinition property) { }
-
-        public object GetTypedValue()
-        {
-            return null;
-        }
-
-        public TypeDefinition TypeDef { get { throw new NotImplementedException(); } }
     }
 }

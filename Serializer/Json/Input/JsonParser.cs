@@ -5,17 +5,17 @@ namespace json.Json
 {
     internal class JsonParser
     {
-        private readonly NewWriter writer;
+        private readonly Writer writer;
         private IEnumerator<Token> tokenEnumerator;
 
-        private JsonParser(NewWriter writer)
+        private JsonParser(Writer writer)
         {
             if (writer == null) throw new ArgumentNullException("writer");
 
             this.writer = writer;
         }
 
-        public static void Parse(string json, NewWriter writer)
+        public static void Parse(string json, Writer writer)
         {
             try
             {
@@ -27,13 +27,13 @@ namespace json.Json
             }
         }
 
-        private static void Parse(IEnumerable<Token> tokens, NewWriter writer)
+        private static void Parse(IEnumerable<Token> tokens, Writer writer)
         {
             JsonParser parser = new JsonParser(writer);
             parser.ParseTokens(tokens);
         }
 
-        public void ReadSubStructure(NewWriter subWriter)
+        public void ReadSubStructure(Writer subWriter)
         {
             MoveNextIfSymbol(",");
             Parse(GetSubObjectTokens(), subWriter);

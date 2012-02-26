@@ -1,6 +1,6 @@
 namespace json
 {
-    public interface NewWriter
+    public interface Writer
     {
         bool CanWrite(object value);
         void Write(object value);

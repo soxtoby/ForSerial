@@ -4,10 +4,10 @@ namespace json.Objects
 {
     public partial class ObjectReader
     {
-        private readonly NewWriter writer;
+        private readonly Writer writer;
         private readonly ObjectParsingOptions options;
 
-        private ObjectReader(NewWriter writer, ObjectParsingOptions options)
+        private ObjectReader(Writer writer, ObjectParsingOptions options)
         {
             if (writer == null) throw new ArgumentNullException("writer");
             if (options == null) throw new ArgumentNullException("options");
@@ -21,7 +21,7 @@ namespace json.Objects
             get { return options.SerializeAllTypes; }
         }
 
-        public static void Read(object obj, NewWriter writer, ObjectParsingOptions options = null)
+        public static void Read(object obj, Writer writer, ObjectParsingOptions options = null)
         {
             ObjectReader reader = new ObjectReader(writer, options ?? new ObjectParsingOptions());
 

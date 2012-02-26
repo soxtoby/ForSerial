@@ -13,7 +13,7 @@ namespace json.Objects.TypeDefinitions
             ItemTypeDef = CurrentTypeHandler.GetTypeDefinition(itemType);
         }
 
-        public override void ReadObject(object input, ObjectReader reader, NewWriter writer)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer)
         {
             IEnumerable inputArray = input as IEnumerable;
             if (inputArray == null) return;

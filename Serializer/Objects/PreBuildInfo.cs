@@ -14,9 +14,9 @@ namespace json.Objects
             this.preBuild = preBuild;
         }
 
-        public void PreBuild(object target, object reader, NewWriter objectPopulator)
+        public void PreBuild(object target, object reader, Writer objectPopulator)
         {
-            NewWriter writerForContext = attribute.GetWriter();
+            Writer writerForContext = attribute.GetWriter();
             // reader.ReadSubStructure(writerForContext);
             object context = attribute.GetContextValue(writerForContext);
 
