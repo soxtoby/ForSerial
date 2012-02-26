@@ -115,13 +115,40 @@ namespace json.Tests.Json
         }
 
         [Test]
-        public void TwoItemSequence_SecondItemDelimited()
+        public void ManyItemSequence_ItemsAreDelimited()
         {
             sut.BeginSequence();
             sut.WriteValue(1);
             sut.WriteValue(2);
+            sut.WriteValue(3);
             sut.EndSequence();
-            Json.ShouldBe("[1,2]");
+            Json.ShouldBe("[1,2,3]");
+        }
+
+        [Test]
+        public void NestedSequences()
+        {
+            sut.BeginSequence();
+            sut.BeginSequence();
+            sut.WriteValue(1);
+            sut.EndSequence();
+            sut.BeginSequence();
+            sut.WriteValue(2);
+            sut.EndSequence();
+            sut.EndSequence();
+            Json.ShouldBe("[[1],[2]]");
+        }
+
+        [Test]
+        public void StructuresInsideSequence()
+        {
+            sut.BeginSequence();
+            sut.BeginStructure();
+            sut.EndStructure();
+            sut.BeginStructure();
+            sut.EndStructure();
+            sut.EndSequence();
+            Json.ShouldBe("[{},{}]");
         }
     }
 }

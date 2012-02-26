@@ -19,7 +19,8 @@ namespace json.JsonObjects
 
         public override void ReadPreBuildResult(object preBuildResult, Writer valueFactory)
         {
-            JsonObjectReader.Read((JsonObject)preBuildResult, valueFactory);
+            // TODO reimplement prebuild
+            //JsonObjectReader.Read((JObject)preBuildResult, valueFactory);
         }
     }
 }

@@ -64,6 +64,14 @@ namespace json.JsonObjects
 
     public interface JObject
     {
+        void Accept(JObjectVisitor visitor);
+    }
+
+    public interface JObjectVisitor
+    {
+        void Visit(JsonMap map);
+        void Visit(JsonArray array);
+        void Visit(JsonValue value);
     }
 
     public class JsonMap : JObject, IEnumerable<KeyValuePair<string, JObject>>
@@ -81,10 +89,12 @@ namespace json.JsonObjects
             get { return innerMap.Count; }
         }
 
-        public void Add(string key, object value)
-        {
-            Add(key, new JsonValue(value));
-        }
+        public void Add(string key, bool value) { Add(key, new JsonValue(value)); }
+        public void Add(string key, int value) { Add(key, new JsonValue(value)); }
+        public void Add(string key, double value) { Add(key, new JsonValue(value)); }
+        public void Add(string key, float value) { Add(key, new JsonValue(value)); }
+        public void Add(string key, string value) { Add(key, new JsonValue(value)); }
+        public void Add(string key, char value) { Add(key, new JsonValue(value + string.Empty)); }
 
         public void Add(string key, JObject value)
         {
@@ -107,6 +117,11 @@ namespace json.JsonObjects
             return innerMap.GetHashCode();
         }
 
+        public void Accept(JObjectVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+
         public IEnumerator<KeyValuePair<string, JObject>> GetEnumerator()
         {
             return innerMap.GetEnumerator();
@@ -122,6 +137,13 @@ namespace json.JsonObjects
     {
         private readonly List<JObject> innerArray = new List<JObject>();
 
+        public void Add(bool value) { Add(new JsonValue(value)); }
+        public void Add(int value) { Add(new JsonValue(value)); }
+        public void Add(double value) { Add(new JsonValue(value)); }
+        public void Add(float value) { Add(new JsonValue(value)); }
+        public void Add(string value) { Add(new JsonValue(value)); }
+        public void Add(char value) { Add(new JsonValue(value + string.Empty)); }
+
         public void Add(JObject value)
         {
             innerArray.Add(value);
@@ -136,6 +158,11 @@ namespace json.JsonObjects
         {
             return GetEnumerator();
         }
+
+        public void Accept(JObjectVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 
     public class JsonValue : JObject
@@ -145,6 +172,11 @@ namespace json.JsonObjects
         public JsonValue(object value)
         {
             Value = value;
+        }
+
+        public void Accept(JObjectVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 

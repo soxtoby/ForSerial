@@ -67,6 +67,7 @@ namespace json.Json
 
         public void BeginStructure()
         {
+            Delimit();
             json.Write('{');
             suppressDelimiter = true;
         }
@@ -87,6 +88,7 @@ namespace json.Json
 
         public void BeginSequence()
         {
+            Delimit();
             json.Write('[');
             suppressDelimiter = true;
         }
