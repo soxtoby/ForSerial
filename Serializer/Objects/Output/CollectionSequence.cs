@@ -33,7 +33,7 @@ namespace json.Objects
         private void PopulateCollection(object collection)
         {
             if (collection != null)
-                foreach (TypedValue value in Items)
+                foreach (ObjectOutput value in Items)
                     collectionDef.AddToCollection(collection, value.GetTypedValue());
         }
     }

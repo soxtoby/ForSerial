@@ -22,11 +22,6 @@ namespace json.Objects
         public bool CanGet { get { return getter != null; } }
         public bool CanSet { get { return setter != null; } }
 
-        public Writer GetWriter()
-        {
-            return null;// new TypedObjectBuilder(TypeDef.Type);
-        }
-
         public object GetFrom(object source)
         {
             return getter(source);

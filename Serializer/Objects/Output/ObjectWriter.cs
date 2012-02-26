@@ -6,7 +6,7 @@ namespace json.Objects
 {
     public class ObjectWriter<T> : NewWriter
     {
-        private readonly Stack<TypedValue> outputs = new Stack<TypedValue>();
+        private readonly Stack<ObjectOutput> outputs = new Stack<ObjectOutput>();
         private readonly Stack<string> properties = new Stack<string>();
         private object result;
 
@@ -65,7 +65,7 @@ namespace json.Objects
             AddToCurrent(newSequence);
         }
 
-        private void AddToCurrent(TypedValue value)
+        private void AddToCurrent(ObjectOutput value)
         {
             OnCurrent(() => result = value.GetTypedValue(),
                 structure => structure.Add(properties.Pop(), value),
@@ -89,13 +89,20 @@ namespace json.Objects
         }
     }
 
-    public interface ObjectStructure : TypedValue
+    public interface ObjectOutput
+    {
+        void AssignToProperty(object obj, PropertyDefinition property);
+        object GetTypedValue();
+        TypeDefinition TypeDef { get; }
+    }
+
+    public interface ObjectStructure : ObjectOutput
     {
         ObjectStructure CreateStructure(string property);
         ObjectSequence CreateSequence(string property);
         bool CanCreateValue(string property, object value);
         ObjectValue CreateValue(string property, object value);
-        void Add(string property, TypedValue value);
+        void Add(string property, ObjectOutput value);
     }
 
     class NullObjectStructure : ObjectStructure
@@ -121,7 +128,7 @@ namespace json.Objects
             return NullObjectSequence.Instance;
         }
 
-        public void Add(string property, TypedValue value) { }
+        public void Add(string property, ObjectOutput value) { }
 
         public bool CanCreateValue(string property, object value)
         {
@@ -136,13 +143,13 @@ namespace json.Objects
         public TypeDefinition TypeDef { get { return null; } }
     }
 
-    public interface ObjectSequence : TypedValue
+    public interface ObjectSequence : ObjectOutput
     {
         ObjectStructure CreateStructure();
         ObjectSequence CreateSequence();
         bool CanCreateValue(object value);
         ObjectValue CreateValue(object value);
-        void Add(TypedValue value);
+        void Add(ObjectOutput value);
     }
 
     class NullObjectSequence : ObjectSequence
@@ -175,7 +182,7 @@ namespace json.Objects
             return true;
         }
 
-        public void Add(TypedValue value) { }
+        public void Add(ObjectOutput value) { }
 
         public ObjectValue CreateValue(object value)
         {
@@ -183,7 +190,7 @@ namespace json.Objects
         }
     }
 
-    public interface ObjectValue : TypedValue
+    public interface ObjectValue : ObjectOutput
     {
 
     }

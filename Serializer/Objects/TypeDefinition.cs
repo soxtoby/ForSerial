@@ -126,7 +126,7 @@ namespace json.Objects
             }
         }
 
-        internal PreBuildInfo GetPreBuildInfo(Reader reader)
+        internal PreBuildInfo GetPreBuildInfo(object reader)
         {
             return reader == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ReaderMatches(reader));
         }
@@ -162,16 +162,8 @@ namespace json.Objects
 
         public virtual ObjectValue CreateValue(object value)
         {
-            if (value == null) return TypedNull.Value;
+            if (value == null) return new DefaultObjectValue(null);
             throw new NotAValue(Type);
-        }
-
-        public Writer GetWriterForProperty(string name)
-        {
-            PropertyDefinition property = Properties.Get(name);
-            if (property != null)
-                return property.GetWriter();
-            return NullTypedWriter.Instance;
         }
 
         // TODO this property stuff should be on StructureDefinition or something - SequenceDefinitions don't have properties

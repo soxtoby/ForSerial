@@ -26,7 +26,7 @@ namespace json.Objects
 
             object obj = matchingConstructor.Construct(parameters);
 
-            foreach (KeyValuePair<string, TypedValue> property in Properties)
+            foreach (KeyValuePair<string, ObjectOutput> property in Properties)
             {
                 PropertyDefinition propDef = TypeDef.Properties.Get(property.Key);
                 if (propDef != null)

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using json.Json;
-using json.JsonObjects;
 using json.Objects;
 using NUnit.Framework;
 
@@ -295,25 +294,25 @@ namespace json.Tests.Objects
         }
 
         //[Test]    // TFSBAD reimplement typing
-        [ExpectedException(typeof(TypedObjectBase.PropertyTypeMismatch))]
-        public void PropertyTypeMismatch()
-        {
-            //var obj = new { Property = new BooleanPropertyClass() }, new ObjectParsingOptions { SerializeAllTypes = true, SerializeAllTypeInformation = true };
+        //[ExpectedException(typeof(TypedObjectBase.PropertyTypeMismatch))]
+        //public void PropertyTypeMismatch()
+        //{
+        //var obj = new { Property = new BooleanPropertyClass() }, new ObjectParsingOptions { SerializeAllTypes = true, SerializeAllTypeInformation = true };
 
-            //StringWriter stringWriter = new StringWriter();
-            //JsonStringWriter jsonWriter = new JsonStringWriter(stringWriter);
-            //ObjectReader.Read(obj, jsonWriter);
+        //StringWriter stringWriter = new StringWriter();
+        //JsonStringWriter jsonWriter = new JsonStringWriter(stringWriter);
+        //ObjectReader.Read(obj, jsonWriter);
 
-            //string json = stringWriter.ToString();
-            //DeserializeJson<InterfacePropertyClass>(json);
-        }
+        //string json = stringWriter.ToString();
+        //DeserializeJson<InterfacePropertyClass>(json);
+        //}
 
         //[Test] // TODO reimplement SetType
-        [ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        public void AddNullToUntypedObject()
-        {
-            DeserializeJson<object>(@"{""foo"":null}");
-        }
+        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
+        //public void AddNullToUntypedObject()
+        //{
+        //    DeserializeJson<object>(@"{""foo"":null}");
+        //}
 
         // TODO not sure if want
         //[Test]
@@ -376,21 +375,21 @@ namespace json.Tests.Objects
         //    Assert.AreEqual(1, obj.Two);
         //}
 
-        private class PreDeserializeUpgradeClass
-        {
-            public int One { get; set; }
-            public int Two { get; set; }
+        //private class PreDeserializeUpgradeClass
+        //{
+        //    public int One { get; set; }
+        //    public int Two { get; set; }
 
-            [PreDeserialize]
-            public JsonObject PreDeserialize(JsonObject json)
-            {
-                int one = (int)(json.Get("One") as double? ?? 0);
-                int two = (int)(json.Get("Two") as double? ?? 0);
-                json["One"] = two;
-                json["Two"] = one;
-                return json;
-            }
-        }
+        //    [PreDeserialize]
+        //    public JsonObject PreDeserialize(JsonObject json)
+        //    {
+        //        int one = (int)(json.Get("One") as double? ?? 0);
+        //        int two = (int)(json.Get("Two") as double? ?? 0);
+        //        json["One"] = two;
+        //        json["Two"] = one;
+        //        return json;
+        //    }
+        //}
 
         //[Test] // TODO reimplement object references
         public void MaintainObjectReferences()

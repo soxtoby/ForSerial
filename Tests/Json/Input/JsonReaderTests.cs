@@ -164,31 +164,31 @@ namespace json.Tests.Json
             //Assert.AreEqual(@"{""baz"":""qux""}", writer.SubObjectJson);
         }
 
-        private class ParseSubObjectWriter : TestWriter
-        {
-            public override OutputStructure BeginStructure()
-            {
-                return new ParseSubObjectObject(this);
-            }
+        //private class ParseSubObjectWriter : TestWriter
+        //{
+        //    public override OutputStructure BeginStructure()
+        //    {
+        //        return new ParseSubObjectObject(this);
+        //    }
 
-            public string SubObjectJson { get; set; }
-        }
+        //    public string SubObjectJson { get; set; }
+        //}
 
-        private class ParseSubObjectObject : NullOutputStructure
-        {
-            private readonly ParseSubObjectWriter parentFactory;
+        //private class ParseSubObjectObject : NullOutputStructure
+        //{
+        //    private readonly ParseSubObjectWriter parentFactory;
 
-            public ParseSubObjectObject(ParseSubObjectWriter parentFactory)
-            {
-                this.parentFactory = parentFactory;
-            }
+        //    public ParseSubObjectObject(ParseSubObjectWriter parentFactory)
+        //    {
+        //        this.parentFactory = parentFactory;
+        //    }
 
-            public override bool SetType(string typeIdentifier, Reader reader)
-            {
-                //parentFactory.SubObjectJson = JsonStringBuilder.GetResult(reader.ReadSubStructure(JsonStringBuilder.GetDefault()));
-                return true;
-            }
-        }
+        //    public override bool SetType(string typeIdentifier, Reader reader)
+        //    {
+        //        //parentFactory.SubObjectJson = JsonStringBuilder.GetResult(reader.ReadSubStructure(JsonStringBuilder.GetDefault()));
+        //        return true;
+        //    }
+        //}
 
         //[Test] // TODO reimplement references
         public void MaintainReferences()

@@ -111,32 +111,32 @@ namespace json.Tests.JsonObjects
         //    Assert.AreEqual(@"{""baz"":""qux""}", valueFactory.SubObjectJson);
         //}
 
-        private class ReadSubStructureWriter : TestWriter
-        {
-            public string SubObjectJson { get; set; }
+        //private class ReadSubStructureWriter : TestWriter
+        //{
+        //    public string SubObjectJson { get; set; }
 
-            public override OutputStructure BeginStructure()
-            {
-                return new ReadSubStructureObject(this);
-            }
-        }
+        //    public override OutputStructure BeginStructure()
+        //    {
+        //        return new ReadSubStructureObject(this);
+        //    }
+        //}
 
-        private class ReadSubStructureObject : NullOutputStructure
-        {
-            private readonly ReadSubStructureWriter parentFactory;
+        //private class ReadSubStructureObject : NullOutputStructure
+        //{
+        //    private readonly ReadSubStructureWriter parentFactory;
 
-            public ReadSubStructureObject(ReadSubStructureWriter parentFactory)
-            {
-                this.parentFactory = parentFactory;
-            }
+        //    public ReadSubStructureObject(ReadSubStructureWriter parentFactory)
+        //    {
+        //        this.parentFactory = parentFactory;
+        //    }
 
-            public override bool SetType(string typeIdentifier, Reader reader)
-            {
-                //Output jsonStringValue = reader.ReadSubStructure(JsonStringBuilder.GetDefault());
-                //parentFactory.SubObjectJson = JsonStringBuilder.GetResult(jsonStringValue);
-                return true;
-            }
-        }
+        //    public override bool SetType(string typeIdentifier, Reader reader)
+        //    {
+        //        //Output jsonStringValue = reader.ReadSubStructure(JsonStringBuilder.GetDefault());
+        //        //parentFactory.SubObjectJson = JsonStringBuilder.GetResult(jsonStringValue);
+        //        return true;
+        //    }
+        //}
 
         private static string ConvertToJson(JObject jsonObject)
         {

@@ -14,18 +14,18 @@ namespace json.Objects
             this.preBuild = preBuild;
         }
 
-        public void PreBuild(object target, Reader reader, Writer objectPopulator)
+        public void PreBuild(object target, object reader, NewWriter objectPopulator)
         {
-            Writer writerForContext = attribute.GetWriter();
-            Output contextOutput = reader.ReadSubStructure(writerForContext);
-            object context = attribute.GetContextValue(contextOutput);
+            NewWriter writerForContext = attribute.GetWriter();
+            // reader.ReadSubStructure(writerForContext);
+            object context = attribute.GetContextValue(writerForContext);
 
             object preBuildResult = preBuild(target, new[] { context });
 
             attribute.ReadPreBuildResult(preBuildResult, objectPopulator);
         }
 
-        public bool ReaderMatches(Reader reader)
+        public bool ReaderMatches(object reader)
         {
             return attribute.ReaderMatches(reader);
         }

@@ -7,7 +7,7 @@ namespace json.Objects
     public abstract class BaseObjectSequence : ObjectSequence
     {
         private readonly SequenceDefinition collectionDef;
-        protected readonly List<TypedValue> Items = new List<TypedValue>();
+        protected readonly List<ObjectOutput> Items = new List<ObjectOutput>();
 
         protected BaseObjectSequence(SequenceDefinition collectionDef)
         {
@@ -41,7 +41,7 @@ namespace json.Objects
             return collectionDef.CreateValueForItem(value);
         }
 
-        public void Add(TypedValue value)
+        public void Add(ObjectOutput value)
         {
             Items.Add(value);
         }

@@ -5,20 +5,20 @@ namespace json.JsonObjects
 {
     public class PreDeserializeAttribute : PreBuildAttribute
     {
-        public PreDeserializeAttribute() : base(typeof(JsonParser), typeof(JsonObject)) { }
+        public PreDeserializeAttribute() : base(typeof(JsonParser), typeof(JObject)) { }
 
-        public override Writer GetWriter()
+        public override NewWriter GetWriter()
         {
-            return JsonObjectBuilder.Instance;
+            return new JsonObjectWriter();
         }
 
-        public override object GetContextValue(Output parsedContext)
+        public override object GetContextValue(NewWriter parsedContext)
         {
             //return JsonObjectBuilder.GetResult(parsedContext);
             return null;
         }
 
-        public override void ReadPreBuildResult(object preBuildResult, Writer valueFactory)
+        public override void ReadPreBuildResult(object preBuildResult, NewWriter valueFactory)
         {
             // TODO reimplement prebuild
             //JsonObjectReader.Read((JObject)preBuildResult, valueFactory);

@@ -14,7 +14,7 @@ namespace json.Objects
             this.preBuildContextType = preBuildContextType;
         }
 
-        public bool ReaderMatches(Reader reader)
+        public bool ReaderMatches(object reader)
         {
             return reader.GetType() == readerType;
         }
@@ -28,11 +28,11 @@ namespace json.Objects
             }
         }
 
-        public abstract Writer GetWriter();
+        public abstract NewWriter GetWriter();
 
-        public abstract object GetContextValue(Output parsedContext);
+        public abstract object GetContextValue(NewWriter parsedContext);
 
-        public abstract void ReadPreBuildResult(object preBuildResult, Writer valueFactory);
+        public abstract void ReadPreBuildResult(object preBuildResult, NewWriter writer);
 
         private class InvalidMethodSignature : Exception
         {

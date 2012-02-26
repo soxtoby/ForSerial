@@ -3,6 +3,6 @@
     public class ObjectParsingOptions
     {
         public bool SerializeAllTypes { get; set; }
-        public bool SerializeAllTypeInformation { get; set; }
+        public bool SerializeAllTypeInformation { get; set; }   // TODO implement
     }
 }

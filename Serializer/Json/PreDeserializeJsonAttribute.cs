@@ -6,19 +6,19 @@ namespace json.Json
     {
         public PreDeserializeJsonAttribute() : base(typeof(JsonParser), typeof(string)) { }
 
-        public override Writer GetWriter()
+        public override NewWriter GetWriter()
         {
             //return JsonStringBuilder.GetDefault();
             return null;
         }
 
-        public override object GetContextValue(Output parsedContext)
+        public override object GetContextValue(NewWriter parsedContext)
         {
             //return JsonStringBuilder.GetResult(parsedContext);
             return null;
         }
 
-        public override void ReadPreBuildResult(object preBuildResult, Writer valueFactory)
+        public override void ReadPreBuildResult(object preBuildResult, NewWriter valueFactory)
         {
             //JsonParser.Parse((string)preBuildResult, valueFactory);//TODO reimplement
         }

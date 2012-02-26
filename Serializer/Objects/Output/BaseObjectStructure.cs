@@ -6,7 +6,7 @@ namespace json.Objects
 {
     public abstract class BaseObjectStructure : ObjectStructure
     {
-        protected readonly Dictionary<string, TypedValue> Properties = new Dictionary<string, TypedValue>(StringComparer.OrdinalIgnoreCase);
+        protected readonly Dictionary<string, ObjectOutput> Properties = new Dictionary<string, ObjectOutput>(StringComparer.OrdinalIgnoreCase);
 
         protected BaseObjectStructure(TypeDefinition typeDef)
         {
@@ -36,7 +36,7 @@ namespace json.Objects
             return TypeDef.CreateValueForProperty(property, value);
         }
 
-        public void Add(string property, TypedValue value)
+        public void Add(string property, ObjectOutput value)
         {
             Properties[property] = value;
         }
@@ -85,13 +85,13 @@ namespace json.Objects
 
         internal class NoMatchingConstructor : Exception
         {
-            public NoMatchingConstructor(Type type, Dictionary<string, TypedValue> properties)
+            public NoMatchingConstructor(Type type, Dictionary<string, ObjectOutput> properties)
                 : base("Could not find a matching constructor for type {0} with properties {1}"
                     .FormatWith(type.FullName, BuildParameterList(properties)))
             {
             }
 
-            private static string BuildParameterList(Dictionary<string, TypedValue> properties)
+            private static string BuildParameterList(Dictionary<string, ObjectOutput> properties)
             {
                 return properties
                     .Select(kv => "{0} [{1}]".FormatWith(kv.Key, GetTypeName(kv.Value.GetTypedValue())))

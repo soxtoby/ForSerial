@@ -268,23 +268,23 @@ namespace json.Tests.Objects
 
         private struct ValueType { }
 
-        private class ValueOnlyWriter : TestWriter
-        {
-            public override OutputStructure BeginStructure()
-            {
-                throw new AssertionException("Tried to create an object.");
-            }
+        //private class ValueOnlyWriter : TestWriter
+        //{
+        //    public override OutputStructure BeginStructure()
+        //    {
+        //        throw new AssertionException("Tried to create an object.");
+        //    }
 
-            public override SequenceOutput BeginSequence()
-            {
-                throw new AssertionException("Tried to create an array.");
-            }
+        //    public override SequenceOutput BeginSequence()
+        //    {
+        //        throw new AssertionException("Tried to create an array.");
+        //    }
 
-            public override OutputStructure CreateReference(OutputStructure outputStructure)
-            {
-                throw new AssertionException("Tried to create a reference.");
-            }
-        }
+        //    public override OutputStructure CreateReference(OutputStructure outputStructure)
+        //    {
+        //        throw new AssertionException("Tried to create a reference.");
+        //    }
+        //}
 
         [Test]
         public void StaticPropertyIsNotSerialized()

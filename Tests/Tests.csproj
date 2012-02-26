@@ -53,9 +53,8 @@
     <Compile Include="Objects\Output\DynamicMethodProviderStructTests.cs" />
     <Compile Include="Objects\Output\DynamicMethodProviderClassTests.cs" />
     <Compile Include="Objects\Output\ObjectWriterTests.cs" />
-    <Compile Include="Objects\Output\TypedObjectConstructorOnlyObjectTests.cs" />
     <Compile Include="Objects\TypeDefinitionTests.cs" />
-    <Compile Include="Output\TestOutputs.cs" />
+    <Compile Include="Output\SameReferenceTwice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionTesting.cs" />
     <Compile Include="EasyAssertions.cs" />

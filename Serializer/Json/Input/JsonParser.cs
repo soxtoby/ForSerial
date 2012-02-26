@@ -7,7 +7,6 @@ namespace json.Json
     {
         private readonly NewWriter writer;
         private IEnumerator<Token> tokenEnumerator;
-        private readonly List<OutputStructure> objectReferences = new List<OutputStructure>();
 
         private JsonParser(NewWriter writer)
         {

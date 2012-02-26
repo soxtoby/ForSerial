@@ -34,7 +34,7 @@ namespace json.Objects
             IDictionary typedDictionary = dictionary as IDictionary;
             if (typedDictionary == null) return;
 
-            foreach (KeyValuePair<string, TypedValue> property in Properties)
+            foreach (KeyValuePair<string, ObjectOutput> property in Properties)
                 typedDictionary[dictionaryDef.KeyTypeDef.ConvertToCorrectType(property.Key)] = dictionaryDef.ValueTypeDef.ConvertToCorrectType(property.Value.GetTypedValue());
         }
     }
