@@ -59,6 +59,17 @@ namespace json.Objects
         {
             return member.GetCustomAttributes(typeof(T), true).Any();
         }
+
+        public static bool IsJsonPrimitiveType(this object value)
+        {
+            if (value == null)
+                return true;
+
+            TypeCodeType typeCodeType = value.GetType().GetTypeCodeType();
+            return typeCodeType == TypeCodeType.Number
+                || typeCodeType == TypeCodeType.Boolean
+                || typeCodeType == TypeCodeType.String;
+        }
     }
 
     internal enum TypeCodeType

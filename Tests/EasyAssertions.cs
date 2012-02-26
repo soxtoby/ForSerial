@@ -75,8 +75,8 @@ namespace json.Tests
         {
             return "{0}\r\nExpected: {1}\r\nActual:   {2}\r\n{3}".FormatWith(
                 failedAssertionMessage,
-                ConvertListToString(expecteds),
-                ConvertListToString(actuals),
+                ConvertToString(expecteds),
+                ConvertToString(actuals),
                 userMessage);
         }
 
@@ -118,7 +118,7 @@ namespace json.Tests
         {
             List<T> actuals = actual.ToList();
             if (actuals.Count != asserts.Length)
-                throw new EasyAssertionException("Expected {0} items, but there were {1}.\r\nActual: {2}".FormatWith(asserts.Length, actuals.Count, ConvertListToString(actuals)));
+                throw new EasyAssertionException("Expected {0} items, but there were {1}.\r\nActual: {2}".FormatWith(asserts.Length, actuals.Count, ConvertToString(actuals)));
 
             for (int i = 0; i < actuals.Count; i++)
                 asserts[i](actuals[i]);
@@ -127,10 +127,7 @@ namespace json.Tests
         private static void AssertEqual(object actual, object expected, string message)
         {
             if (!AreEqual(actual, expected))
-            {
-                string error = "\r\nExpected: {0}\r\nActual:   {1}\r\n{2}".FormatWith(expected, actual ?? "null", message);
-                throw new EasyAssertionException(error);
-            }
+                throw new EasyAssertionException("\r\nExpected: {0}\r\nActual:   {1}\r\n{2}".FormatWith(ConvertToString(expected), ConvertToString(actual), message));
         }
 
         private static bool AreEqual(object actual, object expected)
@@ -154,7 +151,15 @@ namespace json.Tests
             return Equals(actual, expected);
         }
 
-        private static string ConvertListToString(IEnumerable list)
+        private static string ConvertToString(object obj)
+        {
+            string str = System.Convert.ToString(obj);
+            return str == string.Empty
+                ? "<String.Empty>"
+                : str;
+        }
+
+        private static string ConvertToString(IEnumerable list)
         {
             return "[{0}]".FormatWith(list.Cast<object>().Select(System.Convert.ToString).Join(", "));
         }

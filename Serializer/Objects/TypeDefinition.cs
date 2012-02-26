@@ -139,7 +139,7 @@ namespace json.Objects
             return reader == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ReaderMatches(reader));
         }
 
-        public abstract Output ReadObject(object input, ReaderWriter valueFactory);
+        public abstract void ReadObject(object input, ObjectReader reader, NewWriter writer);
 
         protected static bool ValueIsSerializable(object value)
         {

@@ -24,12 +24,12 @@ namespace json.Objects.TypeDefinitions
                 || typeCodeType == TypeCodeType.Number;
         }
 
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override void ReadObject(object input, ObjectReader reader, NewWriter writer)
         {
             IDictionary dictionary = input as IDictionary;
-            if (dictionary == null) return null;
+            if (dictionary == null) return;
 
-            OutputStructure output = valueFactory.CreateStructure(input);
+            writer.BeginStructure();
 
             Type valueType = Type.GetGenericInterfaceType(typeof(IDictionary<,>), 1);
             TypeDefinition valueTypeDef = CurrentTypeHandler.GetTypeDefinition(valueType);
@@ -41,12 +41,11 @@ namespace json.Objects.TypeDefinitions
                 string name = System.Convert.ToString(key, CultureInfo.InvariantCulture);
                 object value = dictionary[key];
 
-                valueFactory.ReadProperty(valueTypeDef, name, value, output);
+                writer.AddProperty(name);
+                reader.Read(value);
             }
 
-            valueFactory.EndStructure();
-
-            return output;
+            writer.EndStructure();
         }
 
         public override TypedObject CreateStructure()

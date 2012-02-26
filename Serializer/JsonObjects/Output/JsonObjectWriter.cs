@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using json.Objects;
 
 namespace json.JsonObjects
 {
@@ -11,7 +12,12 @@ namespace json.JsonObjects
 
         public JObject Result { get; private set; }
 
-        public void WriteValue(object value)
+        public bool CanWrite(object value)
+        {
+            return value.IsJsonPrimitiveType();
+        }
+
+        public void Write(object value)
         {
             Write(new JsonValue(value));
         }

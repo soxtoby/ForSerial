@@ -13,18 +13,17 @@ namespace json.Objects.TypeDefinitions
             return new DefaultTypeDefinition(type);
         }
 
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override void ReadObject(object input, ObjectReader reader, NewWriter writer)
         {
-            OutputStructure output = valueFactory.CreateStructure(input);
+            writer.BeginStructure();
 
-            foreach (KeyValuePair<PropertyDefinition, object> property in GetSerializableProperties(input, valueFactory.SerializeAllTypes))
+            foreach (KeyValuePair<PropertyDefinition, object> property in GetSerializableProperties(input, reader.SerializeAllTypes))
             {
-                valueFactory.ReadProperty(input, property.Key, output);
+                writer.AddProperty(property.Key.Name);
+                reader.Read(property.Value);
             }
 
-            valueFactory.EndStructure();
-
-            return output;
+            writer.EndStructure();
         }
 
         public override TypedObject CreateStructure()

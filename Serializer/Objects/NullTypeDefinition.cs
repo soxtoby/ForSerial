@@ -10,9 +10,9 @@ namespace json.Objects
             get { return instance ?? (instance = new NullTypeDefinition()); }
         }
 
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override void ReadObject(object input, ObjectReader reader, NewWriter writer)
         {
-            return valueFactory.CreateValue(null);
+            writer.Write(null);
         }
     }
 }

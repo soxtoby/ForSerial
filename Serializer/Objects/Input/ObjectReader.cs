@@ -1,73 +1,65 @@
 using System;
-using System.Collections.Generic;
 
 namespace json.Objects
 {
-    public partial class ObjectReader : Reader
+    public partial class ObjectReader
     {
+        private readonly NewWriter writer;
         private readonly ObjectParsingOptions options;
-        private object currentObject;
-        private readonly StateStack<ReaderWriter> readerWriter;
-        private readonly Dictionary<object, OutputStructure> objectReferences = new Dictionary<object, OutputStructure>(new ReferenceEqualityComparer<object>());
 
-        private ObjectReader(Writer writer, ObjectParsingOptions options)
-            : base(writer)
+        private ObjectReader(NewWriter writer, ObjectParsingOptions options)
         {
+            if (writer == null) throw new ArgumentNullException("writer");
+            if (options == null) throw new ArgumentNullException("options");
+
+            this.writer = writer;
             this.options = options;
-            readerWriter = new StateStack<ReaderWriter>(new ObjectReaderWriter(this));
         }
 
-        public static Output Read(object obj, Writer valueFactory, ObjectParsingOptions options = null)
+        public bool SerializeAllTypes
         {
-            ObjectReader reader = new ObjectReader(valueFactory, options ?? new ObjectParsingOptions());
-
-            return reader.ReadValue(obj);
+            get { return options.SerializeAllTypes; }
         }
 
-        public override Output ReadSubStructure(Writer subWriter)
+        public static void Read(object obj, NewWriter writer, ObjectParsingOptions options = null)
         {
-            return Read(currentObject, subWriter, options).AsStructure();
+            ObjectReader reader = new ObjectReader(writer, options ?? new ObjectParsingOptions());
+
+            reader.Read(obj);
         }
 
-        private Output ReadValue(object input)
+        // TODO reimplement prebuild
+        //public override Output ReadSubStructure(Writer subWriter)
+        //{
+        //    return Read(currentObject, subWriter, options).AsStructure();
+        //}
+
+        public void Read(object input)
         {
-            if (input == null)
-                return writer.Current.CreateValue(null);
+            if (writer.CanWrite(input))
+                writer.Write(input);
+            else
+                ReadObject(input);
 
-            Type inputType = input.GetType();
+            // TODO reimplement object references
+            //OutputStructure previouslyParsedObject = objectReferences.Get(input);
+            //output = previouslyParsedObject == null
+            //    ? ReadObject(input)
+            //    : ReferenceObject(previouslyParsedObject);
 
-            Output output = null;
-
-            if (IsValueType(inputType))
-                output = writer.Current.CreateValue(input);
-
-            if (output == null)
-            {
-                OutputStructure previouslyParsedObject = objectReferences.Get(input);
-                output = previouslyParsedObject == null
-                    ? ReadObject(input)
-                    : ReferenceObject(previouslyParsedObject);
-            }
-
-            return output;
         }
 
-        private static bool IsValueType(Type type)
+        private void ReadObject(object input)
         {
-            return type.IsValueType || type == typeof(string);
-        }
-
-        private Output ReadObject(object input)
-        {
-            currentObject = input;
             TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(input.GetType());
-            return typeDef.ReadObject(input, readerWriter.Current);
+            typeDef.ReadObject(input, this, writer);
         }
 
-        private OutputStructure ReferenceObject(OutputStructure outputStructure)
-        {
-            return writer.Current.CreateReference(outputStructure);
-        }
+        // TODO reimplement object references
+        //private OutputStructure ReferenceObject(OutputStructure outputStructure)
+        //{
+        //    return writer.CreateReference(outputStructure);
+        //}
     }
 }
 

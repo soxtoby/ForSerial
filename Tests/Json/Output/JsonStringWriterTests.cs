@@ -21,49 +21,49 @@ namespace json.Tests.Json
         [Test]
         public void WriteValue_GivenNumber_WritesNumber()
         {
-            sut.WriteValue(1);
+            sut.Write(1);
             Json.ShouldBe("1");
         }
 
         [Test]
         public void WriteValue_GivenString_WrapsStringInQuotes()
         {
-            sut.WriteValue("foo");
+            sut.Write("foo");
             Json.ShouldBe(@"""foo""");
         }
 
         [Test]
         public void WriteValue_GivenStringWithQuotes_EscapesQuotes()
         {
-            sut.WriteValue(@"foo""bar");
+            sut.Write(@"foo""bar");
             Json.ShouldBe(@"""foo\""bar""");
         }
 
         [Test]
         public void WriteValue_GivenStringWithBackslash_EscapesBackslash()
         {
-            sut.WriteValue("foo\\bar");
+            sut.Write("foo\\bar");
             Json.ShouldBe(@"""foo\\bar""");
         }
 
         [Test]
         public void WriteValue_GivenTrue_WritesTrue()
         {
-            sut.WriteValue(true);
+            sut.Write(true);
             Json.ShouldBe("true");
         }
 
         [Test]
         public void WriteValue_GivenFalse_WritesFalse()
         {
-            sut.WriteValue(false);
+            sut.Write(false);
             Json.ShouldBe("false");
         }
 
         [Test]
         public void WriteValue_GivenNull_WritesNull()
         {
-            sut.WriteValue(null);
+            sut.Write(null);
             Json.ShouldBe("null");
         }
 
@@ -80,7 +80,7 @@ namespace json.Tests.Json
         {
             sut.BeginStructure();
             sut.AddProperty("foo");
-            sut.WriteValue("bar");
+            sut.Write("bar");
             sut.EndStructure();
             Json.ShouldBe(@"{""foo"":""bar""}");
         }
@@ -90,9 +90,9 @@ namespace json.Tests.Json
         {
             sut.BeginStructure();
             sut.AddProperty("foo");
-            sut.WriteValue(1);
+            sut.Write(1);
             sut.AddProperty("bar");
-            sut.WriteValue(2);
+            sut.Write(2);
             sut.EndStructure();
             Json.ShouldBe(@"{""foo"":1,""bar"":2}");
         }
@@ -109,7 +109,7 @@ namespace json.Tests.Json
         public void SingleItemSequence()
         {
             sut.BeginSequence();
-            sut.WriteValue(1);
+            sut.Write(1);
             sut.EndSequence();
             Json.ShouldBe("[1]");
         }
@@ -118,9 +118,9 @@ namespace json.Tests.Json
         public void ManyItemSequence_ItemsAreDelimited()
         {
             sut.BeginSequence();
-            sut.WriteValue(1);
-            sut.WriteValue(2);
-            sut.WriteValue(3);
+            sut.Write(1);
+            sut.Write(2);
+            sut.Write(3);
             sut.EndSequence();
             Json.ShouldBe("[1,2,3]");
         }
@@ -130,10 +130,10 @@ namespace json.Tests.Json
         {
             sut.BeginSequence();
             sut.BeginSequence();
-            sut.WriteValue(1);
+            sut.Write(1);
             sut.EndSequence();
             sut.BeginSequence();
-            sut.WriteValue(2);
+            sut.Write(2);
             sut.EndSequence();
             sut.EndSequence();
             Json.ShouldBe("[[1],[2]]");

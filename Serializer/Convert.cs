@@ -54,7 +54,8 @@ namespace json
 
         public static ConversionExtensionPoint Object(this Convert convert, object obj, ObjectParsingOptions options = null)
         {
-            return ConversionExtensionPoint.Create(b => ObjectReader.Read(obj, b, options ?? new ObjectParsingOptions()));
+            return null;
+            //return ConversionExtensionPoint.Create(b => ObjectReader.Read(obj, b, options ?? new ObjectParsingOptions()));
         }
 
         public static object ToJsonObject(this ConversionExtensionPoint parser)

@@ -18,7 +18,7 @@ namespace json.Tests.JsonObjects
         [Test]
         public void WriteValue_GivenNull_CreatesNullValue()
         {
-            sut.WriteValue(null);
+            sut.Write(null);
             sut.Result
                 .ShouldBe<JsonValue>()
                 .And.Value.ShouldBeNull();
@@ -27,7 +27,7 @@ namespace json.Tests.JsonObjects
         [Test]
         public void WriteValue_GivenNumber_CreatesValueWithNumber()
         {
-            sut.WriteValue(1);
+            sut.Write(1);
             sut.Result
                 .ShouldBe<JsonValue>()
                 .And.Value.ShouldBe(1);
@@ -36,7 +36,7 @@ namespace json.Tests.JsonObjects
         [Test]
         public void WriteValue_GivenString_CreatesValueWithString()
         {
-            sut.WriteValue("foo");
+            sut.Write("foo");
             sut.Result
                 .ShouldBe<JsonValue>()
                 .And.Value.ShouldBe("foo");
@@ -45,7 +45,7 @@ namespace json.Tests.JsonObjects
         [Test]
         public void WriteValue_GivenBoolean_CreatesValueWithBoolean()
         {
-            sut.WriteValue(true);
+            sut.Write(true);
             sut.Result
                 .ShouldBe<JsonValue>()
                 .And.Value.ShouldBe(true);
@@ -65,7 +65,7 @@ namespace json.Tests.JsonObjects
         {
             sut.BeginStructure();
             sut.AddProperty("foo");
-            sut.WriteValue(1);
+            sut.Write(1);
             sut.EndStructure();
             sut.Result.ShouldBe<JsonMap>()
                 .And["foo"].ShouldBe<JsonValue>()
@@ -77,9 +77,9 @@ namespace json.Tests.JsonObjects
         {
             sut.BeginStructure();
             sut.AddProperty("foo");
-            sut.WriteValue(1);
+            sut.Write(1);
             sut.AddProperty("bar");
-            sut.WriteValue(2);
+            sut.Write(2);
             sut.EndStructure();
 
             sut.Result.ShouldBe<JsonMap>()
@@ -96,10 +96,10 @@ namespace json.Tests.JsonObjects
             sut.AddProperty("foo");
             sut.BeginStructure();
             sut.AddProperty("bar");
-            sut.WriteValue(1);
+            sut.Write(1);
             sut.EndStructure();
             sut.AddProperty("baz");
-            sut.WriteValue(2);
+            sut.Write(2);
             sut.EndStructure();
 
             sut.Result.ShouldBe<JsonMap>()
@@ -123,7 +123,7 @@ namespace json.Tests.JsonObjects
         public void SingleItemSequence()
         {
             sut.BeginSequence();
-            sut.WriteValue(1);
+            sut.Write(1);
             sut.EndSequence();
 
             sut.Result.ShouldBe<JsonArray>()
@@ -134,8 +134,8 @@ namespace json.Tests.JsonObjects
         public void TwoItemSequence()
         {
             sut.BeginSequence();
-            sut.WriteValue(1);
-            sut.WriteValue(2);
+            sut.Write(1);
+            sut.Write(2);
             sut.EndSequence();
 
             sut.Result.ShouldBe<JsonArray>()
@@ -147,9 +147,9 @@ namespace json.Tests.JsonObjects
         {
             sut.BeginSequence();
             sut.BeginSequence();
-            sut.WriteValue(1);
+            sut.Write(1);
             sut.EndSequence();
-            sut.WriteValue(2);
+            sut.Write(2);
             sut.EndSequence();
 
             sut.Result.ShouldBe<JsonArray>()
@@ -165,7 +165,7 @@ namespace json.Tests.JsonObjects
             sut.BeginStructure();
             sut.AddProperty("foo");
             sut.BeginSequence();
-            sut.WriteValue(1);
+            sut.Write(1);
             sut.EndSequence();
             sut.EndStructure();
 
@@ -180,7 +180,7 @@ namespace json.Tests.JsonObjects
             sut.BeginSequence();
             sut.BeginStructure();
             sut.AddProperty("foo");
-            sut.WriteValue(1);
+            sut.Write(1);
             sut.EndStructure();
             sut.EndSequence();
 

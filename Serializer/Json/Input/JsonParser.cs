@@ -78,17 +78,17 @@ namespace json.Json
                     {
                         case "true":
                             NextToken();
-                            writer.WriteValue(true);
+                            writer.Write(true);
                             return;
 
                         case "false":
                             NextToken();
-                            writer.WriteValue(false);
+                            writer.Write(false);
                             return;
 
                         case "null":
                             NextToken();
-                            writer.WriteValue(null);
+                            writer.Write(null);
                             return;
 
                         default:
@@ -118,7 +118,7 @@ namespace json.Json
             if (CurrentToken.TokenType != TokenType.Numeric)
                 throw new ParseException("Expected number.", CurrentToken);
 
-            writer.WriteValue(CurrentToken.NumericValue);
+            writer.Write(CurrentToken.NumericValue);
             NextToken();
         }
 
@@ -127,7 +127,7 @@ namespace json.Json
             if (CurrentToken.TokenType != TokenType.String)
                 throw new ParseException("Expected string.", CurrentToken);
 
-            writer.WriteValue(CurrentToken.StringValue);
+            writer.Write(CurrentToken.StringValue);
             NextToken();
         }
 

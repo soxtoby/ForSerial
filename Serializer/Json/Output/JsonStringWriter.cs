@@ -17,7 +17,12 @@ namespace json.Json
             json = textWriter;
         }
 
-        public void WriteValue(object value)
+        public bool CanWrite(object value)
+        {
+            return value.IsJsonPrimitiveType();
+        }
+
+        public void Write(object value)
         {
             Delimit();
 

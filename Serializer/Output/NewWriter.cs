@@ -2,7 +2,8 @@ namespace json
 {
     public interface NewWriter
     {
-        void WriteValue(object value);
+        bool CanWrite(object value);
+        void Write(object value);
         void BeginStructure();
         void EndStructure();
         void AddProperty(string name);

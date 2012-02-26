@@ -24,9 +24,9 @@ namespace json.Objects.TypeDefinitions
             get { return true; }
         }
 
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override void ReadObject(object input, ObjectReader reader, NewWriter writer)
         {
-            return valueFactory.CreateValue(input);
+            writer.Write(input);
         }
 
         public override Output CreateValue(object value)

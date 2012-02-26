@@ -13,21 +13,19 @@ namespace json.Objects.TypeDefinitions
             ItemTypeDef = CurrentTypeHandler.GetTypeDefinition(itemType);
         }
 
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override void ReadObject(object input, ObjectReader reader, NewWriter writer)
         {
             IEnumerable inputArray = input as IEnumerable;
-            if (inputArray == null) return null;
+            if (inputArray == null) return;
 
-            SequenceOutput output = valueFactory.BeginSequence();
+            writer.BeginSequence();
 
             foreach (object item in inputArray)
             {
-                valueFactory.ReadArrayItem(output, item);
+                reader.Read(item);
             }
 
-            valueFactory.EndSequence();
-
-            return output;
+            writer.EndSequence();
         }
     }
 }

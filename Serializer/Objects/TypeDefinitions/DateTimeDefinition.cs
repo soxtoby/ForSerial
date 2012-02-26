@@ -15,11 +15,12 @@ namespace json.Objects.TypeDefinitions
                 : null;
         }
 
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override void ReadObject(object input, ObjectReader reader, NewWriter writer)
         {
             DateTime? dateTime = input as DateTime?;
-            return dateTime == null ? null
-                : valueFactory.CreateValue((dateTime.Value.ToUniversalTime() - BaseDate).TotalMilliseconds);
+            writer.Write(dateTime == null
+                ? (object)null
+                : (dateTime.Value.ToUniversalTime() - BaseDate).TotalMilliseconds);
         }
 
         public override Output CreateValue(object value)

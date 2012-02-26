@@ -32,7 +32,7 @@ namespace json.JsonObjects
         {
             if (input == null)
             {
-                writer.WriteValue(null);
+                writer.Write(null);
                 return;
             }
 
@@ -87,7 +87,7 @@ namespace json.JsonObjects
 
         public void Visit(JsonValue value)
         {
-            writer.WriteValue(value.Value);
+            writer.Write(value.Value);
         }
     }
 }
