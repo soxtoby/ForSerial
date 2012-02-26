@@ -28,6 +28,11 @@ namespace json.Objects
             outputs.Push(outputs.Peek().CreateStructure());
         }
 
+        public void SetType(string typeIdentifier)
+        {
+            outputs.Peek().SetType(typeIdentifier);
+        }
+
         public void EndStructure()
         {
             ObjectOutput newStructure = outputs.Pop(); // TODO throw exception if not structure

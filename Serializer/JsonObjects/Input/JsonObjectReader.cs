@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace json.JsonObjects
 {
@@ -55,15 +56,20 @@ namespace json.JsonObjects
 
             writer.BeginStructure();
 
-            foreach (var property in map)
+            foreach (KeyValuePair<string, JsonObject> property in map)
             {
-                // TODO reimplement SetType
-                //if (name == TypeKey)
-                //    writer.SetType((string)map[TypeKey], this);
-                //else
+                string name = property.Key;
+                JsonObject value = property.Value;
 
-                writer.AddProperty(property.Key);
-                ReadValue(property.Value);
+                if (name == TypeKey)
+                {
+                    writer.SetType((string)value.Value());
+                }
+                else
+                {
+                    writer.AddProperty(name);
+                    ReadValue(value);
+                }
             }
 
             writer.EndStructure();

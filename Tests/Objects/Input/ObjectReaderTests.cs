@@ -38,7 +38,7 @@ namespace json.Tests.Objects
         [Test]
         public void Null()
         {
-            Assert.AreEqual("{\"Property\":null}", ConvertToJson(new NullPropertyClass(), false));
+            Assert.AreEqual("{\"Property\":null}", ConvertToJson(new NullPropertyClass()));
         }
 
         private class NullPropertyClass
@@ -91,7 +91,8 @@ namespace json.Tests.Objects
         [Test]
         public void ObjectArray()
         {
-            Assert.AreEqual("{\"foo\":[{\"bar\":5},{}]}", ConvertToJson(new { foo = new object[] { new { bar = 5 }, new { } } }));
+            ConvertToJson(new { foo = new object[] { new { bar = 5 }, new { } } })
+                .ShouldBe(@"{""foo"":[{""bar"":5},{}]}");
         }
 
         [Test]
@@ -103,7 +104,8 @@ namespace json.Tests.Objects
         [Test]
         public void MixedArray()
         {
-            Assert.AreEqual("{\"foo\":[1,\"two\",{},[]]}", ConvertToJson(new { foo = new object[] { 1, "two", new { }, new object[] { } } }));
+            ConvertToJson(new { foo = new object[] { 1, "two", new { }, new object[] { } } })
+                .ShouldBe(@"{""foo"":[1,""two"",{},[]]}");
         }
 
         [Test]
@@ -299,14 +301,14 @@ namespace json.Tests.Objects
             public static int StaticProperty { get; set; }
         }
 
-        //[Test] //TODO reimplement SetType
+        [Test]
         public void OverrideTypeHandler()
         {
-            //using (CurrentTypeHandler.Override(new CustomTypeHandler()))
-            //{
-            //    string json = Convert.From.Object(new { foo = 5 }, new ObjectParsingOptions { SerializeAllTypes = true }).ToTypedJson();
-            //    Assert.AreEqual(@"{""_type"":""foobar"",""foo"":5}", json);
-            //}
+            using (CurrentTypeHandler.Override(new CustomTypeHandler()))
+            {
+                ConvertToJson(new { foo = 5 }, TypeInformationLevel.All)
+                    .ShouldBe(@"{""_type"":""foobar"",""foo"":5}");
+            }
         }
 
         private class CustomTypeHandler : TypeHandler
@@ -327,92 +329,92 @@ namespace json.Tests.Objects
             }
         }
 
-        //[Test] //TODO reimplement SetType
+        [Test]
         public void InterfacePropertyTypeSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new InterfacePropertyClass { Property = new ConcreteClass { Value = 1 } });
-            Assert.AreEqual(@"{""_type"":""InterfacePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":1}}", json);
+            ConvertToSimpleTypeJson(new InterfacePropertyClass { Property = new ConcreteClass { Value = 1 } })
+                .ShouldBe(@"{""_type"":""InterfacePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":1}}");
         }
 
-        //[Test] //TODO reimplement SetType
+        [Test]
         public void AbstractTypePropertyTypeSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new AbstractTypePropertyClass { Property = new ConcreteClass { Value = 2 } });
-            Assert.AreEqual(@"{""_type"":""AbstractTypePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":2}}", json);
+            ConvertToSimpleTypeJson(new AbstractTypePropertyClass { Property = new ConcreteClass { Value = 2 } })
+                .ShouldBe(@"{""_type"":""AbstractTypePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":2}}");
         }
 
-        //[Test] //TODO reimplement SetType
+        [Test]
         public void KnownTypeNotSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new ConcreteTypePropertyClass { Property = new ConcreteClass { Value = 3 } });
-            Assert.AreEqual(@"{""_type"":""ConcreteTypePropertyClass"",""Property"":{""Value"":3}}", json);
+            ConvertToSimpleTypeJson(new ConcreteTypePropertyClass { Property = new ConcreteClass { Value = 3 } })
+                .ShouldBe(@"{""_type"":""ConcreteTypePropertyClass"",""Property"":{""Value"":3}}");
         }
 
-        //[Test] //TODO reimplement SetType
+        [Test]
         public void MarkedKnownTypePropertyTypeSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new MarkedConcreteTypePropertyClass { Property = new ConcreteClass { Value = 4 } });
-            Assert.AreEqual(@"{""_type"":""MarkedConcreteTypePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":4}}", json);
+            ConvertToSimpleTypeJson(new MarkedConcreteTypePropertyClass { Property = new ConcreteClass { Value = 4 } })
+                .ShouldBe(@"{""_type"":""MarkedConcreteTypePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":4}}");
         }
 
-        //[Test] //TODO reimplement SetType
+        [Test]
         public void KnownTypeEnumerablePropertyTypeNotSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new ConcreteTypeEnumerablePropertyClass { Property = new List<ConcreteClass> { new ConcreteClass { Value = 5 } } });
-            Assert.AreEqual(@"{""_type"":""ConcreteTypeEnumerablePropertyClass"",""Property"":[{""Value"":5}]}", json);
+            ConvertToSimpleTypeJson(new ConcreteTypeEnumerablePropertyClass { Property = new List<ConcreteClass> { new ConcreteClass { Value = 5 } } })
+                .ShouldBe(@"{""_type"":""ConcreteTypeEnumerablePropertyClass"",""Property"":[{""Value"":5}]}");
         }
 
-        //[Test] //TODO reimplement SetType
+        [Test]
         public void MarkedKnownTypeEnumerablePropertyTypeSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new MarkedConcreteTypeEnumerablePropertyClass { Property = new List<ConcreteClass> { new ConcreteClass { Value = 6 } } });
-            Assert.AreEqual(@"{""_type"":""MarkedConcreteTypeEnumerablePropertyClass"",""Property"":[{""_type"":""ConcreteClass"",""Value"":6}]}", json);
+            ConvertToSimpleTypeJson(new MarkedConcreteTypeEnumerablePropertyClass { Property = new List<ConcreteClass> { new ConcreteClass { Value = 6 } } })
+                .ShouldBe(@"{""_type"":""MarkedConcreteTypeEnumerablePropertyClass"",""Property"":[{""_type"":""ConcreteClass"",""Value"":6}]}");
         }
 
-        //[Test] //TODO reimplement SetType
+        [Test]
         public void KnownTypeDictionaryTypesNotSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new ConcreteTypeDictionaryPropertyClass
-            {
-                Property = new Dictionary<ConcreteClass, ConcreteClass>
+            ConvertToSimpleTypeJson(new ConcreteTypeDictionaryPropertyClass
+                {
+                    Property = new Dictionary<ConcreteClass, ConcreteClass>
                         {
                             { new ConcreteClass { Value = 7 }, new ConcreteClass { Value = 8 } }
                         }
-            });
-            Assert.AreEqual(@"{""_type"":""ConcreteTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""Value"":7},""Value"":{""Value"":8}}]}", json);
+                })
+                .ShouldBe(@"{""_type"":""ConcreteTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""Value"":7},""Value"":{""Value"":8}}]}");
         }
 
         //[Test]
         public void MarkedKnownTypeKeyDictionaryTypesSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new MarkedConcreteKeyTypeDictionaryPropertyClass
-            {
-                Property = new Dictionary<ConcreteClass, ConcreteClass>
+            ConvertToSimpleTypeJson(new MarkedConcreteKeyTypeDictionaryPropertyClass
+                {
+                    Property = new Dictionary<ConcreteClass, ConcreteClass>
                         {
                             { new ConcreteClass { Value = 9 }, new ConcreteClass { Value = 10 } }
                         }
-            });
-            Assert.AreEqual(@"{""_type"":""MarkedConcreteKeyTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""_type"":""ConcreteClass"",""Value"":9},""Value"":{""Value"":10}}]}", json);
+                })
+                .ShouldBe(@"{""_type"":""MarkedConcreteKeyTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""_type"":""ConcreteClass"",""Value"":9},""Value"":{""Value"":10}}]}");
         }
 
         //[Test]
         public void MarkedKnownTypeValueDictionaryTypeSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new MarkedConcreteValueTypeDictionaryPropertyClass
+            ConvertToSimpleTypeJson(new MarkedConcreteValueTypeDictionaryPropertyClass
                 {
                     Property = new Dictionary<ConcreteClass, ConcreteClass>
                         {
                             { new ConcreteClass { Value = 11 }, new ConcreteClass { Value = 12 } }
                         }
-                });
-            Assert.AreEqual(@"{""_type"":""MarkedConcreteValueTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""Value"":11},""Value"":{""_type"":""ConcreteClass"",""Value"":12}}]}", json);
+                })
+                .ShouldBe(@"{""_type"":""MarkedConcreteValueTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""Value"":11},""Value"":{""_type"":""ConcreteClass"",""Value"":12}}]}");
         }
 
         private static string ConvertToSimpleTypeJson(object obj)
         {
             using (CurrentTypeHandler.Override(new SimpleTypeNameTypeHandler()))
             {
-                return ConvertToJson(obj);
+                return ConvertToJson(obj, TypeInformationLevel.Minimal);
             }
         }
 
@@ -499,9 +501,9 @@ namespace json.Tests.Objects
         }
 
 
-        private static string ConvertToJson(object obj, bool serializeAllTypes = true)
+        private static string ConvertToJson(object obj, TypeInformationLevel serializeTypeInformation = TypeInformationLevel.None)
         {
-            var options = new ObjectParsingOptions { SerializeAllTypes = serializeAllTypes };
+            var options = new ObjectParsingOptions { SerializeAllTypes = true, SerializeTypeInformation = serializeTypeInformation };
             StringWriter stringWriter = new StringWriter();
             JsonStringWriter jsonWriter = new JsonStringWriter(stringWriter);
             ObjectReader.Read(obj, jsonWriter, options);

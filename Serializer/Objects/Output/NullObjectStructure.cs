@@ -17,6 +17,8 @@ namespace json.Objects
 
         public void SetCurrentProperty(string name) { }
 
+        public void SetType(string typeIdentifier) { }
+
         public ObjectContainer CreateStructure()
         {
             return Instance;

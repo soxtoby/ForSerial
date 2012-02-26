@@ -77,6 +77,12 @@ namespace json.Json
             suppressDelimiter = true;
         }
 
+        public void SetType(string typeIdentifier)
+        {
+            AddProperty("_type");
+            Write(typeIdentifier);
+        }
+
         public void EndStructure()
         {
             json.Write('}');

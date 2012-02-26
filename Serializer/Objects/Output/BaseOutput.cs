@@ -8,6 +8,7 @@ namespace json.Objects
 
         public void AssignToProperty(object obj, PropertyDefinition property) { }
         public void SetCurrentProperty(string name) { }
+        public void SetType(string typeIdentifier) { }
 
         public object GetTypedValue()
         {

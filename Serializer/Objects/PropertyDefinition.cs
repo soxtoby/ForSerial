@@ -9,12 +9,12 @@ namespace json.Objects
             this.setter = setter;
             Name = name;
             TypeDef = typeDef;
-            ForceTypeIdentifierSerialization = forceTypeIdentifierSerialization;
+            this.forceTypeIdentifierSerialization = forceTypeIdentifierSerialization;
         }
 
         public string Name { get; private set; }
         public TypeDefinition TypeDef { get; private set; }
-        public bool ForceTypeIdentifierSerialization { get; private set; }
+        private bool forceTypeIdentifierSerialization;
 
         private readonly GetMethod getter;
         private readonly SetMethod setter;
@@ -46,6 +46,15 @@ namespace json.Objects
         public ObjectValue CreateValue(object value)
         {
             return TypeDef.CreateValue(value);
+        }
+
+        public bool ShouldWriteTypeIdentifier(object value)
+        {
+            if (forceTypeIdentifierSerialization)
+                return true;
+
+            TypeDefinition valueTypeDef = CurrentTypeHandler.GetTypeDefinition(value);
+            return valueTypeDef != TypeDef;
         }
     }
 }

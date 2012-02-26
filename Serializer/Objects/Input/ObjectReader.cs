@@ -24,7 +24,6 @@ namespace json.Objects
         public static void Read(object obj, Writer writer, ObjectParsingOptions options = null)
         {
             ObjectReader reader = new ObjectReader(writer, options ?? new ObjectParsingOptions());
-
             reader.Read(obj);
         }
 
@@ -34,12 +33,17 @@ namespace json.Objects
         //    return Read(currentObject, subWriter, options).AsStructure();
         //}
 
-        public void Read(object input)
+        private void Read(object input)
+        {
+            Read(input, options.SerializeTypeInformation != TypeInformationLevel.None);
+        }
+
+        public void Read(object input, bool requestTypeIdentification)
         {
             if (writer.CanWrite(input))
                 writer.Write(input);
             else
-                ReadObject(input);
+                ReadObject(input, ShouldWriteTypeIdentification(requestTypeIdentification));
 
             // TODO reimplement object references
             //OutputStructure previouslyParsedObject = objectReferences.Get(input);
@@ -49,10 +53,16 @@ namespace json.Objects
 
         }
 
-        private void ReadObject(object input)
+        private bool ShouldWriteTypeIdentification(bool typeIdentifierRequested)
+        {
+            return options.SerializeTypeInformation == TypeInformationLevel.All
+                || options.SerializeTypeInformation == TypeInformationLevel.Minimal && typeIdentifierRequested;
+        }
+
+        private void ReadObject(object input, bool writerTypeIdentifier)
         {
             TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(input.GetType());
-            typeDef.ReadObject(input, this, writer);
+            typeDef.ReadObject(input, this, writer, writerTypeIdentifier);
         }
 
         // TODO reimplement object references

@@ -21,7 +21,11 @@ namespace json.Objects
 
         public TypeDefinition TypeDef { get { return collectionDef; } }
 
-        public void SetCurrentProperty(string name) { } // TODO throw exception - can't have properties in a sequence
+        // TODO throw exception - can't have properties in a sequence
+        public void SetCurrentProperty(string name) { }
+
+        // TODO throw exception - can't change type of sequence (in JSON at least)
+        public void SetType(string typeIdentifier) { }
 
         public ObjectContainer CreateStructure()
         {

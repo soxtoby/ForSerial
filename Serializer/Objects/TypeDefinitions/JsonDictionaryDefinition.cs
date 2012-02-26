@@ -33,12 +33,15 @@ namespace json.Objects.TypeDefinitions
                 || typeCodeType == TypeCodeType.Number;
         }
 
-        public override void ReadObject(object input, ObjectReader reader, Writer writer)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
             IDictionary dictionary = input as IDictionary;
             if (dictionary == null) return;
 
             writer.BeginStructure();
+
+            if (writeTypeIdentifier)
+                writer.SetType(CurrentTypeHandler.GetTypeIdentifier(Type));
 
             foreach (object key in dictionary.Keys)
             {
@@ -48,7 +51,7 @@ namespace json.Objects.TypeDefinitions
                 object value = dictionary[key];
 
                 writer.AddProperty(name);
-                reader.Read(value);
+                reader.Read(value, CurrentTypeHandler.GetTypeDefinition(value) != ValueTypeDef);
             }
 
             writer.EndStructure();

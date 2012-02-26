@@ -297,7 +297,7 @@ namespace json.Tests.Objects
         //[ExpectedException(typeof(TypedObjectBase.PropertyTypeMismatch))]
         //public void PropertyTypeMismatch()
         //{
-        //var obj = new { Property = new BooleanPropertyClass() }, new ObjectParsingOptions { SerializeAllTypes = true, SerializeAllTypeInformation = true };
+        //var obj = new { Property = new BooleanPropertyClass() }, new ObjectParsingOptions { SerializeAllTypes = true, SerializeTypeInformation = true };
 
         //StringWriter stringWriter = new StringWriter();
         //JsonStringWriter jsonWriter = new JsonStringWriter(stringWriter);
@@ -434,7 +434,7 @@ namespace json.Tests.Objects
             CollectionAssert.AreEqual(new[] { 4, 5, 6 }, obj.NestedArray[1]);
         }
 
-        //[Test] // TODO implement SetType
+        [Test]
         public void InterfaceProperty()
         {
             InterfacePropertyClass obj = new InterfacePropertyClass { Property = new InterfaceImplementation { Value = 5 } };
@@ -466,7 +466,7 @@ namespace json.Tests.Objects
             result.SubProperty.ShouldBe(0);
         }
 
-        //[Test] // TODO reimplement SetType
+        [Test]
         public void MaintainSubType()
         {
             CopyTo<AbstractSuperClass>(new SubClass { SuperProperty = 1, SubProperty = 2 })
@@ -482,7 +482,7 @@ namespace json.Tests.Objects
                 .SubProperty.ShouldBe(2);
         }
 
-        //[Test] // TODO reimplement SetType
+        [Test]
         public void AbstractTypedProperty()
         {
             AbstractTypedPropertyClass original = new AbstractTypedPropertyClass { Property = new SuperClass { SuperProperty = 5 } };
@@ -515,7 +515,7 @@ namespace json.Tests.Objects
             public int SubProperty { get; set; }
         }
 
-        //[Test] // TODO reimplement SetType
+        [Test]
         public void AbstractTypedPropertyMarkedWithSerializable()
         {
             var original = new SerializableAbstractTypedPropertyClass { Property = new SerializableAbstractImplementation { AbstractProperty = 5 } };
@@ -657,7 +657,7 @@ namespace json.Tests.Objects
         private static T CopyTo<T>(object obj)
         {
             ObjectWriter<T> writer = new ObjectWriter<T>();
-            ObjectReader.Read(obj, writer, new ObjectParsingOptions { SerializeAllTypes = true });
+            ObjectReader.Read(obj, writer, new ObjectParsingOptions { SerializeAllTypes = true, SerializeTypeInformation = TypeInformationLevel.Minimal });
             return writer.Result;
         }
     }

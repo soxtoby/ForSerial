@@ -27,6 +27,12 @@ namespace json.JsonObjects
             currentObject.Push(map);
         }
 
+        public void SetType(string typeIdentifier)
+        {
+            AddProperty("_type");
+            Write(typeIdentifier);
+        }
+
         public void EndStructure()
         {
             currentObject.Pop();

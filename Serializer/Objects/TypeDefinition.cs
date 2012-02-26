@@ -15,6 +15,8 @@ namespace json.Objects
 
         public Type Type { get; private set; }
 
+        protected virtual bool ShouldWriterTypeIdentifier { get { return true; } }
+
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
 
         public List<ConstructorDefinition> Constructors { get; private set; }
@@ -131,7 +133,7 @@ namespace json.Objects
             return reader == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ReaderMatches(reader));
         }
 
-        public abstract void ReadObject(object input, ObjectReader reader, Writer writer);
+        public abstract void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier);
 
         protected static bool ValueIsSerializable(object value)
         {

@@ -20,7 +20,7 @@ namespace json.Json
 
         public override void ReadPreBuildResult(object preBuildResult, Writer valueFactory)
         {
-            //JsonParser.Parse((string)preBuildResult, valueFactory);//TODO reimplement
+            //JsonParser.Parse((string)preBuildResult, valueFactory);//TODO reimplement prebuild
         }
     }
 }

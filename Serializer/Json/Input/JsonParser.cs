@@ -205,10 +205,9 @@ namespace json.Json
 
                 if (name == "_type")
                 {
-                    if (parser.SetObjectType())
-                        ReturnImmediately = true; // Object was pre-built
-                    else
-                        NextPropertyParser = new RegularPropertyParser(parser);
+                    parser.SetObjectType();
+                    //ReturnImmediately = true; // Object was pre-built // TODO reimplement prebuild
+                    NextPropertyParser = new RegularPropertyParser(parser);
                 }
                 else
                 {
@@ -216,7 +215,7 @@ namespace json.Json
                     NextPropertyParser.ParsePropertyValue(name);
                 }
 
-                //parser.objectReferences.Add(OutputStructure);//TODO reimplement
+                //parser.objectReferences.Add(OutputStructure);//TODO reimplement object references
             }
         }
 
@@ -252,11 +251,10 @@ namespace json.Json
             //return writer.CreateReference(objectReferences[referenceId]);
         }
 
-        private bool SetObjectType()
+        private void SetObjectType()
         {
-            throw new NotImplementedException();
-            //string typeIdentifier = GetString();
-            //return writer.SetType(typeIdentifier, this);
+            string typeIdentifier = GetString();
+            writer.SetType(typeIdentifier);
         }
 
         private string GetString()

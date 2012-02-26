@@ -13,7 +13,9 @@ namespace json.Objects.TypeDefinitions
                 : null;
         }
 
-        public override void ReadObject(object input, ObjectReader reader, Writer writer)
+        protected override bool ShouldWriterTypeIdentifier { get { return false; } }
+
+        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
             Guid? guid = input as Guid?;
             writer.Write(guid == null

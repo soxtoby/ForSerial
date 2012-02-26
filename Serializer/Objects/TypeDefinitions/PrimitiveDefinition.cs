@@ -19,7 +19,7 @@ namespace json.Objects.TypeDefinitions
                 || type == typeof(string);  // string is considered a primitive for purposes of JSON serialization
         }
 
-        public override void ReadObject(object input, ObjectReader reader, Writer writer)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
             writer.Write(input);
         }

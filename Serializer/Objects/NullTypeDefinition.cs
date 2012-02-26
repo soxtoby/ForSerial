@@ -10,7 +10,7 @@ namespace json.Objects
             get { return instance ?? (instance = new NullTypeDefinition()); }
         }
 
-        public override void ReadObject(object input, ObjectReader reader, Writer writer)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
             writer.Write(null);
         }

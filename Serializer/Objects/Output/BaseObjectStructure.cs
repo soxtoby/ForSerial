@@ -22,6 +22,18 @@ namespace json.Objects
             currentProperty = name;
         }
 
+        public void SetType(string typeIdentifier)
+        {
+            TypeDefinition newTypeDef = CurrentTypeHandler.GetTypeDefinition(typeIdentifier);
+            ChangeTypeIfMoreSpecific(newTypeDef);
+        }
+
+        private void ChangeTypeIfMoreSpecific(TypeDefinition newTypeDef)
+        {
+            if (TypeDef.Type.IsAssignableFrom(newTypeDef.Type))
+                TypeDef = newTypeDef;
+        }
+
         public ObjectContainer CreateStructure()
         {
             return TypeDef.CreateStructureForProperty(currentProperty);
