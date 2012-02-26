@@ -23,7 +23,7 @@ namespace json.Objects.TypeDefinitions
                 : (dateTime.Value.ToUniversalTime() - BaseDate).TotalMilliseconds);
         }
 
-        public override Output CreateValue(object value)
+        public override ObjectValue CreateValue(object value)
         {
             DateTime dateTime;
             double? number = value as double?;
@@ -32,7 +32,7 @@ namespace json.Objects.TypeDefinitions
             else
                 dateTime = (DateTime)value;
 
-            return new TypedObjectOutputStructure(dateTime);
+            return new DefaultObjectValue(dateTime);
         }
     }
 }

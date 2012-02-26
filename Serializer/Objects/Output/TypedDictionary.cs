@@ -26,7 +26,7 @@ namespace json.Objects
 
         public Output CreateValue(string name, object value)
         {
-            return valueTypeDef.CreateValue(value);
+            return null;// valueTypeDef.CreateValue(value);
         }
 
         public OutputStructure BeginStructure(string name)
@@ -38,9 +38,10 @@ namespace json.Objects
 
         public SequenceOutput BeginSequence(string name)
         {
-            TypedSequence array = valueTypeDef.CreateSequence();
-            outputs.Push(array);
-            return array;
+            return null;
+            //TypedSequence array = valueTypeDef.CreateSequence();
+            //outputs.Push(array);
+            //return array;
         }
 
         public void EndStructure()

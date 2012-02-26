@@ -1,6 +1,6 @@
 ﻿namespace json.Objects
 {
-    internal class TypedNull : NullOutput
+    internal class TypedNull : ObjectValue
     {
         private TypedNull() { }
 
@@ -10,19 +10,16 @@
             get { return value = value ?? new TypedNull(); }
         }
 
-        public override OutputStructure AsStructure()
+        public void AssignToProperty(object obj, PropertyDefinition property)
         {
-            return new TypedObjectOutputStructure((object)null);
+            property.SetOn(obj, null);
         }
 
-        public override void AddToStructure(OutputStructure structure, string name)
+        public object GetTypedValue()
         {
-            ((TypedObjectOutputStructure)structure).AddProperty(name, new TypedPrimitiveValue(null));
+            return null;
         }
 
-        public override void AddToSequence(SequenceOutput sequence)
-        {
-            ((TypedSequence)sequence).AddItem(null);
-        }
+        public TypeDefinition TypeDef { get { throw new System.NotImplementedException(); } }
     }
 }

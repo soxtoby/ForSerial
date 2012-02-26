@@ -11,11 +11,6 @@ namespace json.Tests
         public void AddToSequence(SequenceOutput sequence)
         {
         }
-
-        public OutputStructure AsStructure()
-        {
-            return NullOutputStructure.Instance;
-        }
     }
 
     internal class TestWriter : Writer

@@ -2,12 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace json.Objects.TypeDefinitions
 {
     public class JsonDictionaryDefinition : TypeDefinition
     {
-        private JsonDictionaryDefinition(Type dictionaryType) : base(dictionaryType) { }
+        private JsonDictionaryDefinition(Type dictionaryType)
+            : base(dictionaryType)
+        {
+            KeyTypeDef = CurrentTypeHandler.GetTypeDefinition(dictionaryType.GetGenericInterfaceType(typeof(IDictionary<,>), 0));
+            ValueTypeDef = CurrentTypeHandler.GetTypeDefinition(dictionaryType.GetGenericInterfaceType(typeof(IDictionary<,>), 1));
+        }
+
+        public TypeDefinition ValueTypeDef { get; set; }
+        public TypeDefinition KeyTypeDef { get; set; }
 
         internal static JsonDictionaryDefinition CreateDictionaryDefinition(Type type)
         {
@@ -31,14 +40,11 @@ namespace json.Objects.TypeDefinitions
 
             writer.BeginStructure();
 
-            Type valueType = Type.GetGenericInterfaceType(typeof(IDictionary<,>), 1);
-            TypeDefinition valueTypeDef = CurrentTypeHandler.GetTypeDefinition(valueType);
-
             foreach (object key in dictionary.Keys)
             {
                 // Convert.ToString is in case the keys are numbers, which are represented
                 // as strings when used as keys, but can be indexed with numbers in JavaScript
-                string name = System.Convert.ToString(key, CultureInfo.InvariantCulture);
+                string name = Convert.ToString(key, CultureInfo.InvariantCulture);
                 object value = dictionary[key];
 
                 writer.AddProperty(name);
@@ -48,9 +54,31 @@ namespace json.Objects.TypeDefinitions
             writer.EndStructure();
         }
 
-        public override TypedObject CreateStructure()
+        public override ObjectStructure CreateStructure()
         {
-            return new TypedDictionary(this);
+            return new DictionaryStructure(this);
+        }
+
+        public override ObjectStructure CreateStructureForProperty(string name)
+        {
+            return ValueTypeDef.CreateStructure();
+        }
+
+        public override ObjectSequence CreateSequenceForProperty(string name)
+        {
+            return ValueTypeDef.CreateSequence();
+        }
+
+        public override ObjectValue CreateValueForProperty(string name, object value)
+        {
+            return ValueTypeDef.CreateValue(value);
+        }
+
+        public object ConstructNew()
+        {
+            ConstructorDefinition constructor = Constructors.FirstOrDefault(c => c.Parameters.None());
+            return constructor == null ? null
+                : constructor.Construct(new object[] { });
         }
     }
 }

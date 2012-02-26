@@ -158,10 +158,10 @@ namespace json.Tests.Json
         //[Test] // TODO reimplement subobject parsing
         public void ParseSubObject()
         {
-            ParseSubObjectWriter writer = new ParseSubObjectWriter();
-            Convert.From.Json(@"{""foo"":{""_type"":""bar"",""baz"":""qux""}}").WithBuilder(writer);
+            //ParseSubObjectWriter writer = new ParseSubObjectWriter();
+            //Convert.From.Json(@"{""foo"":{""_type"":""bar"",""baz"":""qux""}}").WithBuilder(writer);
 
-            Assert.AreEqual(@"{""baz"":""qux""}", writer.SubObjectJson);
+            //Assert.AreEqual(@"{""baz"":""qux""}", writer.SubObjectJson);
         }
 
         private class ParseSubObjectWriter : TestWriter
@@ -185,7 +185,7 @@ namespace json.Tests.Json
 
             public override bool SetType(string typeIdentifier, Reader reader)
             {
-                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(reader.ReadSubStructure(JsonStringBuilder.GetDefault()));
+                //parentFactory.SubObjectJson = JsonStringBuilder.GetResult(reader.ReadSubStructure(JsonStringBuilder.GetDefault()));
                 return true;
             }
         }
@@ -193,10 +193,10 @@ namespace json.Tests.Json
         //[Test] // TODO reimplement references
         public void MaintainReferences()
         {
-            var testBuilder = new WatchForReferenceBuilder();
-            Convert.From.Json(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}").WithBuilder(testBuilder);
+            //var testBuilder = new WatchForReferenceBuilder();
+            //Convert.From.Json(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}").WithBuilder(testBuilder);
 
-            Assert.NotNull(testBuilder.ReferencedObject);
+            //Assert.NotNull(testBuilder.ReferencedObject);
         }
 
         [Test]

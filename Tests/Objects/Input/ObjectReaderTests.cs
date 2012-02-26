@@ -116,37 +116,37 @@ namespace json.Tests.Objects
         //[Test] // TODO reimplement prebuild
         public void ReadSubStructure()
         {
-            ReadSubStructureWriter writer = new ReadSubStructureWriter();
-            Convert.From.Object(new { foo = new { bar = "baz" } }, new ObjectParsingOptions { SerializeAllTypes = true }).WithBuilder(writer);
+            //ReadSubStructureWriter writer = new ReadSubStructureWriter();
+            //Convert.From.Object(new { foo = new { bar = "baz" } }, new ObjectParsingOptions { SerializeAllTypes = true }).WithBuilder(writer);
 
-            Assert.AreEqual(@"{""bar"":""baz""}", writer.SubStructureJson);
+            //Assert.AreEqual(@"{""bar"":""baz""}", writer.SubStructureJson);
         }
 
-        private class ReadSubStructureWriter : TestWriter
-        {
-            public string SubStructureJson { get; set; }
+        //private class ReadSubStructureWriter : TestWriter
+        //{
+        //    public string SubStructureJson { get; set; }
 
-            public override OutputStructure BeginStructure()
-            {
-                return new ReadSubStructureObject(this);
-            }
-        }
+        //    public override OutputStructure BeginStructure()
+        //    {
+        //        return new ReadSubStructureObject(this);
+        //    }
+        //}
 
-        private class ReadSubStructureObject : NullOutputStructure
-        {
-            private readonly ReadSubStructureWriter parentFactory;
+        //private class ReadSubStructureObject : NullOutputStructure
+        //{
+        //    private readonly ReadSubStructureWriter parentFactory;
 
-            public ReadSubStructureObject(ReadSubStructureWriter parentFactory)
-            {
-                this.parentFactory = parentFactory;
-            }
+        //    public ReadSubStructureObject(ReadSubStructureWriter parentFactory)
+        //    {
+        //        this.parentFactory = parentFactory;
+        //    }
 
-            public override bool SetType(string typeIdentifier, Reader reader)
-            {
-                parentFactory.SubStructureJson = JsonStringBuilder.GetResult(reader.ReadSubStructure(new JsonStringBuilder()));
-                return true;
-            }
-        }
+        //    public override bool SetType(string typeIdentifier, Reader reader)
+        //    {
+        //        parentFactory.SubStructureJson = JsonStringBuilder.GetResult(reader.ReadSubStructure(new JsonStringBuilder()));
+        //        return true;
+        //    }
+        //}
 
         [Test]
         public void StringObjectDictionary_OutputAsRegularObject()
@@ -158,31 +158,31 @@ namespace json.Tests.Objects
         //[Test] //TODO reimplement object references
         public void MaintainReferences()
         {
-            SameReferenceTwice foo = new SameReferenceTwice(new object());
-            var testBuilder = new WatchForReferenceBuilder();
-            Convert.From.Object(foo).WithBuilder(testBuilder);
+            //SameReferenceTwice foo = new SameReferenceTwice(new object());
+            //var testBuilder = new WatchForReferenceBuilder();
+            //Convert.From.Object(foo).WithBuilder(testBuilder);
 
-            Assert.NotNull(testBuilder.ReferencedObject);
+            //Assert.NotNull(testBuilder.ReferencedObject);
         }
 
         // [Test] // TODO reimplement object references
         public void ValueTypesNotReferenced()
         {
-            SameReferenceTwice obj = new SameReferenceTwice(new KeyValuePair<int, int>(1, 2));
-            var testBuilder = new WatchForReferenceBuilder();
-            Convert.From.Object(obj).WithBuilder(testBuilder);
+            //SameReferenceTwice obj = new SameReferenceTwice(new KeyValuePair<int, int>(1, 2));
+            //var testBuilder = new WatchForReferenceBuilder();
+            //Convert.From.Object(obj).WithBuilder(testBuilder);
 
-            Assert.IsNull(testBuilder.ReferencedObject);
+            //Assert.IsNull(testBuilder.ReferencedObject);
         }
 
         // [Test] // TODO reimplement object references
         public void StringsNotReferenced()
         {
-            SameReferenceTwice obj = new SameReferenceTwice("foo");
-            var testBuilder = new WatchForReferenceBuilder();
-            Convert.From.Object(obj).WithBuilder(testBuilder);
+            //SameReferenceTwice obj = new SameReferenceTwice("foo");
+            //var testBuilder = new WatchForReferenceBuilder();
+            //Convert.From.Object(obj).WithBuilder(testBuilder);
 
-            Assert.IsNull(testBuilder.ReferencedObject);
+            //Assert.IsNull(testBuilder.ReferencedObject);
         }
 
         // TODO remove if not using objcet/array/property contexts anymore
@@ -263,7 +263,7 @@ namespace json.Tests.Objects
         // [Test] // TODO reimplement object references
         public void ValueTypeParsedToValue()
         {
-            Convert.From.Object(new ValueType()).WithBuilder(new ValueOnlyWriter());
+            //Convert.From.Object(new ValueType()).WithBuilder(new ValueOnlyWriter());
         }
 
         private struct ValueType { }
@@ -302,11 +302,11 @@ namespace json.Tests.Objects
         //[Test] //TODO reimplement SetType
         public void OverrideTypeHandler()
         {
-            using (CurrentTypeHandler.Override(new CustomTypeHandler()))
-            {
-                string json = Convert.From.Object(new { foo = 5 }, new ObjectParsingOptions { SerializeAllTypes = true }).ToTypedJson();
-                Assert.AreEqual(@"{""_type"":""foobar"",""foo"":5}", json);
-            }
+            //using (CurrentTypeHandler.Override(new CustomTypeHandler()))
+            //{
+            //    string json = Convert.From.Object(new { foo = 5 }, new ObjectParsingOptions { SerializeAllTypes = true }).ToTypedJson();
+            //    Assert.AreEqual(@"{""_type"":""foobar"",""foo"":5}", json);
+            //}
         }
 
         private class CustomTypeHandler : TypeHandler

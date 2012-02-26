@@ -26,11 +26,6 @@ namespace json.Objects
             sequence.GetArrayAsTypedObjectArray().AddItem(GetTypedValue());
         }
 
-        public override OutputStructure AsStructure()
-        {
-            return new TypedObjectOutputStructure(GetTypedValue());
-        }
-
         public void AssignToProperty(object obj, PropertyDefinition property)
         {
             if (property.CanSet)
@@ -41,6 +36,8 @@ namespace json.Objects
         {
             return collection;
         }
+
+        public TypeDefinition TypeDef { get { throw new NotImplementedException(); } }
 
         public void AddItem(object item)
         {

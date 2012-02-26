@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace json.Objects.TypeDefinitions
@@ -28,15 +29,22 @@ namespace json.Objects.TypeDefinitions
             return null;
         }
 
+        public override ObjectSequence CreateSequence()
+        {
+            return new CollectionSequence(this);
+        }
+
         public void AddToCollection(object collection, object item)
         {
             if (adder != null)
                 adder(collection, new[] { ItemTypeDef.ConvertToCorrectType(item) });
         }
 
-        public override TypedSequence CreateSequence()
+        public object ConstructNew()
         {
-            return new TypedObjectTypedArray(this);
+            var defaultConstructor = Constructors.FirstOrDefault(c => c.Parameters.None());
+            return defaultConstructor == null ? null
+                : defaultConstructor.Construct(new object[] { });
         }
     }
 }

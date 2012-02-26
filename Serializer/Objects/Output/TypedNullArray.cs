@@ -24,5 +24,7 @@ namespace json.Objects
         {
             return Enumerable.Empty<object>();
         }
+
+        public TypeDefinition TypeDef { get { throw new System.NotImplementedException(); } }
     }
 }

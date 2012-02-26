@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using json.Json;
 using json.JsonObjects;
 using json.Objects;
 using NUnit.Framework;
@@ -8,7 +9,7 @@ using NUnit.Framework;
 namespace json.Tests.Objects
 {
     [TestFixture]
-    public class TypedObjectBuilderTests
+    public class ObjectWriterTests
     {
         [Test]
         public void Null()
@@ -150,7 +151,8 @@ namespace json.Tests.Objects
                 }
             };
 
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, Clone(obj).Array.Select(i => i.Integer).ToList());
+            Clone(obj)
+                .Array.Select(i => i.Integer).ShouldBe(new[] { 1, 2, 3 });
         }
 
         private class ObjectArrayPropertyClass
@@ -241,7 +243,8 @@ namespace json.Tests.Objects
                             { "foo", new List<int> { 1, 2, 3 } }
                         }
                 });
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, foo.Dictionary["foo"]);
+
+            foo.Dictionary["foo"].ShouldBe(new[] { 1, 2, 3 });
         }
 
         private class ListDictionaryPropertyClass
@@ -291,81 +294,87 @@ namespace json.Tests.Objects
             public Dictionary<int, string> Dictionary { get; set; }
         }
 
-        [Test]
+        //[Test]    // TFSBAD reimplement typing
         [ExpectedException(typeof(TypedObjectBase.PropertyTypeMismatch))]
         public void PropertyTypeMismatch()
         {
-            string json = Convert.From
-                .Object(new { Property = new BooleanPropertyClass() }, new ObjectParsingOptions { SerializeAllTypes = true, SerializeAllTypeInformation = true })
-                .ToTypedJson();
-            Convert.From.Json(json).ToObject<InterfacePropertyClass>();
+            //var obj = new { Property = new BooleanPropertyClass() }, new ObjectParsingOptions { SerializeAllTypes = true, SerializeAllTypeInformation = true };
+
+            //StringWriter stringWriter = new StringWriter();
+            //JsonStringWriter jsonWriter = new JsonStringWriter(stringWriter);
+            //ObjectReader.Read(obj, jsonWriter);
+
+            //string json = stringWriter.ToString();
+            //DeserializeJson<InterfacePropertyClass>(json);
         }
 
-        [Test]
+        //[Test] // TODO reimplement SetType
         [ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
         public void AddNullToUntypedObject()
         {
-            Convert.From.Json(@"{""foo"":null}").WithBuilder(TypedObjectBuilder.GenericInstance);
+            DeserializeJson<object>(@"{""foo"":null}");
         }
 
-        [Test]
-        [ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        public void AddBooleanToUntypedObject()
-        {
-            Convert.From.Json(@"{""foo"":true}").WithBuilder(TypedObjectBuilder.GenericInstance);
-        }
+        // TODO not sure if want
+        //[Test]
+        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
+        //public void AddBooleanToUntypedObject()
+        //{
+        //    DeserializeJson<object>(@"{""foo"":true}");
+        //}
 
-        [Test]
-        [ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        public void AddNumberToUntypedObject()
-        {
-            Convert.From.Json(@"{""foo"":5}").WithBuilder(TypedObjectBuilder.GenericInstance);
-        }
+        //[Test]
+        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
+        //public void AddNumberToUntypedObject()
+        //{
+        //    DeserializeJson<object>(@"{""foo"":5}");
+        //}
 
-        [Test]
-        [ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        public void AddStringToUntypedObject()
-        {
-            Convert.From.Json(@"{""foo"":""bar""}").WithBuilder(TypedObjectBuilder.GenericInstance);
-        }
+        //[Test]
+        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
+        //public void AddStringToUntypedObject()
+        //{
+        //    DeserializeJson<object>(@"{""foo"":""bar""}");
+        //}
 
-        [Test]
-        [ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        public void AddObjectToUntypedObject()
-        {
-            Convert.From.Json(@"{""foo"":{}}").WithBuilder(TypedObjectBuilder.GenericInstance);
-        }
+        //[Test]
+        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
+        //public void AddObjectToUntypedObject()
+        //{
+        //    DeserializeJson<object>(@"{""foo"":{}}");
+        //}
 
-        [Test]
-        [ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        public void AddArrayToUntypedObject()
-        {
-            Convert.From.Json(@"{""foo"":[]}").WithBuilder(TypedObjectBuilder.GenericInstance);
-        }
+        //[Test]
+        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
+        //public void AddArrayToUntypedObject()
+        //{
+        //    DeserializeJson<object>(@"{""foo"":[]}");
+        //}
 
-        [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.InvalidResultObject))]
+        //[Test]
+        //[ExpectedException(typeof(TypedObjectBuilder.InvalidResultObject))]
         public void InvalidResultObject()
         {
-            TypedObjectBuilder.GetResult<object>(NullOutputStructure.Instance);
+            //TypedObjectBuilder.GetResult<object>(NullOutputStructure.Instance);// TODO remove
         }
 
-        [Test]
-        [ExpectedException(typeof(TypedObjectBuilder.UnknownRootArrayType))]
+        //[Test]
+        //[ExpectedException(typeof(TypedObjectBuilder.UnknownRootArrayType))]
         public void UnknownRootArrayType()
         {
-            Convert.From.Object(new object[] { }).WithBuilder(TypedObjectBuilder.GenericInstance);
+            // TODO probably remove
+            //Convert.From.Object(new object[] { }).WithBuilder(TypedObjectBuilder.GetGenericInstance());
         }
 
-        [Test]
-        public void PreDeserializeUpgrade()
-        {
-            string json = Convert.From.Object(new PreDeserializeUpgradeClass { One = 1, Two = 2 }).ToTypedJson();
-            PreDeserializeUpgradeClass obj = Convert.From.Json(json).ToObject<PreDeserializeUpgradeClass>();
+        //[Test] // TODO reimplement prebuild
+        //public void PreDeserializeUpgrade()
+        //{
+        //    string json = Convert.From.Object(new PreDeserializeUpgradeClass { One = 1, Two = 2 }).ToTypedJson();
+        //    PreDeserializeUpgradeClass obj = Convert.From.Json(json).ToObject<PreDeserializeUpgradeClass>();
 
-            Assert.AreEqual(2, obj.One);
-            Assert.AreEqual(1, obj.Two);
-        }
+        //    Assert.AreEqual(2, obj.One);
+        //    Assert.AreEqual(1, obj.Two);
+        //}
 
         private class PreDeserializeUpgradeClass
         {
@@ -383,7 +392,7 @@ namespace json.Tests.Objects
             }
         }
 
-        [Test]
+        //[Test] // TODO reimplement object references
         public void MaintainObjectReferences()
         {
             IntPropertyClass intProperty = new IntPropertyClass { Integer = 5 };
@@ -396,15 +405,14 @@ namespace json.Tests.Objects
         [Test]
         public void BuildTypedObject()
         {
-            IntPropertyClass obj = Convert.From.Json(@"{""Integer"":3}").ToObject<IntPropertyClass>();
-
-            Assert.AreEqual(3, obj.Integer);
+            DeserializeJson<IntPropertyClass>(@"{""Integer"":3}")
+                .Integer.ShouldBe(3);
         }
 
         [Test]
         public void BuildTypedProperty()
         {
-            ObjectPropertyClass obj = Convert.From.Json(@"{""Object"":{""Integer"":4}}").ToObject<ObjectPropertyClass>();
+            ObjectPropertyClass obj = DeserializeJson<ObjectPropertyClass>(@"{""Object"":{""Integer"":4}}");
 
             Assert.AreEqual(4, obj.Object.Integer);
         }
@@ -412,9 +420,7 @@ namespace json.Tests.Objects
         [Test]
         public void BuildTypedArrayProperty()
         {
-            ObjectArrayPropertyClass obj = Convert.From
-                .Json(@"{""Array"":[{""Integer"":1},{""Integer"":2},{""Integer"":3}]}")
-                .ToObject<ObjectArrayPropertyClass>();
+            ObjectArrayPropertyClass obj = DeserializeJson<ObjectArrayPropertyClass>(@"{""Array"":[{""Integer"":1},{""Integer"":2},{""Integer"":3}]}");
 
             CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.Array.Select(i => i.Integer));
         }
@@ -422,25 +428,20 @@ namespace json.Tests.Objects
         [Test]
         public void BuildTypedNestedArrayProperty()
         {
-            NestedArrayPropertyClass obj = Convert.From
-                .Json(@"{""NestedArray"":[[1,2,3],[4,5,6]]}")
-                .ToObject<NestedArrayPropertyClass>();
+            NestedArrayPropertyClass obj = DeserializeJson<NestedArrayPropertyClass>(@"{""NestedArray"":[[1,2,3],[4,5,6]]}");
 
             Assert.NotNull(obj.NestedArray);
             CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.NestedArray[0]);
             CollectionAssert.AreEqual(new[] { 4, 5, 6 }, obj.NestedArray[1]);
         }
 
-        [Test]
+        //[Test] // TODO implement SetType
         public void InterfaceProperty()
         {
-            InterfacePropertyClass obj = Convert.From
-                .Object(new InterfacePropertyClass { Property = new InterfaceImplementation { Value = 5 } },
-                        new ObjectParsingOptions { SerializeAllTypes = true })
-                .ToObject<InterfacePropertyClass>();
-
-            Assert.NotNull(obj.Property);
-            Assert.AreEqual(5, obj.Property.Value);
+            InterfacePropertyClass obj = new InterfacePropertyClass { Property = new InterfaceImplementation { Value = 5 } };
+            CopyTo<InterfacePropertyClass>(obj)
+                .Property.ShouldNotBeNull()
+                .And.Value.ShouldBe(5);
         }
 
         private class InterfacePropertyClass
@@ -461,35 +462,28 @@ namespace json.Tests.Objects
         [Test]
         public void ConvertToSubType()
         {
-            SubClass sub = Convert.From.Object(new SuperClass { SuperProperty = 1 }).ToObject<SubClass>();
-
-            Assert.AreEqual(1, sub.SuperProperty);
-            Assert.AreEqual(0, sub.SubProperty);
+            SubClass result = CopyTo<SubClass>(new SuperClass { SuperProperty = 1 });
+            result.SuperProperty.ShouldBe(1);
+            result.SubProperty.ShouldBe(0);
         }
 
-        [Test]
+        //[Test] // TODO reimplement SetType
         public void MaintainSubType()
         {
-            SubClass sub = Convert.From
-                .Object(new SubClass { SuperProperty = 1, SubProperty = 2 })
-                .ToObject<AbstractSuperClass>() as SubClass;
-
-            Assert.NotNull(sub);
-            Assert.AreEqual(1, sub.SuperProperty);
-            Assert.AreEqual(2, sub.SubProperty);
+            CopyTo<AbstractSuperClass>(new SubClass { SuperProperty = 1, SubProperty = 2 })
+                .ShouldBe<SubClass>()
+                .And(sub => sub.SuperProperty.ShouldBe(1))
+                .And(sub => sub.SubProperty.ShouldBe(2));
         }
 
         [Test]
         public void ConvertToSimilarType()
         {
-            SimilarClass similar = Convert.From
-                .Object(new SubClass { SuperProperty = 1, SubProperty = 2 })
-                .ToObject<SimilarClass>();
-
-            Assert.AreEqual(2, similar.SubProperty);
+            CopyTo<SimilarClass>(new SubClass { SuperProperty = 1, SubProperty = 2 })
+                .SubProperty.ShouldBe(2);
         }
 
-        [Test]
+        //[Test] // TODO reimplement SetType
         public void AbstractTypedProperty()
         {
             AbstractTypedPropertyClass original = new AbstractTypedPropertyClass { Property = new SuperClass { SuperProperty = 5 } };
@@ -522,7 +516,7 @@ namespace json.Tests.Objects
             public int SubProperty { get; set; }
         }
 
-        [Test]
+        //[Test] // TODO reimplement SetType
         public void AbstractTypedPropertyMarkedWithSerializable()
         {
             var original = new SerializableAbstractTypedPropertyClass { Property = new SerializableAbstractImplementation { AbstractProperty = 5 } };
@@ -587,10 +581,8 @@ namespace json.Tests.Objects
         [Test]
         public void BuildGuid()
         {
-            GuidPropertyClass obj = Convert.From
-                .Json(@"{""Property"":""4bb47128-42c1-4a75-9b0c-cd424f84d3e3""}")
-                .ToObject<GuidPropertyClass>();
-            Assert.AreEqual(obj.Property, new Guid("4bb47128-42c1-4a75-9b0c-cd424f84d3e3"));
+            DeserializeJson<Guid>(@"""4bb47128-42c1-4a75-9b0c-cd424f84d3e3""")
+                .ShouldBe(new Guid("4bb47128-42c1-4a75-9b0c-cd424f84d3e3"));
         }
 
         private class GuidPropertyClass
@@ -601,35 +593,30 @@ namespace json.Tests.Objects
         [Test]
         public void BuildDateTimeFromNumber()
         {
-            DateTime result = Convert.From.Json("981137106007").ToObject<DateTime>();
-            Assert.AreEqual(new DateTime(2001, 2, 3, 4, 5, 6, 7), result);
+            DeserializeJson<DateTime>("981137106007")
+                .ShouldBe(new DateTime(2001, 2, 3, 4, 5, 6, 7));
         }
 
         [Test]
         public void BuildKeyValuePair()
         {
-            KeyValuePair<string, int> kv = Convert.From
-                .Json(@"{""Key"":""foo"", ""Value"":5}")
-                .ToObject<KeyValuePair<string, int>>();
-            Assert.AreEqual("foo", kv.Key);
-            Assert.AreEqual(5, kv.Value);
+            KeyValuePair<string, int> result = DeserializeJson<KeyValuePair<string, int>>(@"{""Key"":""foo"", ""Value"":5}");
+            result.Key.ShouldBe("foo");
+            result.Value.ShouldBe(5);
         }
 
         [Test]
         public void AnonymousObject()
         {
-            var obj = new { Property = 5 };
-            var result = Clone(obj);
-            Assert.AreEqual(5, result.Property);
+            Clone(new { Property = 1 })
+                .Property.ShouldBe(1);
         }
 
         [Test]
         public void BuildIEnumerable()
         {
-            EnumerablePropertyClass obj = Convert.From
-                .Json(@"{""Property"":[0,1,2]}")
-                .ToObject<EnumerablePropertyClass>();
-            CollectionAssert.AreEqual(new[] { 0, 1, 2 }, obj.Property);
+            DeserializeJson<EnumerablePropertyClass>(@"{""Property"":[0,1,2]}")
+                .Property.ShouldBe(new[] { 0, 1, 2 });
         }
 
         private class EnumerablePropertyClass
@@ -646,11 +633,8 @@ namespace json.Tests.Objects
                     More = new IntPropertyClass { Integer = 2 }
                 };
 
-            IntPropertyClass fewerProperties = Convert.From
-                .Object(moreProperties)
-                .ToObject<IntPropertyClass>();
-
-            Assert.AreEqual(1, fewerProperties.Integer);
+            CopyTo<IntPropertyClass>(moreProperties)
+                .Integer.ShouldBe(1);
         }
 
         private class MorePropertiesClass
@@ -659,10 +643,23 @@ namespace json.Tests.Objects
             public IntPropertyClass More { get; set; }
         }
 
+        private static T DeserializeJson<T>(string json)
+        {
+            ObjectWriter<T> writer = new ObjectWriter<T>();
+            JsonParser.Parse(json, writer);
+            return writer.Result;
+        }
 
         private static T Clone<T>(T obj)
         {
-            return Convert.From.Object(obj, new ObjectParsingOptions { SerializeAllTypes = true }).ToObject<T>();
+            return CopyTo<T>(obj);
+        }
+
+        private static T CopyTo<T>(object obj)
+        {
+            ObjectWriter<T> writer = new ObjectWriter<T>();
+            ObjectReader.Read(obj, writer, new ObjectParsingOptions { SerializeAllTypes = true });
+            return writer.Result;
         }
     }
 }

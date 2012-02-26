@@ -26,9 +26,9 @@ namespace json.Objects.TypeDefinitions
             writer.EndStructure();
         }
 
-        public override TypedObject CreateStructure()
+        public override ObjectStructure CreateStructure()
         {
-            return new TypedRegularObject(this);
+            return new DefaultObjectStructure(this);
         }
 
         private IEnumerable<KeyValuePair<PropertyDefinition, object>> GetSerializableProperties(object obj, bool serializeAllTypes)

@@ -6,11 +6,6 @@ namespace json
 
         public abstract void AddToSequence(SequenceOutput sequence);
 
-        public OutputStructure AsStructure()
-        {
-            return this;
-        }
-
         public virtual bool SetType(string typeIdentifier, Reader reader) { return false; }
 
         public virtual Output CreateValue(string name, Writer valueFactory, object value)

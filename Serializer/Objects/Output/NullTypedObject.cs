@@ -30,7 +30,7 @@ namespace json.Objects
 
         public Output CreateValue(string name, object value)
         {
-            return TypedNull.Value;
+            return null;// TypedNull.Value;
         }
 
         public OutputStructure BeginStructure(string name)

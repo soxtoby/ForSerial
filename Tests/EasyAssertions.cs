@@ -15,7 +15,7 @@ namespace json.Tests
 
         public static void ShouldBe(this object actual, string expected, string message = null)
         {
-            AssertEqual(System.Convert.ToString(actual), expected, message);
+            AssertEqual(Convert.ToString(actual), expected, message);
         }
 
         public static void ShouldBe<TExpected>(this IEnumerable actual, IEnumerable<TExpected> expected, string message = null)
@@ -42,7 +42,7 @@ namespace json.Tests
         {
             try
             {
-                convertedItem = (T)System.Convert.ChangeType(item, typeof(T));
+                convertedItem = (T)Convert.ChangeType(item, typeof(T));
                 return true;
             }
             catch (InvalidCastException)
@@ -86,6 +86,14 @@ namespace json.Tests
                 throw new EasyAssertionException("Expected null, but was {0}.\r\n{1}".FormatWith(actual, message));
         }
 
+        public static ActualValue<T> ShouldNotBeNull<T>(this T actual, string message = null) where T : class
+        {
+            if (actual == null)
+                throw new EasyAssertionException("Shouldn't have been null.");
+
+            return new ActualValue<T>(actual);
+        }
+
         public static ActualValue<TExpected> ShouldBe<TExpected>(this object actual, string message = null)
         {
             if (!(actual is TExpected))
@@ -111,7 +119,7 @@ namespace json.Tests
         {
             List<object> items = enumerable.Cast<object>().ToList();
             if (items.Any())
-                throw new EasyAssertionException("Should be empty, but has {0} items:\r\n{1}\r\n{2}".FormatWith(items.Count, items.Select(System.Convert.ToString).Join(", "), message));
+                throw new EasyAssertionException("Should be empty, but has {0} items:\r\n{1}\r\n{2}".FormatWith(items.Count, items.Select(Convert.ToString).Join(", "), message));
         }
 
         public static void ItemsSatisfy<T>(this IEnumerable<T> actual, params Action<T>[] asserts)
@@ -146,14 +154,14 @@ namespace json.Tests
                 return false;
 
             if (actualTypeCodeType == TypeCodeType.Number)
-                actual = System.Convert.ChangeType(actual, expectedTypeCode);
+                actual = Convert.ChangeType(actual, expectedTypeCode);
 
             return Equals(actual, expected);
         }
 
         private static string ConvertToString(object obj)
         {
-            string str = System.Convert.ToString(obj);
+            string str = Convert.ToString(obj);
             return str == string.Empty
                 ? "<String.Empty>"
                 : str;
@@ -161,7 +169,7 @@ namespace json.Tests
 
         private static string ConvertToString(IEnumerable list)
         {
-            return "[{0}]".FormatWith(list.Cast<object>().Select(System.Convert.ToString).Join(", "));
+            return "[{0}]".FormatWith(list.Cast<object>().Select(Convert.ToString).Join(", "));
         }
     }
 

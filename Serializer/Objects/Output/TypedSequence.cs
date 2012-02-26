@@ -1,4 +1,6 @@
-﻿namespace json.Objects
+﻿using System;
+
+namespace json.Objects
 {
     public interface TypedSequence : SequenceOutput, TypedValue
     {
@@ -12,7 +14,7 @@
             TypedSequence arrayValue = value as TypedSequence;
 
             if (arrayValue == null)
-                throw new TypedObjectBuilder.UnsupportedSequenceOutput();
+                throw new Exception(); //TypedObjectBuilder.UnsupportedSequenceOutput();
 
             return arrayValue;
         }

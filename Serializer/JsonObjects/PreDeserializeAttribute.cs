@@ -14,7 +14,8 @@ namespace json.JsonObjects
 
         public override object GetContextValue(Output parsedContext)
         {
-            return JsonObjectBuilder.GetResult(parsedContext);
+            //return JsonObjectBuilder.GetResult(parsedContext);
+            return null;
         }
 
         public override void ReadPreBuildResult(object preBuildResult, Writer valueFactory)

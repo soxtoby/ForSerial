@@ -132,8 +132,8 @@ namespace json.Tests.JsonObjects
 
             public override bool SetType(string typeIdentifier, Reader reader)
             {
-                Output jsonStringValue = reader.ReadSubStructure(JsonStringBuilder.GetDefault());
-                parentFactory.SubObjectJson = JsonStringBuilder.GetResult(jsonStringValue);
+                //Output jsonStringValue = reader.ReadSubStructure(JsonStringBuilder.GetDefault());
+                //parentFactory.SubObjectJson = JsonStringBuilder.GetResult(jsonStringValue);
                 return true;
             }
         }

@@ -13,6 +13,7 @@ Test nullable value type properties.
 Turn all singleton properties into public readonly fields.
 Don't require output to be an object. Get rid of AsStructure if possible.
 Simple struct serialization with ToString & Parse.
+Support IDictionary - detect map or KeyValuePair list.
 
 New Serialization Rules:
  - Defaults

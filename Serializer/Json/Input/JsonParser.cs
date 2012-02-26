@@ -249,7 +249,7 @@ namespace json.Json
 
         private void ReferenceObject()
         {
-            //int referenceId = System.Convert.ToInt32(GetNumber());
+            //int referenceId = Convert.ToInt32(GetNumber());
             //return writer.CreateReference(objectReferences[referenceId]);
         }
 

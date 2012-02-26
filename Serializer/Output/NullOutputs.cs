@@ -42,11 +42,6 @@ namespace json
         {
         }
 
-        public override OutputStructure AsStructure()
-        {
-            return NullOutputStructure.Instance;
-        }
-
         public override void AddToStructure(OutputStructure structure, string name)
         {
         }
@@ -71,11 +66,6 @@ namespace json
 
         public override void AddToSequence(SequenceOutput sequence)
         {
-        }
-
-        public override OutputStructure AsStructure()
-        {
-            return NullOutputStructure.Instance;
         }
     }
 }

@@ -18,5 +18,7 @@ namespace json.Objects
         {
             return value;
         }
+
+        public TypeDefinition TypeDef { get { throw new System.NotImplementedException(); } }
     }
 }

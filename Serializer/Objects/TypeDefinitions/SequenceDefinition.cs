@@ -27,5 +27,25 @@ namespace json.Objects.TypeDefinitions
 
             writer.EndSequence();
         }
+
+        public ObjectStructure CreateStructureForItem()
+        {
+            return ItemTypeDef.CreateStructure();
+        }
+
+        public ObjectSequence CreateSequenceForItem()
+        {
+            return ItemTypeDef.CreateSequence();
+        }
+
+        public ObjectValue CreateValueForItem(object value)
+        {
+            return ItemTypeDef.CreateValue(value);
+        }
+
+        public bool CanCreateValueForItem(object value)
+        {
+            return ItemTypeDef.CanCreateValue(value);
+        }
     }
 }

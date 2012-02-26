@@ -42,7 +42,7 @@ namespace json.Objects
             PreBuildInfo preBuildInfo = typeDef.GetPreBuildInfo(reader);
             if (preBuildInfo == null) return false;
 
-            preBuildInfo.PreBuild(Object, reader, new TypedObjectBuilder.TypedObjectSubBuilder(Object));
+            preBuildInfo.PreBuild(Object, reader, null /*new TypedObjectBuilder.TypedObjectSubBuilder(Object)*/);
             return true;
         }
 
@@ -53,7 +53,7 @@ namespace json.Objects
 
         private void SetType(TypeDefinition typeDef)
         {
-            typedObject = typeDef.CreateStructure();
+            //typedObject = typeDef.CreateStructure();
         }
 
         public void AddProperty(string name, TypedValue value)
@@ -105,6 +105,8 @@ namespace json.Objects
         {
             return Object;
         }
+
+        public TypeDefinition TypeDef { get { throw new NotImplementedException(); } }
 
         internal class ObjectNotInitialized : Exception
         {

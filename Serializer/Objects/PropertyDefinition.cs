@@ -24,7 +24,7 @@ namespace json.Objects
 
         public Writer GetWriter()
         {
-            return new TypedObjectBuilder(TypeDef.Type);
+            return null;// new TypedObjectBuilder(TypeDef.Type);
         }
 
         public object GetFrom(object source)
@@ -36,6 +36,21 @@ namespace json.Objects
         {
             if (CanSet)
                 setter(target, TypeDef.ConvertToCorrectType(value));
+        }
+
+        public ObjectStructure CreateStructure()
+        {
+            return TypeDef.CreateStructure();
+        }
+
+        public ObjectSequence CreateSequence()
+        {
+            return TypeDef.CreateSequence();
+        }
+
+        public ObjectValue CreateValue(object value)
+        {
+            return TypeDef.CreateValue(value);
         }
     }
 }

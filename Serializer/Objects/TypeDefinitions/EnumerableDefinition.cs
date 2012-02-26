@@ -6,10 +6,7 @@ namespace json.Objects.TypeDefinitions
 {
     public class EnumerableDefinition : SequenceDefinition
     {
-        private EnumerableDefinition(Type type, Type itemType)
-            : base(type, itemType)
-        {
-        }
+        private EnumerableDefinition(Type type, Type itemType) : base(type, itemType) { }
 
         internal static SequenceDefinition CreateEnumerableDefinition(Type type)
         {
@@ -28,9 +25,9 @@ namespace json.Objects.TypeDefinitions
             get { return ItemTypeDef.IsSerializable; }
         }
 
-        public override TypedSequence CreateSequence()
+        public override ObjectSequence CreateSequence()
         {
-            return new TypedEnumerable(ItemTypeDef);
+            return new EnumerableSequence(this);
         }
     }
 }

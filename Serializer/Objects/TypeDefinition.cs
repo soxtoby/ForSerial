@@ -10,9 +10,11 @@ namespace json.Objects
         private static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
 
         private readonly TypeCode typeCode;
+
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
 
         public Type Type { get; private set; }
+
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
 
         public List<ConstructorDefinition> Constructors { get; private set; }
@@ -28,6 +30,7 @@ namespace json.Objects
         }
 
         private bool? isSerializable;
+
         public virtual bool IsSerializable
         {
             get
@@ -35,17 +38,6 @@ namespace json.Objects
                 return isSerializable ?? (bool)(isSerializable =
                     !Type.IsAbstract
                     && (Type.IsSerializable || HasDefaultConstructor));
-            }
-        }
-
-        private bool? isDeserializable;
-        public virtual bool IsDeserializable
-        {
-            get
-            {
-                return isDeserializable ?? (bool)(isDeserializable =
-                    !Type.IsAbstract
-                    && HasDefaultConstructor);
             }
         }
 
@@ -119,7 +111,7 @@ namespace json.Objects
         public object ConvertToCorrectType(object obj)
         {
             return typeCode.GetTypeCodeType() == TypeCodeType.Number
-                ? System.Convert.ChangeType(obj, typeCode)
+                ? Convert.ChangeType(obj, typeCode)
                 : obj;
         }
 
@@ -149,20 +141,29 @@ namespace json.Objects
             return typeDef.IsSerializable;
         }
 
-        public virtual Output CreateValue(object value)
-        {
-            if (value == null) return TypedNull.Value;
-            throw new NotAValue(Type);
-        }
-
-        public virtual TypedObject CreateStructure()
+        public virtual ObjectStructure CreateStructure()
         {
             throw new NotAnObject(Type);
         }
 
-        public virtual TypedSequence CreateSequence()
+        public virtual ObjectSequence CreateSequence()
         {
             throw new NotAnArray(Type);
+        }
+
+        public virtual bool CanCreateValue(object value)
+        {
+            if (value == null)
+                return true;
+            Type type = value.GetType();
+            return type.IsValueType
+                || type == typeof(string);
+        }
+
+        public virtual ObjectValue CreateValue(object value)
+        {
+            if (value == null) return TypedNull.Value;
+            throw new NotAValue(Type);
         }
 
         public Writer GetWriterForProperty(string name)
@@ -171,6 +172,38 @@ namespace json.Objects
             if (property != null)
                 return property.GetWriter();
             return NullTypedWriter.Instance;
+        }
+
+        // TODO this property stuff should be on StructureDefinition or something - SequenceDefinitions don't have properties
+
+        public virtual ObjectStructure CreateStructureForProperty(string name)
+        {
+            PropertyDefinition property = Properties.Get(name);
+            return property != null
+                ? property.CreateStructure()
+                : NullObjectStructure.Instance;
+        }
+
+        public virtual ObjectSequence CreateSequenceForProperty(string name)
+        {
+            PropertyDefinition property = Properties.Get(name);
+            return property != null
+                ? property.CreateSequence()
+                : NullObjectSequence.Instance;
+        }
+
+        public bool CanCreateValueForProperty(string name, object value)
+        {
+            PropertyDefinition property = Properties.Get(name);
+            return property != null && property.TypeDef.CanCreateValue(value);
+        }
+
+        public virtual ObjectValue CreateValueForProperty(string name, object value)
+        {
+            PropertyDefinition property = Properties.Get(name);
+            return property != null
+                ? property.CreateValue(value)
+                : NullObjectValue.Instance;
         }
 
         private class NotAValue : Exception

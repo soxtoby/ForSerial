@@ -38,7 +38,7 @@ namespace json.JsonObjects
                 case TypeCodeType.String:
                     return new JsonObjectString((string)value);
                 case TypeCodeType.Number:
-                    return new JsonObjectNumber(System.Convert.ToDouble(value));
+                    return new JsonObjectNumber(Convert.ToDouble(value));
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -133,13 +133,6 @@ namespace json.JsonObjects
             values.Add(value);
         }
 
-        public override OutputStructure AsStructure()
-        {
-            JsonObjectObject obj = new JsonObjectObject();
-            obj.AddProperty("items", this);
-            return obj;
-        }
-
         public override void AddToStructure(OutputStructure structure, string name)
         {
             ((JsonObjectObject)structure).AddProperty(name, values);
@@ -159,13 +152,6 @@ namespace json.JsonObjects
         public static JsonObjectNull Value
         {
             get { return value = value ?? new JsonObjectNull(); }
-        }
-
-        public override OutputStructure AsStructure()
-        {
-            JsonObjectObject obj = new JsonObjectObject();
-            obj.AddProperty("value", null);
-            return obj;
         }
 
         public override void AddToStructure(OutputStructure structure, string name)
@@ -200,13 +186,6 @@ namespace json.JsonObjects
             get { return falseValue = falseValue ?? new JsonObjectBoolean(false); }
         }
 
-        public override OutputStructure AsStructure()
-        {
-            JsonObjectObject obj = new JsonObjectObject();
-            obj.AddProperty("value", value);
-            return obj;
-        }
-
         public override void AddToStructure(OutputStructure structure, string name)
         {
             ((JsonObjectObject)structure).AddProperty(name, value);
@@ -227,13 +206,6 @@ namespace json.JsonObjects
     {
         public JsonObjectNumber(double value) : base(value) { }
 
-        public override OutputStructure AsStructure()
-        {
-            JsonObjectObject obj = new JsonObjectObject();
-            obj.AddProperty("value", value);
-            return obj;
-        }
-
         public override void AddToStructure(OutputStructure structure, string name)
         {
             ((JsonObjectObject)structure).AddProperty(name, value);
@@ -253,13 +225,6 @@ namespace json.JsonObjects
     internal class JsonObjectString : StringOutput, JsonObjectOutput
     {
         public JsonObjectString(string value) : base(value) { }
-
-        public override OutputStructure AsStructure()
-        {
-            JsonObjectObject obj = new JsonObjectObject();
-            obj.AddProperty("value", value);
-            return obj;
-        }
 
         public override void AddToStructure(OutputStructure structure, string name)
         {

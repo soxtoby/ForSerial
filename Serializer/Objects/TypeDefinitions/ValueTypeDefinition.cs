@@ -13,19 +13,20 @@ namespace json.Objects.TypeDefinitions
                 : null;
         }
 
-        public override bool IsDeserializable
+        public override ObjectStructure CreateStructure()
         {
-            get { return true; }
+            return new DefaultObjectStructure(this);
         }
 
-        public override TypedObject CreateStructure()
+        public override bool CanCreateValue(object value)
         {
-            return new ConstructorOnlyObject(this);
+            return value != null
+                && value.GetType() == Type;
         }
 
-        public override Output CreateValue(object value)
+        public override ObjectValue CreateValue(object value)
         {
-            return new TypedObjectOutputStructure(value);
+            return new DefaultObjectValue(value);
         }
     }
 }

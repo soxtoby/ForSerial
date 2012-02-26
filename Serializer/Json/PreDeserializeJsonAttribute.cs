@@ -8,12 +8,14 @@ namespace json.Json
 
         public override Writer GetWriter()
         {
-            return JsonStringBuilder.GetDefault();
+            //return JsonStringBuilder.GetDefault();
+            return null;
         }
 
         public override object GetContextValue(Output parsedContext)
         {
-            return JsonStringBuilder.GetResult(parsedContext);
+            //return JsonStringBuilder.GetResult(parsedContext);
+            return null;
         }
 
         public override void ReadPreBuildResult(object preBuildResult, Writer valueFactory)

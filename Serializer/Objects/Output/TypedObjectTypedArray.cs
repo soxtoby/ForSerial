@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using json.Objects.TypeDefinitions;
 
 namespace json.Objects
 {
-    internal class TypedObjectTypedArray : SequenceOutputBase, TypedSequence
+    internal class TypedObjectTypedArray : ObjectSequence
     {
         private readonly CollectionDefinition collectionDef;
         private readonly IEnumerable typedArray;
-        private readonly Stack<Output> outputs = new Stack<Output>();
 
         public TypedObjectTypedArray(CollectionDefinition collectionDefinition)
         {
-            this.collectionDef = collectionDefinition;
+            collectionDef = collectionDefinition;
             typedArray = (IEnumerable)Activator.CreateInstance(collectionDefinition.Type);
         }
 
@@ -35,43 +33,31 @@ namespace json.Objects
             return typedArray;
         }
 
-        public override OutputStructure AsStructure()
+        public TypeDefinition TypeDef { get { throw new NotImplementedException(); } }
+
+        public void Add(TypedValue value)
         {
-            return new TypedObjectOutputStructure(typedArray);
+            collectionDef.AddToCollection(typedArray, value.GetTypedValue());
         }
 
-        public void AddItem(object item)
+        public bool CanCreateValue(object value)
         {
-            collectionDef.AddToCollection(typedArray, item);
+            throw new NotImplementedException();
         }
 
-        public override Output CreateValue(Writer valueFactory, object value)
+        public ObjectValue CreateValue(object value)
         {
             return collectionDef.ItemTypeDef.CreateValue(value);
         }
 
-        public override OutputStructure BeginStructure(Writer valueFactory)
+        public ObjectStructure CreateStructure()
         {
-            TypedObjectOutputStructure obj = new TypedObjectOutputStructure(collectionDef.ItemTypeDef);
-            outputs.Push(obj);
-            return obj;
+            return collectionDef.ItemTypeDef.CreateStructure();
         }
 
-        public override SequenceOutput BeginSequence(Writer valueFactory)
+        public ObjectSequence CreateSequence()
         {
-            TypedSequence array = collectionDef.ItemTypeDef.CreateSequence();
-            outputs.Push(array);
-            return array;
-        }
-
-        public override void EndStructure(Writer writer)
-        {
-            outputs.Pop();
-        }
-
-        public override void EndSequence(Writer writer)
-        {
-            outputs.Pop();
+            return collectionDef.ItemTypeDef.CreateSequence();
         }
 
         private static IEnumerable PopulateCollection(TypeDefinition collectionType, IEnumerable items, Func<object> getCollection)
@@ -98,21 +84,6 @@ namespace json.Objects
             return itemTypeDef is CollectionDefinition
                 ? PopulateCollection(itemTypeDef, (IEnumerable)item, () => Activator.CreateInstance(itemTypeDef.Type))
                 : item;
-        }
-
-        private class InvalidCollectionType : Exception
-        {
-            public InvalidCollectionType(Type type) : base("Cannot create collection of type {0}.".FormatWith(type.FullName)) { }
-        }
-
-        public override void AddToStructure(OutputStructure structure, string name)
-        {
-            ((TypedObjectOutputStructure)structure).AddProperty(name, this);
-        }
-
-        public override void AddToSequence(SequenceOutput sequence)
-        {
-            ((TypedSequence)sequence).AddItem(typedArray);
         }
     }
 }

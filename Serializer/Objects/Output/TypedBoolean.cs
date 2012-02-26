@@ -16,11 +16,6 @@
             get { return falseValue = falseValue ?? new TypedBoolean(false); }
         }
 
-        public override OutputStructure AsStructure()
-        {
-            return new TypedObjectOutputStructure(value);
-        }
-
         public override void AddToStructure(OutputStructure structure, string name)
         {
             ((TypedObjectOutputStructure)structure).AddProperty(name, new TypedPrimitiveValue(value));

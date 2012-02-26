@@ -43,7 +43,7 @@ namespace json.Json
                     break;
 
                 case TypeCodeType.Number:
-                    WriteNumber(System.Convert.ToDouble(value));
+                    WriteNumber(Convert.ToDouble(value));
                     break;
             }
         }
