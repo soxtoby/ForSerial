@@ -25,7 +25,7 @@ namespace json.Objects.TypeDefinitions
             get { return ItemTypeDef.IsSerializable; }
         }
 
-        public override ObjectSequence CreateSequence()
+        public override ObjectContainer CreateSequence()
         {
             return new EnumerableSequence(this);
         }

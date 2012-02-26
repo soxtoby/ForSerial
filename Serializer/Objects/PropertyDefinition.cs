@@ -33,12 +33,12 @@ namespace json.Objects
                 setter(target, TypeDef.ConvertToCorrectType(value));
         }
 
-        public ObjectStructure CreateStructure()
+        public ObjectContainer CreateStructure()
         {
             return TypeDef.CreateStructure();
         }
 
-        public ObjectSequence CreateSequence()
+        public ObjectContainer CreateSequence()
         {
             return TypeDef.CreateSequence();
         }

@@ -13,7 +13,7 @@ namespace json.Objects.TypeDefinitions
                 : null;
         }
 
-        public override ObjectStructure CreateStructure()
+        public override ObjectContainer CreateStructure()
         {
             return new DefaultObjectStructure(this);
         }

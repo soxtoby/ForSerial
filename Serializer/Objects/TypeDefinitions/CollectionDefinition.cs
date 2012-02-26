@@ -29,7 +29,7 @@ namespace json.Objects.TypeDefinitions
             return null;
         }
 
-        public override ObjectSequence CreateSequence()
+        public override ObjectContainer CreateSequence()
         {
             return new CollectionSequence(this);
         }

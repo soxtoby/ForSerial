@@ -28,12 +28,12 @@ namespace json.Objects.TypeDefinitions
             writer.EndSequence();
         }
 
-        public ObjectStructure CreateStructureForItem()
+        public ObjectContainer CreateStructureForItem()
         {
             return ItemTypeDef.CreateStructure();
         }
 
-        public ObjectSequence CreateSequenceForItem()
+        public ObjectContainer CreateSequenceForItem()
         {
             return ItemTypeDef.CreateSequence();
         }

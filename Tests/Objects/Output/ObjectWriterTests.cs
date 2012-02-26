@@ -293,7 +293,7 @@ namespace json.Tests.Objects
             public Dictionary<int, string> Dictionary { get; set; }
         }
 
-        //[Test]    // TFSBAD reimplement typing
+        //[Test]    // TODO reimplement typing
         //[ExpectedException(typeof(TypedObjectBase.PropertyTypeMismatch))]
         //public void PropertyTypeMismatch()
         //{

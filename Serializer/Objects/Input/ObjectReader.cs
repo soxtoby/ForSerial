@@ -2,7 +2,7 @@ using System;
 
 namespace json.Objects
 {
-    public partial class ObjectReader
+    public class ObjectReader
     {
         private readonly Writer writer;
         private readonly ObjectParsingOptions options;

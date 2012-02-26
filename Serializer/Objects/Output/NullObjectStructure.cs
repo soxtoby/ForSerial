@@ -1,40 +1,39 @@
 namespace json.Objects
 {
-    internal class NullObjectStructure : ObjectStructure
+    internal class NullObjectStructure : ObjectContainer
     {
         public static readonly NullObjectStructure Instance = new NullObjectStructure();
 
         private NullObjectStructure() { }
 
-        public void AssignToProperty(object obj, PropertyDefinition property) { }
+        public TypeDefinition TypeDef { get { return NullTypeDefinition.Instance; } }
 
         public object GetTypedValue()
         {
             return null;
         }
 
-        public ObjectStructure CreateStructure(string property)
+        public void AssignToProperty(object obj, PropertyDefinition property) { }
+
+        public void SetCurrentProperty(string name) { }
+
+        public ObjectContainer CreateStructure()
         {
             return Instance;
         }
 
-        public ObjectSequence CreateSequence(string property)
+        public ObjectContainer CreateSequence()
         {
             return NullObjectSequence.Instance;
         }
 
-        public void Add(string property, ObjectOutput value) { }
+        public void Add(ObjectOutput value) { }
 
-        public bool CanCreateValue(string property, object value)
+        public bool CanCreateValue(object value)
         {
             return true;
         }
 
-        public ObjectValue CreateValue(string property, object value)
-        {
-            return NullObjectValue.Instance;
-        }
-
-        public TypeDefinition TypeDef { get { return null; } }
+        public void WriteValue(object value) { }
     }
 }

@@ -4,7 +4,7 @@ using json.Objects.TypeDefinitions;
 
 namespace json.Objects
 {
-    public abstract class BaseObjectSequence : ObjectSequence
+    public abstract class BaseObjectSequence : ObjectContainer
     {
         private readonly SequenceDefinition collectionDef;
         protected readonly List<ObjectOutput> Items = new List<ObjectOutput>();
@@ -21,12 +21,14 @@ namespace json.Objects
 
         public TypeDefinition TypeDef { get { return collectionDef; } }
 
-        public ObjectStructure CreateStructure()
+        public void SetCurrentProperty(string name) { } // TODO throw exception - can't have properties in a sequence
+
+        public ObjectContainer CreateStructure()
         {
             return collectionDef.CreateStructureForItem();
         }
 
-        public ObjectSequence CreateSequence()
+        public ObjectContainer CreateSequence()
         {
             return collectionDef.CreateSequenceForItem();
         }
@@ -36,9 +38,9 @@ namespace json.Objects
             return collectionDef.CanCreateValueForItem(value);
         }
 
-        public ObjectValue CreateValue(object value)
+        public void WriteValue(object value)
         {
-            return collectionDef.CreateValueForItem(value);
+            Add(collectionDef.CreateValueForItem(value));
         }
 
         public void Add(ObjectOutput value)

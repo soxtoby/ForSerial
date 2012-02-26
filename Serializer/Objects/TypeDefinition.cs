@@ -141,12 +141,12 @@ namespace json.Objects
             return typeDef.IsSerializable;
         }
 
-        public virtual ObjectStructure CreateStructure()
+        public virtual ObjectContainer CreateStructure()
         {
             throw new NotAnObject(Type);
         }
 
-        public virtual ObjectSequence CreateSequence()
+        public virtual ObjectContainer CreateSequence()
         {
             throw new NotAnArray(Type);
         }
@@ -168,7 +168,7 @@ namespace json.Objects
 
         // TODO this property stuff should be on StructureDefinition or something - SequenceDefinitions don't have properties
 
-        public virtual ObjectStructure CreateStructureForProperty(string name)
+        public virtual ObjectContainer CreateStructureForProperty(string name)
         {
             PropertyDefinition property = Properties.Get(name);
             return property != null
@@ -176,7 +176,7 @@ namespace json.Objects
                 : NullObjectStructure.Instance;
         }
 
-        public virtual ObjectSequence CreateSequenceForProperty(string name)
+        public virtual ObjectContainer CreateSequenceForProperty(string name)
         {
             PropertyDefinition property = Properties.Get(name);
             return property != null

@@ -85,6 +85,7 @@
     <Compile Include="Objects\ObjectParsingOptions.cs" />
     <Compile Include="Objects\Output\BaseObjectSequence.cs" />
     <Compile Include="Objects\Output\BaseObjectStructure.cs" />
+    <Compile Include="Objects\Output\BaseOutput.cs" />
     <Compile Include="Objects\Output\CollectionSequence.cs" />
     <Compile Include="Objects\Output\DefaultObjectStructure.cs" />
     <Compile Include="Objects\Output\DefaultObjectValue.cs" />
@@ -93,9 +94,8 @@
     <Compile Include="Objects\Output\NullObjectSequence.cs" />
     <Compile Include="Objects\Output\NullObjectStructure.cs" />
     <Compile Include="Objects\Output\NullObjectValue.cs" />
+    <Compile Include="Objects\Output\ObjectContainer.cs" />
     <Compile Include="Objects\Output\ObjectOutput.cs" />
-    <Compile Include="Objects\Output\ObjectSequence.cs" />
-    <Compile Include="Objects\Output\ObjectStructure.cs" />
     <Compile Include="Objects\Output\ObjectValue.cs" />
     <Compile Include="Objects\Output\ObjectWriter.cs" />
     <Compile Include="Objects\ParameterDefinition.cs" />

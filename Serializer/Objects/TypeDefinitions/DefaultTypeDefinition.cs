@@ -26,7 +26,7 @@ namespace json.Objects.TypeDefinitions
             writer.EndStructure();
         }
 
-        public override ObjectStructure CreateStructure()
+        public override ObjectContainer CreateStructure()
         {
             return new DefaultObjectStructure(this);
         }

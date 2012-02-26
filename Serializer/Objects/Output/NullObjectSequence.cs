@@ -1,9 +1,8 @@
-using System;
 using System.Linq;
 
 namespace json.Objects
 {
-    internal class NullObjectSequence : ObjectSequence
+    internal class NullObjectSequence : ObjectContainer
     {
         public static readonly NullObjectSequence Instance = new NullObjectSequence();
 
@@ -16,14 +15,16 @@ namespace json.Objects
             return Enumerable.Empty<object>();
         }
 
-        public TypeDefinition TypeDef { get { throw new NotImplementedException(); } }
+        public TypeDefinition TypeDef { get { return NullTypeDefinition.Instance; } }
 
-        public ObjectStructure CreateStructure()
+        public void SetCurrentProperty(string name) { }
+
+        public ObjectContainer CreateStructure()
         {
             return NullObjectStructure.Instance;
         }
 
-        public ObjectSequence CreateSequence()
+        public ObjectContainer CreateSequence()
         {
             return Instance;
         }
@@ -35,9 +36,6 @@ namespace json.Objects
 
         public void Add(ObjectOutput value) { }
 
-        public ObjectValue CreateValue(object value)
-        {
-            return NullObjectValue.Instance;
-        }
+        public void WriteValue(object value) { }
     }
 }

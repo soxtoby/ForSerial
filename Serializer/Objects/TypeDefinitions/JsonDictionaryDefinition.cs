@@ -54,17 +54,17 @@ namespace json.Objects.TypeDefinitions
             writer.EndStructure();
         }
 
-        public override ObjectStructure CreateStructure()
+        public override ObjectContainer CreateStructure()
         {
             return new DictionaryStructure(this);
         }
 
-        public override ObjectStructure CreateStructureForProperty(string name)
+        public override ObjectContainer CreateStructureForProperty(string name)
         {
             return ValueTypeDef.CreateStructure();
         }
 
-        public override ObjectSequence CreateSequenceForProperty(string name)
+        public override ObjectContainer CreateSequenceForProperty(string name)
         {
             return ValueTypeDef.CreateSequence();
         }
