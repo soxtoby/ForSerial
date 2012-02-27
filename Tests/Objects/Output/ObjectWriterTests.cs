@@ -391,15 +391,17 @@ namespace json.Tests.Objects
         //    }
         //}
 
-        //[Test] // TODO reimplement object references
+        [Test]
         public void MaintainObjectReferences()
         {
-            IntPropertyClass intProperty = new IntPropertyClass { Integer = 5 };
-            SameReferenceTwice clone = Clone(new SameReferenceTwice(intProperty));
+            IntPropertyClass original = new IntPropertyClass();
+            SameReferenceTwice clone = Clone(new SameReferenceTwice(original));
 
-            Assert.AreSame(clone.One, clone.Two);
-            Assert.AreNotSame(intProperty, clone.One);
+            clone.One.ShouldBeSameAs(clone.Two);
+            clone.One.ShouldNotBeSameAs(original);
         }
+
+        // TODO add test for circular reference
 
         [Test]
         public void BuildTypedObject()

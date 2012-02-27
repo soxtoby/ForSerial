@@ -214,8 +214,6 @@ namespace json.Json
                     NextPropertyParser = new RegularPropertyParser(parser);
                     NextPropertyParser.ParsePropertyValue(name);
                 }
-
-                //parser.objectReferences.Add(OutputStructure);//TODO reimplement object references
             }
         }
 
@@ -247,8 +245,8 @@ namespace json.Json
 
         private void ReferenceObject()
         {
-            //int referenceId = Convert.ToInt32(GetNumber());
-            //return writer.CreateReference(objectReferences[referenceId]);
+            int referenceId = Convert.ToInt32(GetNumber());
+            writer.WriteReference(referenceId);
         }
 
         private void SetObjectType()

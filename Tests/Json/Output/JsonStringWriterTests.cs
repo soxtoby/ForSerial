@@ -150,5 +150,12 @@ namespace json.Tests.Json
             sut.EndSequence();
             Json.ShouldBe("[{},{}]");
         }
+
+        [Test]
+        public void WriteReference_GivenIndex_WritesReferenceObjectWithIndex()
+        {
+            sut.WriteReference(1);
+            Json.ShouldBe(@"{""_ref"":1}");
+        }
     }
 }

@@ -98,6 +98,7 @@
     <Compile Include="Objects\Output\ObjectOutput.cs" />
     <Compile Include="Objects\Output\ObjectValue.cs" />
     <Compile Include="Objects\Output\ObjectWriter.cs" />
+    <Compile Include="Objects\Output\StructurerReference.cs" />
     <Compile Include="Objects\ParameterDefinition.cs" />
     <Compile Include="Objects\PropertyDefinitionBuilder.cs" />
     <Compile Include="Objects\ReflectionInterfaceProvider.cs" />

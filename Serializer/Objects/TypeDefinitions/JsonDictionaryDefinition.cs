@@ -38,6 +38,8 @@ namespace json.Objects.TypeDefinitions
             IDictionary dictionary = input as IDictionary;
             if (dictionary == null) return;
 
+            reader.AddStructureReference(input);
+
             writer.BeginStructure();
 
             if (writeTypeIdentifier)

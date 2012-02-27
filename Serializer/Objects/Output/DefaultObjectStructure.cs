@@ -13,8 +13,13 @@ namespace json.Objects
             property.SetOn(obj, GetTypedValue());
         }
 
+        private object typedValue;
+
         public override object GetTypedValue()
         {
+            if (typedValue != null)
+                return typedValue;
+
             IEnumerable<ConstructorDefinition> constructors = TypeDef.Constructors;
             ConstructorDefinition matchingConstructor = constructors.FirstOrDefault(ConstructorParametersMatchProperties);
 
@@ -25,16 +30,16 @@ namespace json.Objects
                 .Select(GetParameterPropertyValue)
                 .ToArray();
 
-            object obj = matchingConstructor.Construct(parameters);
+            typedValue = matchingConstructor.Construct(parameters);
 
             foreach (KeyValuePair<string, ObjectOutput> property in Properties)
             {
                 PropertyDefinition propDef = TypeDef.Properties.Get(property.Key);
                 if (propDef != null)
-                    property.Value.AssignToProperty(obj, propDef);
+                    property.Value.AssignToProperty(typedValue, propDef);
             }
 
-            return obj;
+            return typedValue;
         }
 
         protected object GetParameterPropertyValue(ParameterDefinition parameter)

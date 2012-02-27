@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using json.Json;
 using json.Objects;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace json.Tests.Objects
@@ -157,34 +158,44 @@ namespace json.Tests.Objects
                 .ShouldBe(@"{""foo"":""bar""}");
         }
 
-        //[Test] //TODO reimplement object references
-        public void MaintainReferences()
+        [Test]
+        public void MaintainObjectReferences()
         {
-            //SameReferenceTwice foo = new SameReferenceTwice(new object());
-            //var testBuilder = new WatchForReferenceBuilder();
-            //Convert.From.Object(foo).WithBuilder(testBuilder);
+            Writer writer = Substitute.For<Writer>();
 
-            //Assert.NotNull(testBuilder.ReferencedObject);
+            ObjectReader.Read(new SameReferenceTwice(new object()), writer);
+
+            writer.Received().WriteReference(1);
         }
 
-        // [Test] // TODO reimplement object references
-        public void ValueTypesNotReferenced()
+        [Test]
+        public void MaintainJsonDictionaryReferences()
         {
-            //SameReferenceTwice obj = new SameReferenceTwice(new KeyValuePair<int, int>(1, 2));
-            //var testBuilder = new WatchForReferenceBuilder();
-            //Convert.From.Object(obj).WithBuilder(testBuilder);
+            Writer writer = Substitute.For<Writer>();
 
-            //Assert.IsNull(testBuilder.ReferencedObject);
+            ObjectReader.Read(new SameReferenceTwice(new Dictionary<string, string>()), writer);
+
+            writer.Received().WriteReference(1);
         }
 
-        // [Test] // TODO reimplement object references
+        [Test]
+        public void GuidIsNotReferenced()
+        {
+            Writer writer = Substitute.For<Writer>();
+
+            ObjectReader.Read(new SameReferenceTwice(Guid.NewGuid()), writer);
+
+            writer.DidNotReceive().WriteReference(Arg.Any<int>());
+        }
+
+        [Test]
         public void StringsNotReferenced()
         {
-            //SameReferenceTwice obj = new SameReferenceTwice("foo");
-            //var testBuilder = new WatchForReferenceBuilder();
-            //Convert.From.Object(obj).WithBuilder(testBuilder);
+            Writer writer = Substitute.For<Writer>();
 
-            //Assert.IsNull(testBuilder.ReferencedObject);
+            ObjectReader.Read(new SameReferenceTwice("foo"), writer);
+
+            writer.DidNotReceive().WriteReference(Arg.Any<int>());
         }
 
         // TODO remove if not using objcet/array/property contexts anymore
@@ -262,10 +273,17 @@ namespace json.Tests.Objects
                 .ShouldBe("981137106007");
         }
 
-        // [Test] // TODO reimplement object references
-        public void ValueTypeParsedToValue()
+        [Test]
+        public void ValueIsWrittenAsValueIfWriterCanWriteIt()
         {
-            //Convert.From.Object(new ValueType()).WithBuilder(new ValueOnlyWriter());
+            Writer writer = Substitute.For<Writer>();
+            writer.CanWrite(Arg.Any<object>()).Returns(true);
+            object obj = new object();
+
+            ObjectReader.Read(obj, writer);
+
+            writer.Received().Write(obj);
+            writer.DidNotReceive().BeginStructure();
         }
 
         private struct ValueType { }

@@ -7,8 +7,7 @@ namespace json.JsonObjects
     {
         private readonly Writer writer;
         private const string TypeKey = "_type";
-        private JsonMap currentObject;
-        //private readonly Dictionary<JsonMap, OutputStructure> objectReferences = new Dictionary<JsonMap, OutputStructure>();
+        private readonly Dictionary<JsonMap, int> objectReferences = new Dictionary<JsonMap, int>();
 
         private JsonObjectReader(Writer writer)
         {
@@ -42,17 +41,15 @@ namespace json.JsonObjects
 
         public void Visit(JsonMap map)
         {
-            ReadNewObject(map);
-
-            //OutputStructure existingReference = objectReferences.Get(obj);
-            //existingReference == null
-            //    ? ReadNewObject(obj)
-            //    : ReferenceObject(existingReference);
+            if (objectReferences.ContainsKey(map))
+                ReferenceObject(objectReferences[map]);
+            else
+                ReadNewObject(map);
         }
 
         private void ReadNewObject(JsonMap map)
         {
-            currentObject = map;
+            objectReferences[map] = objectReferences.Count;
 
             writer.BeginStructure();
 
@@ -75,11 +72,10 @@ namespace json.JsonObjects
             writer.EndStructure();
         }
 
-        // TODO reimplement object references
-        //private OutputStructure ReferenceObject(OutputStructure existingReference)
-        //{
-        //    return writer.CreateReference(existingReference);
-        //}
+        private void ReferenceObject(int referenceIndex)
+        {
+            writer.WriteReference(referenceIndex);
+        }
 
         public void Visit(JsonArray array)
         {

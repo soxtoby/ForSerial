@@ -10,5 +10,6 @@ namespace json
         void AddProperty(string name);
         void BeginSequence();
         void EndSequence();
+        void WriteReference(int referenceIndex);
     }
 }

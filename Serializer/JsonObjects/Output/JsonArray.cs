@@ -19,6 +19,16 @@ namespace json.JsonObjects
             innerArray.Add(value);
         }
 
+        public JsonObject this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= innerArray.Count)
+                    return null;
+                return innerArray[index];
+            }
+        }
+
         public IEnumerator<JsonObject> GetEnumerator()
         {
             return innerArray.GetEnumerator();

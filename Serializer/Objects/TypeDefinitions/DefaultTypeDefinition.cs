@@ -15,6 +15,8 @@ namespace json.Objects.TypeDefinitions
 
         public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
+            reader.AddStructureReference(input);
+
             writer.BeginStructure();
 
             if (writeTypeIdentifier)

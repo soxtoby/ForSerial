@@ -1,6 +1,7 @@
 using System.Linq;
 using json.Json;
 using json.JsonObjects;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace json.Tests.Json
@@ -190,13 +191,14 @@ namespace json.Tests.Json
         //    }
         //}
 
-        //[Test] // TODO reimplement references
+        [Test]
         public void MaintainReferences()
         {
-            //var testBuilder = new WatchForReferenceBuilder();
-            //Convert.From.Json(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}").WithBuilder(testBuilder);
+            Writer writer = Substitute.For<Writer>();
 
-            //Assert.NotNull(testBuilder.ReferencedObject);
+            JsonParser.Parse(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}", writer);
+
+            writer.Received().WriteReference(1);
         }
 
         [Test]

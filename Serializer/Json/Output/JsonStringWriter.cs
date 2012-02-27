@@ -110,6 +110,14 @@ namespace json.Json
             suppressDelimiter = false;
         }
 
+        public void WriteReference(int referenceIndex)
+        {
+            BeginStructure();
+            AddProperty("_ref");
+            Write(referenceIndex);
+            EndStructure();
+        }
+
         private void Delimit()
         {
             if (!suppressDelimiter)

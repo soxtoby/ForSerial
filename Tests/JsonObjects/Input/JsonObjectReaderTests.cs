@@ -1,6 +1,7 @@
 using System.IO;
 using json.Json;
 using json.JsonObjects;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace json.Tests.JsonObjects
@@ -146,16 +147,17 @@ namespace json.Tests.JsonObjects
             return stringWriter.ToString();
         }
 
-        //[Test]    // TODO reimplement maintaining references
-        //public void MaintainReferences()
-        //{
-        //    var testBuilder = new WatchForReferenceBuilder();
-        //    var jsonObject = new JsonMap();
-        //    jsonObject["foo"] = jsonObject["bar"] = new JsonMap();
-        //    Convert.From.JsonObject(jsonObject).WithBuilder(testBuilder);
+        [Test]
+        public void MaintainReferences()
+        {
+            Writer writer = Substitute.For<Writer>();
+            JsonMap map = new JsonMap();
+            map["foo"] = map["bar"] = new JsonMap();
 
-        //    Assert.NotNull(testBuilder.ReferencedObject);
-        //}
+            JsonObjectReader.Read(map, writer);
+
+            writer.Received().WriteReference(1);
+        }
 
         // TODO Remove if there's no more property context stuff
         //[Test]

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace json.Objects
 {
@@ -6,6 +7,7 @@ namespace json.Objects
     {
         private readonly Writer writer;
         private readonly ObjectParsingOptions options;
+        private readonly Dictionary<object, int> stuctureReferences = new Dictionary<object, int>();
 
         private ObjectReader(Writer writer, ObjectParsingOptions options)
         {
@@ -41,16 +43,16 @@ namespace json.Objects
         public void Read(object input, bool requestTypeIdentification)
         {
             if (writer.CanWrite(input))
+            {
                 writer.Write(input);
+            }
             else
-                ReadObject(input, ShouldWriteTypeIdentification(requestTypeIdentification));
-
-            // TODO reimplement object references
-            //OutputStructure previouslyParsedObject = objectReferences.Get(input);
-            //output = previouslyParsedObject == null
-            //    ? ReadObject(input)
-            //    : ReferenceObject(previouslyParsedObject);
-
+            {
+                if (stuctureReferences.ContainsKey(input))
+                    writer.WriteReference(stuctureReferences[input]);
+                else
+                    ReadObject(input, ShouldWriteTypeIdentification(requestTypeIdentification));
+            }
         }
 
         private bool ShouldWriteTypeIdentification(bool typeIdentifierRequested)
@@ -65,11 +67,10 @@ namespace json.Objects
             typeDef.ReadObject(input, this, writer, writerTypeIdentifier);
         }
 
-        // TODO reimplement object references
-        //private OutputStructure ReferenceObject(OutputStructure outputStructure)
-        //{
-        //    return writer.CreateReference(outputStructure);
-        //}
+        public void AddStructureReference(object obj)
+        {
+            stuctureReferences[obj] = stuctureReferences.Count;
+        }
     }
 }
 

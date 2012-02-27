@@ -5,6 +5,7 @@ namespace json.Objects
     public class ObjectWriter<T> : Writer
     {
         private readonly Stack<ObjectContainer> outputs = new Stack<ObjectContainer>();
+        private readonly List<ObjectContainer> structureReferences = new List<ObjectContainer>();
 
         public ObjectWriter()
         {
@@ -25,7 +26,9 @@ namespace json.Objects
 
         public void BeginStructure()
         {
-            outputs.Push(outputs.Peek().CreateStructure());
+            ObjectContainer newStructure = outputs.Peek().CreateStructure();
+            structureReferences.Add(newStructure);
+            outputs.Push(newStructure);
         }
 
         public void SetType(string typeIdentifier)
@@ -53,6 +56,16 @@ namespace json.Objects
         {
             ObjectOutput newSequence = outputs.Pop(); // TODO throw exception if not sequence
             outputs.Peek().Add(newSequence);
+        }
+
+        public void WriteReference(int referenceIndex)
+        {
+            outputs.Peek().Add(new StructurerReference(structureReferences[referenceIndex]));
+        }
+
+        public void AddStructureReference(ObjectContainer structureOutput)
+        {
+            structureReferences.Add(structureOutput);
         }
     }
 }

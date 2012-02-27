@@ -1,4 +1,3 @@
-using System;
 
 namespace json.Objects
 {
@@ -15,6 +14,6 @@ namespace json.Objects
             return null;
         }
 
-        public TypeDefinition TypeDef { get { throw new NotImplementedException(); } }
+        public TypeDefinition TypeDef { get { return NullTypeDefinition.Instance; } }
     }
 }

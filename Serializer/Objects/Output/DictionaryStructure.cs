@@ -7,32 +7,41 @@ namespace json.Objects
     public class DictionaryStructure : BaseObjectStructure
     {
         private readonly JsonDictionaryDefinition dictionaryDef;
+        private IDictionary typedDictionary;
 
         public DictionaryStructure(JsonDictionaryDefinition dictionaryDefinition)
             : base(dictionaryDefinition)
         {
-            this.dictionaryDef = dictionaryDefinition;
+            dictionaryDef = dictionaryDefinition;
         }
 
         public override void AssignToProperty(object obj, PropertyDefinition property)
         {
             if (property.CanSet)
+            {
                 property.SetOn(obj, GetTypedValue());
+            }
             else if (property.CanGet)
-                PopulateDictionary(property.GetFrom(obj));
+            {
+                typedDictionary = property.GetFrom(obj) as IDictionary;
+                PopulateDictionary();
+            }
         }
 
         public override object GetTypedValue()
         {
-            object dictionary = dictionaryDef.ConstructNew();
-            PopulateDictionary(dictionary);
-            return dictionary;
+            if (typedDictionary != null)
+                return typedDictionary;
+
+            typedDictionary = dictionaryDef.ConstructNew() as IDictionary;
+            PopulateDictionary();
+            return typedDictionary;
         }
 
-        private void PopulateDictionary(object dictionary)
+        private void PopulateDictionary()
         {
-            IDictionary typedDictionary = dictionary as IDictionary;
-            if (typedDictionary == null) return;
+            if (typedDictionary == null)
+                return;
 
             foreach (KeyValuePair<string, ObjectOutput> property in Properties)
                 typedDictionary[dictionaryDef.KeyTypeDef.ConvertToCorrectType(property.Key)] = dictionaryDef.ValueTypeDef.ConvertToCorrectType(property.Value.GetTypedValue());

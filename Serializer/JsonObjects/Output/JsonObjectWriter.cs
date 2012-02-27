@@ -6,6 +6,7 @@ namespace json.JsonObjects
     public class JsonObjectWriter : Writer
     {
         private readonly Stack<JsonObject> currentObject = new Stack<JsonObject>();
+        private readonly List<JsonObject> objectReferences = new List<JsonObject>();
         private string currentProperty;
 
         public JsonObject Result { get; private set; }
@@ -24,6 +25,7 @@ namespace json.JsonObjects
         {
             JsonMap map = new JsonMap();
             Write(map);
+            objectReferences.Add(map);
             currentObject.Push(map);
         }
 
@@ -53,6 +55,11 @@ namespace json.JsonObjects
         public void EndSequence()
         {
             currentObject.Pop();
+        }
+
+        public void WriteReference(int referenceIndex)
+        {
+            Write(objectReferences[referenceIndex]);
         }
 
         private void Write(JsonObject jsonValue)

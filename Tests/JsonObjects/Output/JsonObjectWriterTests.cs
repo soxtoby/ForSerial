@@ -188,5 +188,18 @@ namespace json.Tests.JsonObjects
                 .And.Single().ShouldBe<JsonMap>()
                     .And["foo"].Value().ShouldBe(1);
         }
+
+        [Test]
+        public void StructureReference()
+        {
+            sut.BeginSequence();
+            sut.BeginStructure();
+            sut.EndStructure();
+            sut.WriteReference(0);
+            sut.EndSequence();
+
+            sut.Result.ShouldBe<JsonArray>()
+                .And(array => array[0].ShouldBeSameAs(array[1]));
+        }
     }
 }
