@@ -6,14 +6,15 @@ namespace json.Objects
 {
     public class DefaultObjectStructure : BaseObjectStructure
     {
+        private object typedValue;
+        private readonly List<object> constructorArguments = new List<object>();
+
         public DefaultObjectStructure(TypeDefinition typeDef) : base(typeDef) { }
 
         public override void AssignToProperty(object obj, PropertyDefinition property)
         {
             property.SetOn(obj, GetTypedValue());
         }
-
-        private object typedValue;
 
         public override object GetTypedValue()
         {
@@ -26,11 +27,12 @@ namespace json.Objects
             if (matchingConstructor == null)
                 throw new NoMatchingConstructor(TypeDef.Type, Properties);
 
-            object[] parameters = matchingConstructor.Parameters
-                .Select(GetParameterPropertyValue)
-                .ToArray();
+            PopulateConstructorParameters(matchingConstructor);
 
-            typedValue = matchingConstructor.Construct(parameters);
+            if (typedValue != null) // If any constructor arguments have references back to this structure, it will already have been constructed while populating their properties
+                return typedValue;
+
+            typedValue = matchingConstructor.Construct(constructorArguments.ToArray());
 
             foreach (KeyValuePair<string, ObjectOutput> property in Properties)
             {
@@ -42,13 +44,22 @@ namespace json.Objects
             return typedValue;
         }
 
-        protected object GetParameterPropertyValue(ParameterDefinition parameter)
+        private void PopulateConstructorParameters(ConstructorDefinition constructor)
+        {
+            // Hold onto constructor arguments in case any args have back-references and we attempt to construct this more than once
+            for (int i = constructorArguments.Count; i < constructor.Parameters.Count; i++)
+            {
+                constructorArguments.Add(GetParameterPropertyValue(constructor.Parameters[i]));
+            }
+        }
+
+        private object GetParameterPropertyValue(ParameterDefinition parameter)
         {
             TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(parameter.Type);
             return typeDef.ConvertToCorrectType(Properties.Get(parameter.Name).GetTypedValue());
         }
 
-        protected bool ConstructorParametersMatchProperties(ConstructorDefinition constructor)
+        private bool ConstructorParametersMatchProperties(ConstructorDefinition constructor)
         {
             return constructor.Parameters
                 .All(CanBeAssignedFromProperty);
@@ -82,7 +93,7 @@ namespace json.Objects
             return parameter.Type.IsByRef;
         }
 
-        internal class NoMatchingConstructor : Exception
+        private class NoMatchingConstructor : Exception
         {
             public NoMatchingConstructor(Type type, Dictionary<string, ObjectOutput> properties)
                 : base("Could not find a matching constructor for type {0} with properties {1}"

@@ -401,7 +401,58 @@ namespace json.Tests.Objects
             clone.One.ShouldNotBeSameAs(original);
         }
 
-        // TODO add test for circular reference
+        [Test]
+        public void MaintainPropertyPropertyCircularReference()
+        {
+            ReferencePropertyClass parent = new ReferencePropertyClass { Reference = new ReferencePropertyClass() };
+            parent.Reference = parent;
+
+            ReferencePropertyClass clone = Clone(parent);
+
+            clone.Reference.ShouldBe<ReferencePropertyClass>()
+                .And.Reference.ShouldBeSameAs(clone);
+        }
+
+        [Test]
+        public void MaintainConstructorPropertyCircularReference()
+        {
+            ReferencePropertyClass child = new ReferencePropertyClass();
+            ReferenceConstructorClass parent = new ReferenceConstructorClass(child);
+            child.Reference = parent;
+
+            ReferenceConstructorClass clone = Clone(parent);
+
+            clone.Reference.ShouldBe<ReferencePropertyClass>()
+                .And.Reference.ShouldBeSameAs(clone);
+        }
+
+        [Test]
+        public void MaintainPropertyConstructorCircularReference()
+        {
+            ReferencePropertyClass parent = new ReferencePropertyClass();
+            ReferenceConstructorClass child = new ReferenceConstructorClass(parent);
+            parent.Reference = child;
+
+            ReferencePropertyClass clone = Clone(parent);
+
+            clone.Reference.ShouldBe<ReferenceConstructorClass>()
+                .And.Reference.ShouldBeSameAs(clone);
+        }
+
+        private class ReferenceConstructorClass
+        {
+            public ReferenceConstructorClass(ReferencePropertyClass reference)
+            {
+                Reference = reference;
+            }
+
+            public object Reference { get; private set; }
+        }
+
+        private class ReferencePropertyClass
+        {
+            public object Reference { get; set; }
+        }
 
         [Test]
         public void BuildTypedObject()
