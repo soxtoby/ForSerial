@@ -125,7 +125,6 @@
     <Compile Include="Objects\TypeDefinition.cs" />
     <Compile Include="Json\Input\JsonParser.cs" />
     <Compile Include="Json\Input\ParseException.cs" />
-    <Compile Include="Json\PreDeserializeJsonAttribute.cs" />
     <Compile Include="Json\Input\Scanner.cs" />
     <Compile Include="Json\Input\Token.cs" />
     <Compile Include="Json\Input\TokenReader.cs" />

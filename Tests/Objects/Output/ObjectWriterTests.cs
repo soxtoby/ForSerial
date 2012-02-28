@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using json.Json;
+using json.JsonObjects;
 using json.Objects;
 using NUnit.Framework;
 
@@ -293,103 +295,36 @@ namespace json.Tests.Objects
             public Dictionary<int, string> Dictionary { get; set; }
         }
 
-        //[Test]    // TODO reimplement typing
-        //[ExpectedException(typeof(TypedObjectBase.PropertyTypeMismatch))]
-        //public void PropertyTypeMismatch()
-        //{
-        //var obj = new { Property = new BooleanPropertyClass() }, new ObjectParsingOptions { SerializeAllTypes = true, SerializeTypeInformation = true };
-
-        //StringWriter stringWriter = new StringWriter();
-        //JsonStringWriter jsonWriter = new JsonStringWriter(stringWriter);
-        //ObjectReader.Read(obj, jsonWriter);
-
-        //string json = stringWriter.ToString();
-        //DeserializeJson<InterfacePropertyClass>(json);
-        //}
-
-        //[Test] // TODO reimplement SetType
-        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        //public void AddNullToUntypedObject()
-        //{
-        //    DeserializeJson<object>(@"{""foo"":null}");
-        //}
-
-        // TODO not sure if want
-        //[Test]
-        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        //public void AddBooleanToUntypedObject()
-        //{
-        //    DeserializeJson<object>(@"{""foo"":true}");
-        //}
-
-        //[Test]
-        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        //public void AddNumberToUntypedObject()
-        //{
-        //    DeserializeJson<object>(@"{""foo"":5}");
-        //}
-
-        //[Test]
-        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        //public void AddStringToUntypedObject()
-        //{
-        //    DeserializeJson<object>(@"{""foo"":""bar""}");
-        //}
-
-        //[Test]
-        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        //public void AddObjectToUntypedObject()
-        //{
-        //    DeserializeJson<object>(@"{""foo"":{}}");
-        //}
-
-        //[Test]
-        //[ExpectedException(typeof(TypedObjectOutputStructure.ObjectNotInitialized))]
-        //public void AddArrayToUntypedObject()
-        //{
-        //    DeserializeJson<object>(@"{""foo"":[]}");
-        //}
-
-        //[Test]
-        //[ExpectedException(typeof(TypedObjectBuilder.InvalidResultObject))]
-        public void InvalidResultObject()
+        [Test]
+        public void PreDeserializeUpgrade()
         {
-            //TypedObjectBuilder.GetResult<object>(NullOutputStructure.Instance);// TODO remove
+            PreDeserializeUpgradeClass original = new PreDeserializeUpgradeClass { One = 1, Two = 2 };
+            StringWriter stringWriter = new StringWriter();
+            JsonStringWriter jsonWriter = new JsonStringWriter(stringWriter);
+            ObjectReader.Read(original, jsonWriter);
+            string json = stringWriter.ToString();
+
+            PreDeserializeUpgradeClass swapped = DeserializeJson<PreDeserializeUpgradeClass>(json);
+
+            swapped.One.ShouldBe(2);
+            swapped.Two.ShouldBe(1);
         }
 
-        //[Test]
-        //[ExpectedException(typeof(TypedObjectBuilder.UnknownRootArrayType))]
-        public void UnknownRootArrayType()
+        private class PreDeserializeUpgradeClass
         {
-            // TODO probably remove
-            //Convert.From.Object(new object[] { }).WithBuilder(TypedObjectBuilder.GetGenericInstance());
+            public int One { get; set; }
+            public int Two { get; set; }
+
+            [PreDeserialize]
+            public static JsonMap PreDeserialize(JsonMap json)
+            {
+                int one = (int)(double)json["One"].Value();
+                int two = (int)(double)json["Two"].Value();
+                json["One"] = new JsonValue(two);
+                json["Two"] = new JsonValue(one);
+                return json;
+            }
         }
-
-        //[Test] // TODO reimplement prebuild
-        //public void PreDeserializeUpgrade()
-        //{
-        //    string json = Convert.From.Object(new PreDeserializeUpgradeClass { One = 1, Two = 2 }).ToTypedJson();
-        //    PreDeserializeUpgradeClass obj = Convert.From.Json(json).ToObject<PreDeserializeUpgradeClass>();
-
-        //    Assert.AreEqual(2, obj.One);
-        //    Assert.AreEqual(1, obj.Two);
-        //}
-
-        //private class PreDeserializeUpgradeClass
-        //{
-        //    public int One { get; set; }
-        //    public int Two { get; set; }
-
-        //    [PreDeserialize]
-        //    public JsonObject PreDeserialize(JsonObject json)
-        //    {
-        //        int one = (int)(json.Get("One") as double? ?? 0);
-        //        int two = (int)(json.Get("Two") as double? ?? 0);
-        //        json["One"] = two;
-        //        json["Two"] = one;
-        //        return json;
-        //    }
-        //}
 
         [Test]
         public void MaintainObjectReferences()

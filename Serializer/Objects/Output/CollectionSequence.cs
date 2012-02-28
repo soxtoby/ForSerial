@@ -18,23 +18,14 @@ namespace json.Objects
         public override void AssignToProperty(object obj, PropertyDefinition property)
         {
             if (property.CanSet)
-                property.SetOn(obj, GetTypedValue());
+                property.SetOn(obj, GetTypedValue(collectionDef));
             else if (property.CanGet)
-                PopulateCollection(property.GetFrom(obj));
+                PopulateCollection(collectionDef, property.GetFrom(obj));
         }
 
         public override object GetTypedValue()
         {
-            object collection = collectionDef.ConstructNew();
-            PopulateCollection(collection);
-            return collection;
-        }
-
-        private void PopulateCollection(object collection)
-        {
-            if (collection != null)
-                foreach (ObjectOutput value in Items)
-                    collectionDef.AddToCollection(collection, value.GetTypedValue());
+            return GetTypedValue(collectionDef);
         }
     }
 }

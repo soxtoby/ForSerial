@@ -102,43 +102,6 @@ namespace json.Tests.JsonObjects
                 .ShouldBe(@"{""foo"":[1,""two"",{""three"":4},[5]]}");
         }
 
-        //[Test]    // TODO reimplement ReadSubStructure
-        //public void ReadSubStructure()
-        //{
-        //    JsonMap obj = new JsonMap { { "foo", new JsonMap { { "_type", "bar" }, { "baz", "qux" } } } };
-        //    ReadSubStructureWriter valueFactory = new ReadSubStructureWriter();
-        //    Convert.From.JsonObject(obj).WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(@"{""baz"":""qux""}", valueFactory.SubObjectJson);
-        //}
-
-        //private class ReadSubStructureWriter : TestWriter
-        //{
-        //    public string SubObjectJson { get; set; }
-
-        //    public override OutputStructure BeginStructure()
-        //    {
-        //        return new ReadSubStructureObject(this);
-        //    }
-        //}
-
-        //private class ReadSubStructureObject : NullOutputStructure
-        //{
-        //    private readonly ReadSubStructureWriter parentFactory;
-
-        //    public ReadSubStructureObject(ReadSubStructureWriter parentFactory)
-        //    {
-        //        this.parentFactory = parentFactory;
-        //    }
-
-        //    public override bool SetType(string typeIdentifier, Reader reader)
-        //    {
-        //        //Output jsonStringValue = reader.ReadSubStructure(JsonStringBuilder.GetDefault());
-        //        //parentFactory.SubObjectJson = JsonStringBuilder.GetResult(jsonStringValue);
-        //        return true;
-        //    }
-        //}
-
         private static string ConvertToJson(JsonObject jsonObject)
         {
             StringWriter stringWriter = new StringWriter();
@@ -158,42 +121,5 @@ namespace json.Tests.JsonObjects
 
             writer.Received().WriteReference(1);
         }
-
-        // TODO Remove if there's no more property context stuff
-        //[Test]
-        //public void CreatePropertyObject()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.JsonObject(new JsonMap { { "foo", new JsonMap() } }).WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ObjectsCreatedFromProperties);
-        //}
-
-        //[Test]
-        //public void CreatePropertyArray()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.JsonObject(new JsonMap { { "foo", new object[] { } } }).WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ArraysCreatedFromProperties);
-        //}
-
-        //[Test]
-        //public void CreateArrayObject()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.JsonObject(new JsonMap { { "foo", new[] { new JsonMap() } } }).WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ObjectsCreatedFromArrays);
-        //}
-
-        //[Test]
-        //public void CreateArrayArray()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.JsonObject(new JsonMap { { "foo", new[] { new object[] { } } } }).WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ArraysCreatedFromArrays);
-        //}
     }
 }

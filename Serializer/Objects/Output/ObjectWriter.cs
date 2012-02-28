@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace json.Objects
 {
@@ -6,6 +7,9 @@ namespace json.Objects
     {
         private readonly Stack<ObjectContainer> outputs = new Stack<ObjectContainer>();
         private readonly List<ObjectContainer> structureReferences = new List<ObjectContainer>();
+        private PreBuildInfo preBuildInfo;
+        private Writer preBuildWriter;
+        private int preBuildDepth;
 
         public ObjectWriter()
         {
@@ -16,56 +20,118 @@ namespace json.Objects
 
         public bool CanWrite(object value)
         {
-            return outputs.Peek().CanCreateValue(value);
+            return preBuildWriter != null
+                ? preBuildWriter.CanWrite(value)
+                : outputs.Peek().CanCreateValue(value);
         }
 
         public void Write(object value)
         {
-            outputs.Peek().WriteValue(value);
+            if (preBuildWriter != null)
+                preBuildWriter.Write(value);
+            else
+                outputs.Peek().WriteValue(value);
         }
 
-        public void BeginStructure()
+        public void BeginStructure(Type readerType)
         {
-            ObjectContainer newStructure = outputs.Peek().CreateStructure();
-            structureReferences.Add(newStructure);
-            outputs.Push(newStructure);
+            BeginStructure(readerType, container => container.CreateStructure(), () => BeginStructure(readerType), () => preBuildWriter.BeginStructure(readerType));
         }
 
-        public void SetType(string typeIdentifier)
+        public void BeginStructure(string typeIdentifier, Type readerType)
         {
-            outputs.Peek().SetType(typeIdentifier);
+            BeginStructure(readerType, container => container.CreateStructure(typeIdentifier), () => BeginStructure(typeIdentifier, readerType), () => preBuildWriter.BeginStructure(readerType));
+        }
+
+        private void BeginStructure(Type readerType, Func<ObjectContainer, ObjectContainer> createStructure, Action initialPreBuildWrite, Action delegateToPreBuildWriter)
+        {
+            if (preBuildWriter != null)
+            {
+                preBuildDepth++;
+                delegateToPreBuildWriter();
+            }
+            else
+            {
+                ObjectContainer newStructure = createStructure(outputs.Peek());
+
+                CheckForPreBuild(readerType, initialPreBuildWrite, newStructure);
+
+                if (preBuildWriter == null)
+                {
+                    structureReferences.Add(newStructure);
+                    outputs.Push(newStructure);
+                }
+            }
+        }
+
+        private void CheckForPreBuild(Type readerType, Action initialPreBuildWrite, ObjectContainer newStructure)
+        {
+            if (preBuildInfo == null) // So PreBuild doesn't trigger another PreBuild
+            {
+                preBuildInfo = newStructure.GetPreBuildInfo(readerType);
+                if (preBuildInfo != null)
+                {
+                    preBuildWriter = preBuildInfo.GetWriter();
+                    initialPreBuildWrite();
+                }
+            }
         }
 
         public void EndStructure()
         {
-            ObjectOutput newStructure = outputs.Pop(); // TODO throw exception if not structure
-            outputs.Peek().Add(newStructure);
+            if (preBuildWriter != null)
+            {
+                preBuildWriter.EndStructure();
+                preBuildDepth--;
+                if (preBuildDepth == 0)
+                {
+                    Writer writer = preBuildWriter;
+                    preBuildWriter = null;
+                    preBuildInfo.PreBuild(writer, this);
+                }
+            }
+            else
+            {
+                ObjectOutput newStructure = outputs.Pop(); // TODO throw exception if not structure
+                outputs.Peek().Add(newStructure);
+            }
         }
 
         public void AddProperty(string name)
         {
-            outputs.Peek().SetCurrentProperty(name);
+            if (preBuildWriter != null)
+                preBuildWriter.AddProperty(name);
+            else
+                outputs.Peek().SetCurrentProperty(name);
         }
 
         public void BeginSequence()
         {
-            outputs.Push(outputs.Peek().CreateSequence());
+            if (preBuildWriter != null)
+                preBuildWriter.BeginSequence();
+            else
+                outputs.Push(outputs.Peek().CreateSequence());
         }
 
         public void EndSequence()
         {
-            ObjectOutput newSequence = outputs.Pop(); // TODO throw exception if not sequence
-            outputs.Peek().Add(newSequence);
+            if (preBuildWriter != null)
+            {
+                preBuildWriter.EndSequence();
+            }
+            else
+            {
+                ObjectOutput newSequence = outputs.Pop(); // TODO throw exception if not sequence
+                outputs.Peek().Add(newSequence);
+            }
         }
 
         public void WriteReference(int referenceIndex)
         {
-            outputs.Peek().Add(new StructurerReference(structureReferences[referenceIndex]));
-        }
-
-        public void AddStructureReference(ObjectContainer structureOutput)
-        {
-            structureReferences.Add(structureOutput);
+            if (preBuildWriter != null)
+                preBuildWriter.WriteReference(referenceIndex - structureReferences.Count);
+            else
+                outputs.Peek().Add(new StructurerReference(structureReferences[referenceIndex]));
         }
     }
 }

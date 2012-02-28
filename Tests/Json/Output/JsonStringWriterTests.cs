@@ -70,7 +70,7 @@ namespace json.Tests.Json
         [Test]
         public void EmptyStructure()
         {
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.EndStructure();
             Json.ShouldBe("{}");
         }
@@ -78,7 +78,7 @@ namespace json.Tests.Json
         [Test]
         public void SinglePropertyStructure()
         {
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.AddProperty("foo");
             sut.Write("bar");
             sut.EndStructure();
@@ -88,7 +88,7 @@ namespace json.Tests.Json
         [Test]
         public void TwoPropertyStructure_SecondPropertyDelimited()
         {
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.AddProperty("foo");
             sut.Write(1);
             sut.AddProperty("bar");
@@ -143,9 +143,9 @@ namespace json.Tests.Json
         public void StructuresInsideSequence()
         {
             sut.BeginSequence();
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.EndStructure();
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.EndStructure();
             sut.EndSequence();
             Json.ShouldBe("[{},{}]");

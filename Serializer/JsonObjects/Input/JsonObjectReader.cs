@@ -22,12 +22,6 @@ namespace json.JsonObjects
             reader.ReadValue(obj);
         }
 
-        // TODO reimplement ReadSubStructure
-        //public override Output ReadSubStructure(Writer subWriter)
-        //{
-        //    return Read(currentObject, subWriter);
-        //}
-
         private void ReadValue(JsonObject input)
         {
             if (input == null)
@@ -51,18 +45,17 @@ namespace json.JsonObjects
         {
             objectReferences[map] = objectReferences.Count;
 
-            writer.BeginStructure();
+            if (((string)map[TypeKey].Value()).IsNotNullOrEmpty())
+                writer.BeginStructure((string)map[TypeKey].Value(), GetType());
+            else
+                writer.BeginStructure(GetType());
 
             foreach (KeyValuePair<string, JsonObject> property in map)
             {
                 string name = property.Key;
                 JsonObject value = property.Value;
 
-                if (name == TypeKey)
-                {
-                    writer.SetType((string)value.Value());
-                }
-                else
+                if (name != TypeKey)
                 {
                     writer.AddProperty(name);
                     ReadValue(value);

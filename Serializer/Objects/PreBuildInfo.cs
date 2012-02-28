@@ -2,32 +2,33 @@ using System;
 
 namespace json.Objects
 {
-    internal class PreBuildInfo
+    public class PreBuildInfo
     {
         private readonly PreBuildAttribute attribute;
-        private readonly FuncMethod preBuild;
+        private readonly StaticFuncMethod preBuild;
 
-        public PreBuildInfo(PreBuildAttribute attribute, FuncMethod preBuild)
+        public PreBuildInfo(PreBuildAttribute attribute, StaticFuncMethod preBuild)
         {
             if (preBuild == null) throw new ArgumentNullException("preBuild");
             this.attribute = attribute;
             this.preBuild = preBuild;
         }
 
-        public void PreBuild(object target, object reader, Writer objectPopulator)
+        public bool ReaderMatches(Type readerType)
         {
-            Writer writerForContext = attribute.GetWriter();
-            // reader.ReadSubStructure(writerForContext);
-            object context = attribute.GetContextValue(writerForContext);
-
-            object preBuildResult = preBuild(target, new[] { context });
-
-            attribute.ReadPreBuildResult(preBuildResult, objectPopulator);
+            return attribute.ReaderMatches(readerType);
         }
 
-        public bool ReaderMatches(object reader)
+        public Writer GetWriter()
         {
-            return attribute.ReaderMatches(reader);
+            return attribute.GetWriter();
+        }
+
+        public void PreBuild(Writer preBuildWriter, Writer primaryWriter)
+        {
+            object context = attribute.GetContextValue(preBuildWriter);
+            object preBuildResult = preBuild(new[] { context });
+            attribute.ReadPreBuildResult(preBuildResult, primaryWriter);
         }
     }
 }

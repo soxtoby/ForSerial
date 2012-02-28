@@ -17,10 +17,11 @@ namespace json.Objects.TypeDefinitions
         {
             reader.AddStructureReference(input);
 
-            writer.BeginStructure();
 
             if (writeTypeIdentifier)
-                writer.SetType(CurrentTypeHandler.GetTypeIdentifier(Type));
+                writer.BeginStructure(CurrentTypeHandler.GetTypeIdentifier(Type), reader.GetType());
+            else
+                writer.BeginStructure(Type);
 
             foreach (KeyValuePair<PropertyDefinition, object> property in GetSerializableProperties(input, reader.SerializeAllTypes))
             {

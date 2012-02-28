@@ -22,21 +22,14 @@ namespace json.Objects
             currentProperty = name;
         }
 
-        public void SetType(string typeIdentifier)
-        {
-            TypeDefinition newTypeDef = CurrentTypeHandler.GetTypeDefinition(typeIdentifier);
-            ChangeTypeIfMoreSpecific(newTypeDef);
-        }
-
-        private void ChangeTypeIfMoreSpecific(TypeDefinition newTypeDef)
-        {
-            if (TypeDef.Type.IsAssignableFrom(newTypeDef.Type))
-                TypeDef = newTypeDef;
-        }
-
         public ObjectContainer CreateStructure()
         {
             return TypeDef.CreateStructureForProperty(currentProperty);
+        }
+
+        public ObjectContainer CreateStructure(string typeIdentifier)
+        {
+            return TypeDef.CreateStructureForProperty(currentProperty, typeIdentifier);
         }
 
         public ObjectContainer CreateSequence()
@@ -57,6 +50,11 @@ namespace json.Objects
         public void Add(ObjectOutput value)
         {
             Properties[currentProperty] = value;
+        }
+
+        public PreBuildInfo GetPreBuildInfo(Type readerType)
+        {
+            return TypeDef.GetPreBuildInfo(readerType);
         }
 
         public abstract object GetTypedValue();

@@ -116,41 +116,6 @@ namespace json.Tests.Objects
                 .ShouldBe(@"{""Property"":[0,1,2]}");
         }
 
-        //[Test] // TODO reimplement prebuild
-        public void ReadSubStructure()
-        {
-            //ReadSubStructureWriter writer = new ReadSubStructureWriter();
-            //Convert.From.Object(new { foo = new { bar = "baz" } }, new ObjectParsingOptions { SerializeAllTypes = true }).WithBuilder(writer);
-
-            //Assert.AreEqual(@"{""bar"":""baz""}", writer.SubStructureJson);
-        }
-
-        //private class ReadSubStructureWriter : TestWriter
-        //{
-        //    public string SubStructureJson { get; set; }
-
-        //    public override OutputStructure BeginStructure()
-        //    {
-        //        return new ReadSubStructureObject(this);
-        //    }
-        //}
-
-        //private class ReadSubStructureObject : NullOutputStructure
-        //{
-        //    private readonly ReadSubStructureWriter parentFactory;
-
-        //    public ReadSubStructureObject(ReadSubStructureWriter parentFactory)
-        //    {
-        //        this.parentFactory = parentFactory;
-        //    }
-
-        //    public override bool SetType(string typeIdentifier, Reader reader)
-        //    {
-        //        parentFactory.SubStructureJson = JsonStringBuilder.GetResult(reader.ReadSubStructure(new JsonStringBuilder()));
-        //        return true;
-        //    }
-        //}
-
         [Test]
         public void StringObjectDictionary_OutputAsRegularObject()
         {
@@ -197,43 +162,6 @@ namespace json.Tests.Objects
 
             writer.DidNotReceive().WriteReference(Arg.Any<int>());
         }
-
-        // TODO remove if not using objcet/array/property contexts anymore
-        //[Test]
-        //public void CreatePropertyObject()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.Object(new { foo = new object() }, new ObjectParsingOptions { SerializeAllTypes = true }).WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ObjectsCreatedFromProperties);
-        //}
-
-        //[Test]
-        //public void CreatePropertyArray()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.Object(new { foo = new object[] { } }, new ObjectParsingOptions { SerializeAllTypes = true }).WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ArraysCreatedFromProperties);
-        //}
-
-        //[Test]
-        //public void CreateArrayObject()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.Object(new[] { new object() }).WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ObjectsCreatedFromArrays);
-        //}
-
-        //[Test]
-        //public void CreateArrayArray()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.Object(new[] { new object[] { } }).WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ArraysCreatedFromArrays);
-        //}
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
@@ -283,28 +211,8 @@ namespace json.Tests.Objects
             ObjectReader.Read(obj, writer);
 
             writer.Received().Write(obj);
-            writer.DidNotReceive().BeginStructure();
+            writer.DidNotReceive().BeginStructure(Arg.Any<Type>());
         }
-
-        private struct ValueType { }
-
-        //private class ValueOnlyWriter : TestWriter
-        //{
-        //    public override OutputStructure BeginStructure()
-        //    {
-        //        throw new AssertionException("Tried to create an object.");
-        //    }
-
-        //    public override SequenceOutput BeginSequence()
-        //    {
-        //        throw new AssertionException("Tried to create an array.");
-        //    }
-
-        //    public override OutputStructure CreateReference(OutputStructure outputStructure)
-        //    {
-        //        throw new AssertionException("Tried to create a reference.");
-        //    }
-        //}
 
         [Test]
         public void StaticPropertyIsNotSerialized()

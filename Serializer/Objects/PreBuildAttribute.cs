@@ -3,20 +3,21 @@ using System.Reflection;
 
 namespace json.Objects
 {
+    [AttributeUsage(AttributeTargets.Method)]
     public abstract class PreBuildAttribute : Attribute
     {
-        private readonly Type readerType;
+        private readonly Type requiredReaderType;
         private readonly Type preBuildContextType;
 
-        protected PreBuildAttribute(Type readerType, Type preBuildContextType)
+        protected PreBuildAttribute(Type requiredReaderType, Type preBuildContextType)
         {
-            this.readerType = readerType;
+            this.requiredReaderType = requiredReaderType;
             this.preBuildContextType = preBuildContextType;
         }
 
-        public bool ReaderMatches(object reader)
+        public bool ReaderMatches(Type readerType)
         {
-            return reader.GetType() == readerType;
+            return readerType == requiredReaderType;
         }
 
         public void AssertValidMethod(MethodInfo method)
@@ -30,7 +31,7 @@ namespace json.Objects
 
         public abstract Writer GetWriter();
 
-        public abstract object GetContextValue(Writer parsedContext);
+        public abstract object GetContextValue(Writer writer);
 
         public abstract void ReadPreBuildResult(object preBuildResult, Writer writer);
 

@@ -1,11 +1,18 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using json.Objects.TypeDefinitions;
 
 namespace json.Objects
 {
     public class EnumerableSequence : BaseObjectSequence
     {
-        public EnumerableSequence(EnumerableDefinition collectionDef) : base(collectionDef) { }
+        private readonly EnumerableDefinition enumerableDef;
+
+        public EnumerableSequence(EnumerableDefinition enumerableDef)
+            : base(enumerableDef)
+        {
+            this.enumerableDef = enumerableDef;
+        }
 
         public override void AssignToProperty(object obj, PropertyDefinition property)
         {
@@ -14,7 +21,8 @@ namespace json.Objects
 
         public override object GetTypedValue()
         {
-            return Items.Select(i => i.GetTypedValue()).ToList();
+            Type listType = typeof(List<>).MakeGenericType(enumerableDef.ItemTypeDef.Type);
+            return GetTypedValue((CollectionDefinition)CurrentTypeHandler.GetTypeDefinition(listType));
         }
     }
 }

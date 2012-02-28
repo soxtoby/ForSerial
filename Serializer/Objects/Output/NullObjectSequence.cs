@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace json.Objects
@@ -19,9 +20,12 @@ namespace json.Objects
 
         public void SetCurrentProperty(string name) { }
 
-        public void SetType(string typeIdentifier) { }
-
         public ObjectContainer CreateStructure()
+        {
+            return NullObjectStructure.Instance;
+        }
+
+        public ObjectContainer CreateStructure(string typeIdentifier)
         {
             return NullObjectStructure.Instance;
         }
@@ -37,6 +41,11 @@ namespace json.Objects
         }
 
         public void Add(ObjectOutput value) { }
+
+        public PreBuildInfo GetPreBuildInfo(Type readerType)
+        {
+            return null;
+        }
 
         public void WriteValue(object value) { }
     }

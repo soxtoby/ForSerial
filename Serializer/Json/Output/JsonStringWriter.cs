@@ -70,15 +70,16 @@ namespace json.Json
             json.Write("null");
         }
 
-        public void BeginStructure()
+        public void BeginStructure(Type readerType)
         {
             Delimit();
             json.Write('{');
             suppressDelimiter = true;
         }
 
-        public void SetType(string typeIdentifier)
+        public void BeginStructure(string typeIdentifier, Type readerType)
         {
+            BeginStructure(readerType);
             AddProperty("_type");
             Write(typeIdentifier);
         }
@@ -112,7 +113,7 @@ namespace json.Json
 
         public void WriteReference(int referenceIndex)
         {
-            BeginStructure();
+            BeginStructure(null); // FIXME readerType isn't being used in this class, but I'm not sure I like passing in null
             AddProperty("_ref");
             Write(referenceIndex);
             EndStructure();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using json.Objects;
 
 namespace json.JsonObjects
@@ -21,7 +22,7 @@ namespace json.JsonObjects
             Write(new JsonValue(value));
         }
 
-        public void BeginStructure()
+        public void BeginStructure(Type readerType)
         {
             JsonMap map = new JsonMap();
             Write(map);
@@ -29,8 +30,9 @@ namespace json.JsonObjects
             currentObject.Push(map);
         }
 
-        public void SetType(string typeIdentifier)
+        public void BeginStructure(string typeIdentifier, Type readerType)
         {
+            BeginStructure(readerType);
             AddProperty("_type");
             Write(typeIdentifier);
         }

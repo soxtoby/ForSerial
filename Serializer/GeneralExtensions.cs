@@ -18,6 +18,11 @@ namespace json
             return String.Join(joinWith, strings.ToArray());
         }
 
+        public static bool IsNotNullOrEmpty(this string value)
+        {
+            return !string.IsNullOrEmpty(value);
+        }
+
         public static string Repeat(this string val, int amount)
         {
             StringBuilder builder = new StringBuilder(val.Length * amount);

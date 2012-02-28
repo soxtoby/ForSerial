@@ -29,12 +29,6 @@ namespace json.Objects
             reader.Read(obj);
         }
 
-        // TODO reimplement prebuild
-        //public override Output ReadSubStructure(Writer subWriter)
-        //{
-        //    return Read(currentObject, subWriter, options).AsStructure();
-        //}
-
         private void Read(object input)
         {
             Read(input, options.SerializeTypeInformation != TypeInformationLevel.None);

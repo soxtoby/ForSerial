@@ -136,7 +136,7 @@ namespace json.Json
 
             if (IsSymbol("}"))
             {
-                writer.BeginStructure();
+                writer.BeginStructure(GetType());
             }
             else
             {
@@ -198,19 +198,15 @@ namespace json.Json
                 {
                     parser.ReferenceObject();
                     NextPropertyParser = new IgnorePropertyParser(parser);
-                    return;
                 }
-
-                parser.writer.BeginStructure();
-
-                if (name == "_type")
+                else if (name == "_type")
                 {
-                    parser.SetObjectType();
-                    //ReturnImmediately = true; // Object was pre-built // TODO reimplement prebuild
+                    parser.BeginTypedStructure();
                     NextPropertyParser = new RegularPropertyParser(parser);
                 }
                 else
                 {
+                    parser.BeginStructure();
                     NextPropertyParser = new RegularPropertyParser(parser);
                     NextPropertyParser.ParsePropertyValue(name);
                 }
@@ -249,10 +245,15 @@ namespace json.Json
             writer.WriteReference(referenceId);
         }
 
-        private void SetObjectType()
+        private void BeginStructure()
+        {
+            writer.BeginStructure(GetType());
+        }
+
+        private void BeginTypedStructure()
         {
             string typeIdentifier = GetString();
-            writer.SetType(typeIdentifier);
+            writer.BeginStructure(typeIdentifier, GetType());
         }
 
         private string GetString()

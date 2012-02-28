@@ -156,41 +156,6 @@ namespace json.Tests.Json
                 .And.Values().ShouldBe(new object[] { 1, "two", null });
         }
 
-        //[Test] // TODO reimplement subobject parsing
-        public void ParseSubObject()
-        {
-            //ParseSubObjectWriter writer = new ParseSubObjectWriter();
-            //Convert.From.Json(@"{""foo"":{""_type"":""bar"",""baz"":""qux""}}").WithBuilder(writer);
-
-            //Assert.AreEqual(@"{""baz"":""qux""}", writer.SubObjectJson);
-        }
-
-        //private class ParseSubObjectWriter : TestWriter
-        //{
-        //    public override OutputStructure BeginStructure()
-        //    {
-        //        return new ParseSubObjectObject(this);
-        //    }
-
-        //    public string SubObjectJson { get; set; }
-        //}
-
-        //private class ParseSubObjectObject : NullOutputStructure
-        //{
-        //    private readonly ParseSubObjectWriter parentFactory;
-
-        //    public ParseSubObjectObject(ParseSubObjectWriter parentFactory)
-        //    {
-        //        this.parentFactory = parentFactory;
-        //    }
-
-        //    public override bool SetType(string typeIdentifier, Reader reader)
-        //    {
-        //        //parentFactory.SubObjectJson = JsonStringBuilder.GetResult(reader.ReadSubStructure(JsonStringBuilder.GetDefault()));
-        //        return true;
-        //    }
-        //}
-
         [Test]
         public void MaintainReferences()
         {
@@ -270,42 +235,5 @@ namespace json.Tests.Json
             JsonParser.Parse(json, writer);
             return writer.Result;
         }
-
-        // TODO probably won't need the old property context stuff, so these test can go
-        //[Test]
-        //public void CreatePropertyObject()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.Json(@"{""foo"":{}}").WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ObjectsCreatedFromProperties);
-        //}
-
-        //[Test]
-        //public void CreatePropertyArray()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.Json(@"{""foo"":[]}").WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ArraysCreatedFromProperties);
-        //}
-
-        //[Test]
-        //public void CreateArrayObject()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.Json(@"{""foo"":[{}]}").WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ObjectsCreatedFromArrays);
-        //}
-
-        //[Test]
-        //public void CreateArrayArray()
-        //{
-        //    var valueFactory = new CustomCreateWriter();
-        //    Convert.From.Json(@"{""foo"":[[]]}").WithBuilder(valueFactory);
-
-        //    Assert.AreEqual(1, valueFactory.ArraysCreatedFromArrays);
-        //}
     }
 }

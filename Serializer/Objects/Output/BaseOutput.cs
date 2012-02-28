@@ -1,3 +1,5 @@
+using System;
+
 namespace json.Objects
 {
     internal class BaseOutput<T> : ObjectContainer
@@ -8,7 +10,6 @@ namespace json.Objects
 
         public void AssignToProperty(object obj, PropertyDefinition property) { }
         public void SetCurrentProperty(string name) { }
-        public void SetType(string typeIdentifier) { }
 
         public object GetTypedValue()
         {
@@ -20,9 +21,19 @@ namespace json.Objects
             result = (T)value.GetTypedValue();
         }
 
+        public PreBuildInfo GetPreBuildInfo(Type readerType)
+        {
+            return null;
+        }
+
         public ObjectContainer CreateStructure()
         {
             return TypeDef.CreateStructure();
+        }
+
+        public ObjectContainer CreateStructure(string typeIdentifier)
+        {
+            return TypeDef.CreateStructure(typeIdentifier);
         }
 
         public ObjectContainer CreateSequence()

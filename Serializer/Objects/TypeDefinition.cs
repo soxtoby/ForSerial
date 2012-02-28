@@ -8,17 +8,11 @@ namespace json.Objects
     public abstract class TypeDefinition
     {
         private static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
-
         private readonly TypeCode typeCode;
-
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
 
         public Type Type { get; private set; }
-
-        protected virtual bool ShouldWriterTypeIdentifier { get { return true; } }
-
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
-
         public List<ConstructorDefinition> Constructors { get; private set; }
 
         protected static readonly ObjectInterfaceProvider ObjectInterfaceProvider = new DynamicMethodProvider();
@@ -104,7 +98,7 @@ namespace json.Objects
         private static PreBuildInfo ValidateAndCreatePreBuildInfo(PreBuildAttribute preBuildAttribute, MethodInfo method)
         {
             preBuildAttribute.AssertValidMethod(method);
-            return new PreBuildInfo(preBuildAttribute, ObjectInterfaceProvider.GetFunc(method));
+            return new PreBuildInfo(preBuildAttribute, ObjectInterfaceProvider.GetStaticFunc(method));
         }
 
         /// <summary>
@@ -128,9 +122,9 @@ namespace json.Objects
             }
         }
 
-        internal PreBuildInfo GetPreBuildInfo(object reader)
+        internal PreBuildInfo GetPreBuildInfo(Type readerType)
         {
-            return reader == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ReaderMatches(reader));
+            return readerType == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ReaderMatches(readerType));
         }
 
         public abstract void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier);
@@ -146,6 +140,14 @@ namespace json.Objects
         public virtual ObjectContainer CreateStructure()
         {
             throw new NotAnObject(Type);
+        }
+
+        public ObjectContainer CreateStructure(string requestedTypeIdentifier)
+        {
+            TypeDefinition requestedTypeDef = CurrentTypeHandler.GetTypeDefinition(requestedTypeIdentifier);
+            return Type.IsAssignableFrom(requestedTypeDef.Type)
+                ? requestedTypeDef.CreateStructure()
+                : CreateStructure();
         }
 
         public virtual ObjectContainer CreateSequence()
@@ -175,6 +177,14 @@ namespace json.Objects
             PropertyDefinition property = Properties.Get(name);
             return property != null
                 ? property.CreateStructure()
+                : NullObjectStructure.Instance;
+        }
+
+        public ObjectContainer CreateStructureForProperty(string name, string typeIdentifier)
+        {
+            PropertyDefinition property = Properties.Get(name);
+            return property != null
+                ? property.CreateStructure(typeIdentifier)
                 : NullObjectStructure.Instance;
         }
 

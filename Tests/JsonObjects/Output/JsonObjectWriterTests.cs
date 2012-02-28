@@ -54,7 +54,7 @@ namespace json.Tests.JsonObjects
         [Test]
         public void EmptyStructure_CreatesEmptyMap()
         {
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.EndStructure();
             sut.Result.ShouldBe<JsonMap>()
                 .And.Count.ShouldBe(0);
@@ -63,7 +63,7 @@ namespace json.Tests.JsonObjects
         [Test]
         public void SinglePropertyStructure()
         {
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.AddProperty("foo");
             sut.Write(1);
             sut.EndStructure();
@@ -75,7 +75,7 @@ namespace json.Tests.JsonObjects
         [Test]
         public void TwoPropertyStructure()
         {
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.AddProperty("foo");
             sut.Write(1);
             sut.AddProperty("bar");
@@ -92,9 +92,9 @@ namespace json.Tests.JsonObjects
         [Test]
         public void NestedStructures()
         {
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.AddProperty("foo");
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.AddProperty("bar");
             sut.Write(1);
             sut.EndStructure();
@@ -162,7 +162,7 @@ namespace json.Tests.JsonObjects
         [Test]
         public void SequenceInsideStructure()
         {
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.AddProperty("foo");
             sut.BeginSequence();
             sut.Write(1);
@@ -178,7 +178,7 @@ namespace json.Tests.JsonObjects
         public void StructureInsideSequence()
         {
             sut.BeginSequence();
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.AddProperty("foo");
             sut.Write(1);
             sut.EndStructure();
@@ -193,7 +193,7 @@ namespace json.Tests.JsonObjects
         public void StructureReference()
         {
             sut.BeginSequence();
-            sut.BeginStructure();
+            sut.BeginStructure(null);
             sut.EndStructure();
             sut.WriteReference(0);
             sut.EndSequence();

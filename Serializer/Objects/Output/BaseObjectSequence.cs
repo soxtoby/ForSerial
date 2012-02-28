@@ -25,11 +25,15 @@ namespace json.Objects
         public void SetCurrentProperty(string name) { }
 
         // TODO throw exception - can't change type of sequence (in JSON at least)
-        public void SetType(string typeIdentifier) { }
 
         public ObjectContainer CreateStructure()
         {
             return collectionDef.CreateStructureForItem();
+        }
+
+        public ObjectContainer CreateStructure(string typeIdentifier)
+        {
+            return CreateStructure();
         }
 
         public ObjectContainer CreateSequence()
@@ -50,6 +54,25 @@ namespace json.Objects
         public void Add(ObjectOutput value)
         {
             Items.Add(value);
+        }
+
+        public PreBuildInfo GetPreBuildInfo(Type readerType)
+        {
+            return TypeDef.GetPreBuildInfo(readerType);
+        }
+
+        protected object GetTypedValue(CollectionDefinition collectionDefinition)
+        {
+            object collection = collectionDefinition.ConstructNew();
+            PopulateCollection(collectionDefinition, collection);
+            return collection;
+        }
+
+        protected void PopulateCollection(CollectionDefinition collectionDefinition, object collection)
+        {
+            if (collection != null)
+                foreach (ObjectOutput value in Items)
+                    collectionDefinition.AddToCollection(collection, value.GetTypedValue());
         }
     }
 }

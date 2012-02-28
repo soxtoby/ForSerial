@@ -14,7 +14,7 @@ namespace json.Objects
 
         public string Name { get; private set; }
         public TypeDefinition TypeDef { get; private set; }
-        private bool forceTypeIdentifierSerialization;
+        private readonly bool forceTypeIdentifierSerialization;
 
         private readonly GetMethod getter;
         private readonly SetMethod setter;
@@ -36,6 +36,11 @@ namespace json.Objects
         public ObjectContainer CreateStructure()
         {
             return TypeDef.CreateStructure();
+        }
+
+        public ObjectContainer CreateStructure(string typeIdentifier)
+        {
+            return TypeDef.CreateStructure(typeIdentifier);
         }
 
         public ObjectContainer CreateSequence()
