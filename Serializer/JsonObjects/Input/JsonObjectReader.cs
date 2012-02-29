@@ -1,114 +1,88 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using json.Objects;
 
 namespace json.JsonObjects
 {
-    public class JsonObjectReader : Reader
+    public class JsonObjectReader : JObjectVisitor
     {
+        private readonly Writer writer;
         private const string TypeKey = "_type";
-        private JsonObject currentObject;
-        private readonly Dictionary<JsonObject, OutputStructure> objectReferences = new Dictionary<JsonObject, OutputStructure>();
+        private readonly Dictionary<JsonMap, int> objectReferences = new Dictionary<JsonMap, int>();
 
-        private JsonObjectReader(Writer writer) : base(writer) { }
-
-        public static OutputStructure Read(JsonObject obj, Writer valueFactory)
+        private JsonObjectReader(Writer writer)
         {
-            JsonObjectReader reader = new JsonObjectReader(valueFactory);
-            return reader.ReadObject(obj);
+            if (writer == null) throw new ArgumentNullException("writer");
+
+            this.writer = writer;
         }
 
-        public override Output ReadSubStructure(Writer subWriter)
+        public static void Read(JsonObject obj, Writer writer)
         {
-            return Read(currentObject, subWriter);
+            JsonObjectReader reader = new JsonObjectReader(writer);
+            reader.ReadValue(obj);
         }
 
-        private Output ReadValue(object input)
+        private void ReadValue(JsonObject input)
         {
             if (input == null)
-                return writer.Current.CreateValue(null);
-
-            switch (input.GetType().GetTypeCodeType())
             {
-                case TypeCodeType.Object:
-                    JsonObject jsonObject = input as JsonObject;
-                    IEnumerable enumerable;
-                    if (jsonObject != null)
-                        return ReadObject(jsonObject);
-                    if ((enumerable = input as IEnumerable) != null)
-                        return ReadArray(enumerable);
-
-                    throw new InvalidObject(input.GetType());
-
-                case TypeCodeType.Boolean:
-                case TypeCodeType.String:
-                case TypeCodeType.Number:
-                    return writer.Current.CreateValue(input);
-
-                default:
-                    throw new UnknownTypeCode(input);
+                writer.Write(null);
+                return;
             }
+
+            input.Accept(this);
         }
 
-        private OutputStructure ReadObject(JsonObject obj)
+        public void Visit(JsonMap map)
         {
-            OutputStructure existingReference = objectReferences.Get(obj);
-            return existingReference == null
-                ? ReadNewObject(obj)
-                : ReferenceObject(existingReference);
+            if (objectReferences.ContainsKey(map))
+                ReferenceObject(objectReferences[map]);
+            else
+                ReadNewObject(map);
         }
 
-        private OutputStructure ReadNewObject(JsonObject obj)
+        private void ReadNewObject(JsonMap map)
         {
-            currentObject = obj;
+            objectReferences[map] = objectReferences.Count;
 
-            OutputStructure outputStructure = objectReferences[obj] = writer.Current.CreateStructure();
+            if (((string)map[TypeKey].Value()).IsNotNullOrEmpty())
+                writer.BeginStructure((string)map[TypeKey].Value(), GetType());
+            else
+                writer.BeginStructure(GetType());
 
-            foreach (var property in obj)
+            foreach (KeyValuePair<string, JsonObject> property in map)
             {
                 string name = property.Key;
-                object value = property.Value;
-                using (UseObjectPropertyContext(outputStructure, name))
+                JsonObject value = property.Value;
+
+                if (name != TypeKey)
                 {
-                    if (name == TypeKey)
-                        outputStructure.SetType((string)obj[TypeKey], this);
-                    else
-                        ReadValue(value).AddToStructure(outputStructure, name);
+                    writer.AddProperty(name);
+                    ReadValue(value);
                 }
             }
 
-            return outputStructure;
+            writer.EndStructure();
         }
 
-        private OutputStructure ReferenceObject(OutputStructure existingReference)
+        private void ReferenceObject(int referenceIndex)
         {
-            return writer.Current.CreateReference(existingReference);
+            writer.WriteReference(referenceIndex);
         }
 
-        private SequenceOutput ReadArray(IEnumerable enumerable)
+        public void Visit(JsonArray array)
         {
-            SequenceOutput array = writer.Current.CreateSequence();
+            writer.BeginSequence();
 
-            using (UseArrayContext(array))
-            {
-                foreach (object item in enumerable)
-                    ReadValue(item).AddToSequence(array);
-            }
+            foreach (JsonObject item in array)
+                ReadValue(item);
 
-            return array;
+            writer.EndSequence();
         }
 
-        internal class InvalidObject : Exception
+        public void Visit(JsonValue value)
         {
-            public InvalidObject(Type objectType) : base("Cannot parse object of type {0}.".FormatWith(objectType.FullName)) { }
-        }
-
-        internal class UnknownTypeCode : Exception
-        {
-            public UnknownTypeCode(object obj)
-                : base("Type {0} has unknown TypeCode.".FormatWith(obj.GetType().FullName))
-            { }
+            writer.Write(value.Value);
         }
     }
 }

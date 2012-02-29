@@ -13,19 +13,37 @@ namespace json.Objects.TypeDefinitions
             ItemTypeDef = CurrentTypeHandler.GetTypeDefinition(itemType);
         }
 
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
             IEnumerable inputArray = input as IEnumerable;
-            if (inputArray == null) return null;
+            if (inputArray == null) return;
 
-            SequenceOutput output = valueFactory.CreateSequence();
+            writer.BeginSequence();
 
             foreach (object item in inputArray)
-            {
-                valueFactory.ReadArrayItem(output, item);
-            }
+                reader.Read(item, writeTypeIdentifier || CurrentTypeHandler.GetTypeDefinition(item) != ItemTypeDef);
 
-            return output;
+            writer.EndSequence();
+        }
+
+        public ObjectContainer CreateStructureForItem()
+        {
+            return ItemTypeDef.CreateStructure();
+        }
+
+        public ObjectContainer CreateSequenceForItem()
+        {
+            return ItemTypeDef.CreateSequence();
+        }
+
+        public ObjectValue CreateValueForItem(object value)
+        {
+            return ItemTypeDef.CreateValue(value);
+        }
+
+        public bool CanCreateValueForItem(object value)
+        {
+            return ItemTypeDef.CanCreateValue(value);
         }
     }
 }

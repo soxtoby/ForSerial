@@ -88,24 +88,23 @@ namespace json.Objects
             return (SetMethod)dynamicSet.CreateDelegate(typeof(SetMethod));
         }
 
-        public FuncMethod GetFunc(MethodInfo method)
+        public StaticFuncMethod GetStaticFunc(MethodInfo method)
         {
-            FuncMethod compiledFuncCall = null;
-            return (target, args) => (compiledFuncCall ?? (compiledFuncCall = CompileFuncCall(method)))(target, args);
+            StaticFuncMethod compiledFuncCall = null;
+            return (args) => (compiledFuncCall ?? (compiledFuncCall = CompileStaticFuncCall(method)))(args);
         }
 
-        private static FuncMethod CompileFuncCall(MethodInfo method)
+        private static StaticFuncMethod CompileStaticFuncCall(MethodInfo method)
         {
-            const int instanceAndObjectArrayArgs = 2;
-            DynamicMethod dynamicMethod = CreateDynamicFunc(method.DeclaringType, "dynamicCall_" + method.Name, instanceAndObjectArrayArgs);
+            const int objectArrayArg = 1;
+            DynamicMethod dynamicMethod = CreateDynamicFunc(method.DeclaringType, "dynamicCall_" + method.Name, objectArrayArg);
 
             dynamicMethod.GetILGenerator()
-                .LoadObjectInstance(method.DeclaringType)
-                .LoadParamsFromObjectArrayArg(1, method)
+                .LoadParamsFromObjectArrayArg(0, method)
                 .CallMethod(method)
                 .Return();
 
-            return (FuncMethod)dynamicMethod.CreateDelegate(typeof(FuncMethod));
+            return (StaticFuncMethod)dynamicMethod.CreateDelegate(typeof(StaticFuncMethod));
         }
 
         public ActionMethod GetAction(MethodInfo method)

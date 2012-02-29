@@ -11,11 +11,5 @@ namespace json.Tests.Objects
         {
             Assert.IsTrue(CurrentTypeHandler.GetTypeDefinition(typeof(string)).IsSerializable);
         }
-
-        [Test]
-        public void StringIsDeserializable()
-        {
-            Assert.IsTrue(CurrentTypeHandler.GetTypeDefinition(typeof(string)).IsDeserializable);
-        }
     }
 }

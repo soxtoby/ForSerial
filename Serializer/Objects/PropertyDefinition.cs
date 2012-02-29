@@ -9,23 +9,18 @@ namespace json.Objects
             this.setter = setter;
             Name = name;
             TypeDef = typeDef;
-            ForceTypeIdentifierSerialization = forceTypeIdentifierSerialization;
+            this.forceTypeIdentifierSerialization = forceTypeIdentifierSerialization;
         }
 
         public string Name { get; private set; }
         public TypeDefinition TypeDef { get; private set; }
-        public bool ForceTypeIdentifierSerialization { get; private set; }
+        private readonly bool forceTypeIdentifierSerialization;
 
         private readonly GetMethod getter;
         private readonly SetMethod setter;
 
         public bool CanGet { get { return getter != null; } }
         public bool CanSet { get { return setter != null; } }
-
-        public Writer Writer
-        {
-            get { return new TypedObjectBuilder(TypeDef.Type); }
-        }
 
         public object GetFrom(object source)
         {
@@ -36,6 +31,35 @@ namespace json.Objects
         {
             if (CanSet)
                 setter(target, TypeDef.ConvertToCorrectType(value));
+        }
+
+        public ObjectContainer CreateStructure()
+        {
+            return TypeDef.CreateStructure();
+        }
+
+        public ObjectContainer CreateStructure(string typeIdentifier)
+        {
+            return TypeDef.CreateStructure(typeIdentifier);
+        }
+
+        public ObjectContainer CreateSequence()
+        {
+            return TypeDef.CreateSequence();
+        }
+
+        public ObjectValue CreateValue(object value)
+        {
+            return TypeDef.CreateValue(value);
+        }
+
+        public bool ShouldWriteTypeIdentifier(object value)
+        {
+            if (forceTypeIdentifierSerialization)
+                return true;
+
+            TypeDefinition valueTypeDef = CurrentTypeHandler.GetTypeDefinition(value);
+            return valueTypeDef != TypeDef;
         }
     }
 }

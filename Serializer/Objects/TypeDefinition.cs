@@ -8,13 +8,11 @@ namespace json.Objects
     public abstract class TypeDefinition
     {
         private static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
-
         private readonly TypeCode typeCode;
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
 
         public Type Type { get; private set; }
         public IDictionary<string, PropertyDefinition> Properties { get; private set; }
-
         public List<ConstructorDefinition> Constructors { get; private set; }
 
         protected static readonly ObjectInterfaceProvider ObjectInterfaceProvider = new DynamicMethodProvider();
@@ -28,6 +26,7 @@ namespace json.Objects
         }
 
         private bool? isSerializable;
+
         public virtual bool IsSerializable
         {
             get
@@ -35,17 +34,6 @@ namespace json.Objects
                 return isSerializable ?? (bool)(isSerializable =
                     !Type.IsAbstract
                     && (Type.IsSerializable || HasDefaultConstructor));
-            }
-        }
-
-        private bool? isDeserializable;
-        public virtual bool IsDeserializable
-        {
-            get
-            {
-                return isDeserializable ?? (bool)(isDeserializable =
-                    !Type.IsAbstract
-                    && HasDefaultConstructor);
             }
         }
 
@@ -110,7 +98,7 @@ namespace json.Objects
         private static PreBuildInfo ValidateAndCreatePreBuildInfo(PreBuildAttribute preBuildAttribute, MethodInfo method)
         {
             preBuildAttribute.AssertValidMethod(method);
-            return new PreBuildInfo(preBuildAttribute, ObjectInterfaceProvider.GetFunc(method));
+            return new PreBuildInfo(preBuildAttribute, ObjectInterfaceProvider.GetStaticFunc(method));
         }
 
         /// <summary>
@@ -119,7 +107,7 @@ namespace json.Objects
         public object ConvertToCorrectType(object obj)
         {
             return typeCode.GetTypeCodeType() == TypeCodeType.Number
-                ? System.Convert.ChangeType(obj, typeCode)
+                ? Convert.ChangeType(obj, typeCode)
                 : obj;
         }
 
@@ -134,12 +122,12 @@ namespace json.Objects
             }
         }
 
-        internal PreBuildInfo GetPreBuildInfo(Reader reader)
+        internal PreBuildInfo GetPreBuildInfo(Type readerType)
         {
-            return reader == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ReaderMatches(reader));
+            return readerType == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ReaderMatches(readerType));
         }
 
-        public abstract Output ReadObject(object input, ReaderWriter valueFactory);
+        public abstract void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier);
 
         protected static bool ValueIsSerializable(object value)
         {
@@ -149,28 +137,77 @@ namespace json.Objects
             return typeDef.IsSerializable;
         }
 
-        public virtual Output CreateValue(object value)
-        {
-            if (value == null) return TypedNull.Value;
-            throw new NotAValue(Type);
-        }
-
-        public virtual TypedObject CreateStructure()
+        public virtual ObjectContainer CreateStructure()
         {
             throw new NotAnObject(Type);
         }
 
-        public virtual TypedSequence CreateSequence()
+        public ObjectContainer CreateStructure(string requestedTypeIdentifier)
+        {
+            TypeDefinition requestedTypeDef = CurrentTypeHandler.GetTypeDefinition(requestedTypeIdentifier);
+            return Type.IsAssignableFrom(requestedTypeDef.Type)
+                ? requestedTypeDef.CreateStructure()
+                : CreateStructure();
+        }
+
+        public virtual ObjectContainer CreateSequence()
         {
             throw new NotAnArray(Type);
         }
 
-        public Writer GetWriterForProperty(string name)
+        public virtual bool CanCreateValue(object value)
+        {
+            if (value == null)
+                return true;
+            Type type = value.GetType();
+            return type.IsValueType
+                || type == typeof(string);
+        }
+
+        public virtual ObjectValue CreateValue(object value)
+        {
+            if (value == null) return new DefaultObjectValue(null);
+            throw new NotAValue(Type);
+        }
+
+        // TODO this property stuff should be on StructureDefinition or something - SequenceDefinitions don't have properties
+
+        public virtual ObjectContainer CreateStructureForProperty(string name)
         {
             PropertyDefinition property = Properties.Get(name);
-            if (property != null)
-                return property.Writer;
-            return NullTypedWriter.Instance;
+            return property != null
+                ? property.CreateStructure()
+                : NullObjectStructure.Instance;
+        }
+
+        public ObjectContainer CreateStructureForProperty(string name, string typeIdentifier)
+        {
+            PropertyDefinition property = Properties.Get(name);
+            return property != null
+                ? property.CreateStructure(typeIdentifier)
+                : NullObjectStructure.Instance;
+        }
+
+        public virtual ObjectContainer CreateSequenceForProperty(string name)
+        {
+            PropertyDefinition property = Properties.Get(name);
+            return property != null
+                ? property.CreateSequence()
+                : NullObjectSequence.Instance;
+        }
+
+        public bool CanCreateValueForProperty(string name, object value)
+        {
+            PropertyDefinition property = Properties.Get(name);
+            return property != null && property.TypeDef.CanCreateValue(value);
+        }
+
+        public virtual ObjectValue CreateValueForProperty(string name, object value)
+        {
+            PropertyDefinition property = Properties.Get(name);
+            return property != null
+                ? property.CreateValue(value)
+                : NullObjectValue.Instance;
         }
 
         private class NotAValue : Exception

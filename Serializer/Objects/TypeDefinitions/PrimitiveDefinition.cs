@@ -19,37 +19,14 @@ namespace json.Objects.TypeDefinitions
                 || type == typeof(string);  // string is considered a primitive for purposes of JSON serialization
         }
 
-        public override bool IsDeserializable
+        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
-            get { return true; }
+            writer.Write(input);
         }
 
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override ObjectValue CreateValue(object value)
         {
-            return valueFactory.CreateValue(input);
-        }
-
-        public override Output CreateValue(object value)
-        {
-            switch (value.GetType().GetTypeCodeType())
-            {
-                case TypeCodeType.Object:
-                    return new TypedObjectOutputStructure(value);
-
-                case TypeCodeType.Boolean:
-                    return (bool)value
-                        ? TypedBoolean.True
-                        : TypedBoolean.False;
-
-                case TypeCodeType.String:
-                    return new TypedString((string)value);
-
-                case TypeCodeType.Number:
-                    return new TypedNumber(System.Convert.ToDouble(value));
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            return new DefaultObjectValue(value);
         }
     }
 }

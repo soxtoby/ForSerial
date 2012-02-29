@@ -3,6 +3,13 @@
     public class ObjectParsingOptions
     {
         public bool SerializeAllTypes { get; set; }
-        public bool SerializeAllTypeInformation { get; set; }
+        public TypeInformationLevel SerializeTypeInformation { get; set; }
+    }
+
+    public enum TypeInformationLevel
+    {
+        None,
+        Minimal,
+        All
     }
 }

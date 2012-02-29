@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using json.Json;
 using json.Objects;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace json.Tests.Objects
@@ -37,7 +39,7 @@ namespace json.Tests.Objects
         [Test]
         public void Null()
         {
-            Assert.AreEqual("{\"Property\":null}", ConvertToJson(new NullPropertyClass(), false));
+            Assert.AreEqual("{\"Property\":null}", ConvertToJson(new NullPropertyClass()));
         }
 
         private class NullPropertyClass
@@ -90,7 +92,8 @@ namespace json.Tests.Objects
         [Test]
         public void ObjectArray()
         {
-            Assert.AreEqual("{\"foo\":[{\"bar\":5},{}]}", ConvertToJson(new { foo = new object[] { new { bar = 5 }, new { } } }));
+            ConvertToJson(new { foo = new object[] { new { bar = 5 }, new { } } })
+                .ShouldBe(@"{""foo"":[{""bar"":5},{}]}");
         }
 
         [Test]
@@ -102,140 +105,62 @@ namespace json.Tests.Objects
         [Test]
         public void MixedArray()
         {
-            Assert.AreEqual("{\"foo\":[1,\"two\",{},[]]}", ConvertToJson(new { foo = new object[] { 1, "two", new { }, new object[] { } } }));
+            ConvertToJson(new { foo = new object[] { 1, "two", new { }, new object[] { } } })
+                .ShouldBe(@"{""foo"":[1,""two"",{},[]]}");
         }
 
         [Test]
         public void IEnumerable()
         {
-            string json = Convert.From
-                .Object(new { Property = Enumerable.Range(0, 3) })
-                .ToJson();
-            Assert.AreEqual(@"{""Property"":[0,1,2]}", json);
-        }
-
-        [Test]
-        public void ReadSubStructure()
-        {
-            ReadSubStructureWriter writer = new ReadSubStructureWriter();
-            Convert.From.Object(new { foo = new { bar = "baz" } }, new ObjectParsingOptions { SerializeAllTypes = true }).WithBuilder(writer);
-
-            Assert.AreEqual(@"{""bar"":""baz""}", writer.SubStructureJson);
-        }
-
-        private class ReadSubStructureWriter : TestWriter
-        {
-            public string SubStructureJson { get; set; }
-
-            public override OutputStructure CreateStructure()
-            {
-                return new ReadSubStructureObject(this);
-            }
-        }
-
-        private class ReadSubStructureObject : NullOutputStructure
-        {
-            private readonly ReadSubStructureWriter parentFactory;
-
-            public ReadSubStructureObject(ReadSubStructureWriter parentFactory)
-            {
-                this.parentFactory = parentFactory;
-            }
-
-            public override bool SetType(string typeIdentifier, Reader reader)
-            {
-                parentFactory.SubStructureJson = JsonStringBuilder.GetResult(reader.ReadSubStructure(new JsonStringBuilder()));
-                return true;
-            }
-        }
-
-        [Test]
-        public void ClassWithNoDefaultConstructor_IsNotSerialized()
-        {
-            Assert.AreEqual("{}", Convert.From.Object(new { foo = new DefaultConstructorChallengedClass(5) }).ToJson());
-        }
-
-        private class DefaultConstructorChallengedClass
-        {
-            public DefaultConstructorChallengedClass(int foo)
-            {
-                Foo = foo;
-            }
-
-            public int Foo { get; set; }
+            ConvertToJson(new { Property = Enumerable.Range(0, 3) })
+                .ShouldBe(@"{""Property"":[0,1,2]}");
         }
 
         [Test]
         public void StringObjectDictionary_OutputAsRegularObject()
         {
-            var json = Convert.From.Object(new Dictionary<string, object> { { "foo", "bar" } }).ToJson();
-            Assert.AreEqual(@"{""foo"":""bar""}", json);
+            ConvertToJson(new Dictionary<string, object> { { "foo", "bar" } })
+                .ShouldBe(@"{""foo"":""bar""}");
         }
 
         [Test]
-        public void MaintainReferences()
+        public void MaintainObjectReferences()
         {
-            SameReferenceTwice foo = new SameReferenceTwice(new object());
-            var testBuilder = new WatchForReferenceBuilder();
-            Convert.From.Object(foo).WithBuilder(testBuilder);
+            Writer writer = Substitute.For<Writer>();
 
-            Assert.NotNull(testBuilder.ReferencedObject);
+            ObjectReader.Read(new SameReferenceTwice(new object()), writer);
+
+            writer.Received().WriteReference(1);
         }
 
         [Test]
-        public void ValueTypesNotReferenced()
+        public void MaintainJsonDictionaryReferences()
         {
-            SameReferenceTwice obj = new SameReferenceTwice(new KeyValuePair<int, int>(1, 2));
-            var testBuilder = new WatchForReferenceBuilder();
-            Convert.From.Object(obj).WithBuilder(testBuilder);
+            Writer writer = Substitute.For<Writer>();
 
-            Assert.IsNull(testBuilder.ReferencedObject);
+            ObjectReader.Read(new SameReferenceTwice(new Dictionary<string, string>()), writer);
+
+            writer.Received().WriteReference(1);
+        }
+
+        [Test]
+        public void GuidIsNotReferenced()
+        {
+            Writer writer = Substitute.For<Writer>();
+
+            ObjectReader.Read(new SameReferenceTwice(Guid.NewGuid()), writer);
+
+            writer.DidNotReceive().WriteReference(Arg.Any<int>());
         }
 
         [Test]
         public void StringsNotReferenced()
         {
-            SameReferenceTwice obj = new SameReferenceTwice("foo");
-            var testBuilder = new WatchForReferenceBuilder();
-            Convert.From.Object(obj).WithBuilder(testBuilder);
+            Writer writer = Substitute.For<Writer>();
 
-            Assert.IsNull(testBuilder.ReferencedObject);
-        }
+            ObjectReader.Read(new SameReferenceTwice("foo"), writer);
 
-        [Test]
-        public void CreatePropertyObject()
-        {
-            var valueFactory = new CustomCreateWriter();
-            Convert.From.Object(new { foo = new object() }, new ObjectParsingOptions { SerializeAllTypes = true }).WithBuilder(valueFactory);
-
-            Assert.AreEqual(1, valueFactory.ObjectsCreatedFromProperties);
-        }
-
-        [Test]
-        public void CreatePropertyArray()
-        {
-            var valueFactory = new CustomCreateWriter();
-            Convert.From.Object(new { foo = new object[] { } }, new ObjectParsingOptions { SerializeAllTypes = true }).WithBuilder(valueFactory);
-
-            Assert.AreEqual(1, valueFactory.ArraysCreatedFromProperties);
-        }
-
-        [Test]
-        public void CreateArrayObject()
-        {
-            var valueFactory = new CustomCreateWriter();
-            Convert.From.Object(new[] { new object() }).WithBuilder(valueFactory);
-
-            Assert.AreEqual(1, valueFactory.ObjectsCreatedFromArrays);
-        }
-
-        [Test]
-        public void CreateArrayArray()
-        {
-            var valueFactory = new CustomCreateWriter();
-            Convert.From.Object(new[] { new object[] { } }).WithBuilder(valueFactory);
-
-            Assert.AreEqual(1, valueFactory.ArraysCreatedFromArrays);
+            writer.DidNotReceive().WriteReference(Arg.Any<int>());
         }
 
         [Test]
@@ -272,34 +197,21 @@ namespace json.Tests.Objects
         [Test]
         public void DateTimeParsedToNumber()
         {
-            DateTime dateTime = new DateTime(2001, 2, 3, 4, 5, 6, 7);
-            Assert.AreEqual(@"{""foo"":981137106007}", ConvertToJson(new { foo = dateTime }));
+            ConvertToJson(new DateTime(2001, 2, 3, 4, 5, 6, 7))
+                .ShouldBe("981137106007");
         }
 
         [Test]
-        public void ValueTypeParsedToValue()
+        public void ValueIsWrittenAsValueIfWriterCanWriteIt()
         {
-            Convert.From.Object(new ValueType()).WithBuilder(new ValueOnlyWriter());
-        }
+            Writer writer = Substitute.For<Writer>();
+            writer.CanWrite(Arg.Any<object>()).Returns(true);
+            object obj = new object();
 
-        private struct ValueType { }
+            ObjectReader.Read(obj, writer);
 
-        private class ValueOnlyWriter : TestWriter
-        {
-            public override OutputStructure CreateStructure()
-            {
-                throw new AssertionException("Tried to create an object.");
-            }
-
-            public override SequenceOutput CreateSequence()
-            {
-                throw new AssertionException("Tried to create an array.");
-            }
-
-            public override OutputStructure CreateReference(OutputStructure outputStructure)
-            {
-                throw new AssertionException("Tried to create a reference.");
-            }
+            writer.Received().Write(obj);
+            writer.DidNotReceive().BeginStructure(Arg.Any<Type>());
         }
 
         [Test]
@@ -320,8 +232,8 @@ namespace json.Tests.Objects
         {
             using (CurrentTypeHandler.Override(new CustomTypeHandler()))
             {
-                string json = Convert.From.Object(new { foo = 5 }, new ObjectParsingOptions { SerializeAllTypes = true }).ToTypedJson();
-                Assert.AreEqual(@"{""_type"":""foobar"",""foo"":5}", json);
+                ConvertToJson(new { foo = 5 }, TypeInformationLevel.All)
+                    .ShouldBe(@"{""_type"":""foobar"",""foo"":5}");
             }
         }
 
@@ -346,89 +258,89 @@ namespace json.Tests.Objects
         [Test]
         public void InterfacePropertyTypeSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new InterfacePropertyClass { Property = new ConcreteClass { Value = 1 } });
-            Assert.AreEqual(@"{""_type"":""InterfacePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":1}}", json);
+            ConvertToSimpleTypeJson(new InterfacePropertyClass { Property = new ConcreteClass { Value = 1 } })
+                .ShouldBe(@"{""_type"":""InterfacePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":1}}");
         }
 
         [Test]
         public void AbstractTypePropertyTypeSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new AbstractTypePropertyClass { Property = new ConcreteClass { Value = 2 } });
-            Assert.AreEqual(@"{""_type"":""AbstractTypePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":2}}", json);
+            ConvertToSimpleTypeJson(new AbstractTypePropertyClass { Property = new ConcreteClass { Value = 2 } })
+                .ShouldBe(@"{""_type"":""AbstractTypePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":2}}");
         }
 
         [Test]
         public void KnownTypeNotSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new ConcreteTypePropertyClass { Property = new ConcreteClass { Value = 3 } });
-            Assert.AreEqual(@"{""_type"":""ConcreteTypePropertyClass"",""Property"":{""Value"":3}}", json);
+            ConvertToSimpleTypeJson(new ConcreteTypePropertyClass { Property = new ConcreteClass { Value = 3 } })
+                .ShouldBe(@"{""_type"":""ConcreteTypePropertyClass"",""Property"":{""Value"":3}}");
         }
 
         [Test]
         public void MarkedKnownTypePropertyTypeSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new MarkedConcreteTypePropertyClass { Property = new ConcreteClass { Value = 4 } });
-            Assert.AreEqual(@"{""_type"":""MarkedConcreteTypePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":4}}", json);
+            ConvertToSimpleTypeJson(new MarkedConcreteTypePropertyClass { Property = new ConcreteClass { Value = 4 } })
+                .ShouldBe(@"{""_type"":""MarkedConcreteTypePropertyClass"",""Property"":{""_type"":""ConcreteClass"",""Value"":4}}");
         }
 
         [Test]
         public void KnownTypeEnumerablePropertyTypeNotSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new ConcreteTypeEnumerablePropertyClass { Property = new List<ConcreteClass> { new ConcreteClass { Value = 5 } } });
-            Assert.AreEqual(@"{""_type"":""ConcreteTypeEnumerablePropertyClass"",""Property"":[{""Value"":5}]}", json);
+            ConvertToSimpleTypeJson(new ConcreteTypeEnumerablePropertyClass { Property = new List<ConcreteClass> { new ConcreteClass { Value = 5 } } })
+                .ShouldBe(@"{""_type"":""ConcreteTypeEnumerablePropertyClass"",""Property"":[{""Value"":5}]}");
         }
 
         [Test]
         public void MarkedKnownTypeEnumerablePropertyTypeSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new MarkedConcreteTypeEnumerablePropertyClass { Property = new List<ConcreteClass> { new ConcreteClass { Value = 6 } } });
-            Assert.AreEqual(@"{""_type"":""MarkedConcreteTypeEnumerablePropertyClass"",""Property"":[{""_type"":""ConcreteClass"",""Value"":6}]}", json);
+            ConvertToSimpleTypeJson(new MarkedConcreteTypeEnumerablePropertyClass { Property = new List<ConcreteClass> { new ConcreteClass { Value = 6 } } })
+                .ShouldBe(@"{""_type"":""MarkedConcreteTypeEnumerablePropertyClass"",""Property"":[{""_type"":""ConcreteClass"",""Value"":6}]}");
         }
 
         [Test]
         public void KnownTypeDictionaryTypesNotSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new ConcreteTypeDictionaryPropertyClass
-            {
-                Property = new Dictionary<ConcreteClass, ConcreteClass>
+            ConvertToSimpleTypeJson(new ConcreteTypeDictionaryPropertyClass
+                {
+                    Property = new Dictionary<ConcreteClass, ConcreteClass>
                         {
                             { new ConcreteClass { Value = 7 }, new ConcreteClass { Value = 8 } }
                         }
-            });
-            Assert.AreEqual(@"{""_type"":""ConcreteTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""Value"":7},""Value"":{""Value"":8}}]}", json);
+                })
+                .ShouldBe(@"{""_type"":""ConcreteTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""Value"":7},""Value"":{""Value"":8}}]}");
         }
 
         //[Test]
         public void MarkedKnownTypeKeyDictionaryTypesSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new MarkedConcreteKeyTypeDictionaryPropertyClass
-            {
-                Property = new Dictionary<ConcreteClass, ConcreteClass>
+            ConvertToSimpleTypeJson(new MarkedConcreteKeyTypeDictionaryPropertyClass
+                {
+                    Property = new Dictionary<ConcreteClass, ConcreteClass>
                         {
                             { new ConcreteClass { Value = 9 }, new ConcreteClass { Value = 10 } }
                         }
-            });
-            Assert.AreEqual(@"{""_type"":""MarkedConcreteKeyTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""_type"":""ConcreteClass"",""Value"":9},""Value"":{""Value"":10}}]}", json);
+                })
+                .ShouldBe(@"{""_type"":""MarkedConcreteKeyTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""_type"":""ConcreteClass"",""Value"":9},""Value"":{""Value"":10}}]}");
         }
 
         //[Test]
         public void MarkedKnownTypeValueDictionaryTypeSerialized()
         {
-            string json = ConvertToSimpleTypeJson(new MarkedConcreteValueTypeDictionaryPropertyClass
+            ConvertToSimpleTypeJson(new MarkedConcreteValueTypeDictionaryPropertyClass
                 {
                     Property = new Dictionary<ConcreteClass, ConcreteClass>
                         {
                             { new ConcreteClass { Value = 11 }, new ConcreteClass { Value = 12 } }
                         }
-                });
-            Assert.AreEqual(@"{""_type"":""MarkedConcreteValueTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""Value"":11},""Value"":{""_type"":""ConcreteClass"",""Value"":12}}]}", json);
+                })
+                .ShouldBe(@"{""_type"":""MarkedConcreteValueTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""Value"":11},""Value"":{""_type"":""ConcreteClass"",""Value"":12}}]}");
         }
 
         private static string ConvertToSimpleTypeJson(object obj)
         {
             using (CurrentTypeHandler.Override(new SimpleTypeNameTypeHandler()))
             {
-                return Convert.From.Object(obj).ToTypedJson();
+                return ConvertToJson(obj, TypeInformationLevel.Minimal);
             }
         }
 
@@ -515,10 +427,13 @@ namespace json.Tests.Objects
         }
 
 
-        private static string ConvertToJson(object obj, bool serializeAllTypes = true)
+        private static string ConvertToJson(object obj, TypeInformationLevel serializeTypeInformation = TypeInformationLevel.None)
         {
-            var options = new ObjectParsingOptions { SerializeAllTypes = serializeAllTypes };
-            return Convert.From.Object(obj, options).ToJson();
+            var options = new ObjectParsingOptions { SerializeAllTypes = true, SerializeTypeInformation = serializeTypeInformation };
+            StringWriter stringWriter = new StringWriter();
+            JsonStringWriter jsonWriter = new JsonStringWriter(stringWriter);
+            ObjectReader.Read(obj, jsonWriter, options);
+            return stringWriter.ToString();
         }
     }
 }

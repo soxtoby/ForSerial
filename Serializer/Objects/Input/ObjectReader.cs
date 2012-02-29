@@ -3,70 +3,67 @@ using System.Collections.Generic;
 
 namespace json.Objects
 {
-    public partial class ObjectReader : Reader
+    public class ObjectReader
     {
+        private readonly Writer writer;
         private readonly ObjectParsingOptions options;
-        private object currentObject;
-        private readonly StateStack<ReaderWriter> readerWriter;
-        private readonly Dictionary<object, OutputStructure> objectReferences = new Dictionary<object, OutputStructure>(new ReferenceEqualityComparer<object>());
+        private readonly Dictionary<object, int> stuctureReferences = new Dictionary<object, int>();
 
         private ObjectReader(Writer writer, ObjectParsingOptions options)
-            : base(writer)
         {
+            if (writer == null) throw new ArgumentNullException("writer");
+            if (options == null) throw new ArgumentNullException("options");
+
+            this.writer = writer;
             this.options = options;
-            readerWriter = new StateStack<ReaderWriter>(new ObjectReaderWriter(this));
         }
 
-        public static Output Read(object obj, Writer valueFactory, ObjectParsingOptions options = null)
+        public bool SerializeAllTypes
         {
-            ObjectReader reader = new ObjectReader(valueFactory, options ?? new ObjectParsingOptions());
-
-            return reader.ReadValue(obj);
+            get { return options.SerializeAllTypes; }
         }
 
-        public override Output ReadSubStructure(Writer subWriter)
+        public static void Read(object obj, Writer writer, ObjectParsingOptions options = null)
         {
-            return Read(currentObject, subWriter, options).AsStructure();
+            ObjectReader reader = new ObjectReader(writer, options ?? new ObjectParsingOptions());
+            reader.Read(obj);
         }
 
-        private Output ReadValue(object input)
+        private void Read(object input)
         {
-            if (input == null)
-                return writer.Current.CreateValue(null);
+            Read(input, options.SerializeTypeInformation != TypeInformationLevel.None);
+        }
 
-            Type inputType = input.GetType();
-
-            Output output = null;
-
-            if (IsValueType(inputType))
-                output = writer.Current.CreateValue(input);
-
-            if (output == null)
+        public void Read(object input, bool requestTypeIdentification)
+        {
+            if (writer.CanWrite(input))
             {
-                OutputStructure previouslyParsedObject = objectReferences.Get(input);
-                output = previouslyParsedObject == null
-                    ? ReadObject(input)
-                    : ReferenceObject(previouslyParsedObject);
+                writer.Write(input);
             }
-
-            return output;
+            else
+            {
+                if (stuctureReferences.ContainsKey(input))
+                    writer.WriteReference(stuctureReferences[input]);
+                else
+                    ReadObject(input, ShouldWriteTypeIdentification(requestTypeIdentification));
+            }
         }
 
-        private static bool IsValueType(Type type)
+        private bool ShouldWriteTypeIdentification(bool typeIdentifierRequested)
         {
-            return type.IsValueType || type == typeof(string);
+            return options.SerializeTypeInformation == TypeInformationLevel.All
+                || options.SerializeTypeInformation == TypeInformationLevel.Minimal && typeIdentifierRequested;
         }
 
-        private Output ReadObject(object input)
+        private void ReadObject(object input, bool writerTypeIdentifier)
         {
-            currentObject = input;
             TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(input.GetType());
-            return typeDef.ReadObject(input, readerWriter.Current);
+            typeDef.ReadObject(input, this, writer, writerTypeIdentifier);
         }
 
-        private OutputStructure ReferenceObject(OutputStructure outputStructure)
+        public void AddStructureReference(object obj)
         {
-            return writer.Current.CreateReference(outputStructure);
+            stuctureReferences[obj] = stuctureReferences.Count;
         }
     }
 }

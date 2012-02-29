@@ -13,22 +13,17 @@ namespace json.Objects.TypeDefinitions
                 : null;
         }
 
-        public override bool IsDeserializable
-        {
-            get { return true; }
-        }
-
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
             Guid? guid = input as Guid?;
-            return guid == null
+            writer.Write(guid == null
                 ? null
-                : valueFactory.CreateValue(guid.ToString());
+                : guid.ToString());
         }
 
-        public override Output CreateValue(object value)
+        public override ObjectValue CreateValue(object value)
         {
-            return new TypedObjectOutputStructure(new Guid(value.ToString()));
+            return new DefaultObjectValue(new Guid(value.ToString()));
         }
     }
 }

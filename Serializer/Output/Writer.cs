@@ -1,10 +1,17 @@
+using System;
+
 namespace json
 {
     public interface Writer
     {
-        Output CreateValue(object value);
-        OutputStructure CreateStructure();
-        SequenceOutput CreateSequence();
-        OutputStructure CreateReference(OutputStructure outputStructure);
+        bool CanWrite(object value);
+        void Write(object value);
+        void BeginStructure(Type readerType);
+        void BeginStructure(string typeIdentifier, Type readerType);
+        void EndStructure();
+        void AddProperty(string name);
+        void BeginSequence();
+        void EndSequence();
+        void WriteReference(int referenceIndex);
     }
 }

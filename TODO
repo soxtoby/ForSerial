@@ -1,13 +1,16 @@
-Make PartiallyTypedJsonStringBuilder that only adds type information when necessary.
- - Should automatically add type info when source is interface or abstract
- - Add attribute that forces type information.
+Clean up ObjectWriter - all those checks for PreBuildWriter are crap.
+
+
 Allow override of type resolution.
 Test duplicate value types - will probably incorrectly create references at the moment.
-Generate and cache DynamicMethods for getting and setting properties. http://www.codeproject.com/KB/cs/Dynamic_Code_Generation.aspx
 Test nullable value type properties.
 Turn all singleton properties into public readonly fields.
-Don't require output to be an object. Get rid of AsStructure if possible.
 Simple struct serialization with ToString & Parse.
+Support IDictionary - detect map or KeyValuePair list.
+Better object construction
+ - Avoid passing in properties that can be set directly.
+ - Once property has been passed in, don't set it again.
+Add tests for static func method generation.
 
 New Serialization Rules:
  - Defaults

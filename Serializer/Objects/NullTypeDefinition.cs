@@ -4,15 +4,11 @@ namespace json.Objects
     {
         private NullTypeDefinition() : base(null) { }
 
-        private static NullTypeDefinition instance;
-        public static NullTypeDefinition Instance
-        {
-            get { return instance ?? (instance = new NullTypeDefinition()); }
-        }
+        public static readonly NullTypeDefinition Instance = new NullTypeDefinition();
 
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
-            return valueFactory.CreateValue(null);
+            writer.Write(null);
         }
     }
 }

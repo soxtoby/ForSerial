@@ -2,12 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace json.Objects.TypeDefinitions
 {
     public class JsonDictionaryDefinition : TypeDefinition
     {
-        private JsonDictionaryDefinition(Type dictionaryType) : base(dictionaryType) { }
+        private JsonDictionaryDefinition(Type dictionaryType)
+            : base(dictionaryType)
+        {
+            KeyTypeDef = CurrentTypeHandler.GetTypeDefinition(dictionaryType.GetGenericInterfaceType(typeof(IDictionary<,>), 0));
+            ValueTypeDef = CurrentTypeHandler.GetTypeDefinition(dictionaryType.GetGenericInterfaceType(typeof(IDictionary<,>), 1));
+        }
+
+        public TypeDefinition ValueTypeDef { get; set; }
+        public TypeDefinition KeyTypeDef { get; set; }
 
         internal static JsonDictionaryDefinition CreateDictionaryDefinition(Type type)
         {
@@ -24,32 +33,57 @@ namespace json.Objects.TypeDefinitions
                 || typeCodeType == TypeCodeType.Number;
         }
 
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
             IDictionary dictionary = input as IDictionary;
-            if (dictionary == null) return null;
+            if (dictionary == null) return;
 
-            OutputStructure output = valueFactory.CreateStructure(input);
+            reader.AddStructureReference(input);
 
-            Type valueType = Type.GetGenericInterfaceType(typeof(IDictionary<,>), 1);
-            TypeDefinition valueTypeDef = CurrentTypeHandler.GetTypeDefinition(valueType);
+            if (writeTypeIdentifier)
+                writer.BeginStructure(CurrentTypeHandler.GetTypeIdentifier(Type), reader.GetType());
+            else
+                writer.BeginStructure(Type);
 
             foreach (object key in dictionary.Keys)
             {
                 // Convert.ToString is in case the keys are numbers, which are represented
                 // as strings when used as keys, but can be indexed with numbers in JavaScript
-                string name = System.Convert.ToString(key, CultureInfo.InvariantCulture);
+                string name = Convert.ToString(key, CultureInfo.InvariantCulture);
                 object value = dictionary[key];
 
-                valueFactory.ReadProperty(valueTypeDef, name, value, output);
+                writer.AddProperty(name);
+                reader.Read(value, CurrentTypeHandler.GetTypeDefinition(value) != ValueTypeDef);
             }
 
-            return output;
+            writer.EndStructure();
         }
 
-        public override TypedObject CreateStructure()
+        public override ObjectContainer CreateStructure()
         {
-            return new TypedDictionary(this);
+            return new DictionaryStructure(this);
+        }
+
+        public override ObjectContainer CreateStructureForProperty(string name)
+        {
+            return ValueTypeDef.CreateStructure();
+        }
+
+        public override ObjectContainer CreateSequenceForProperty(string name)
+        {
+            return ValueTypeDef.CreateSequence();
+        }
+
+        public override ObjectValue CreateValueForProperty(string name, object value)
+        {
+            return ValueTypeDef.CreateValue(value);
+        }
+
+        public object ConstructNew()
+        {
+            ConstructorDefinition constructor = Constructors.FirstOrDefault(c => c.Parameters.None());
+            return constructor == null ? null
+                : constructor.Construct(new object[] { });
         }
     }
 }

@@ -13,21 +13,28 @@ namespace json.Objects.TypeDefinitions
             return new DefaultTypeDefinition(type);
         }
 
-        public override Output ReadObject(object input, ReaderWriter valueFactory)
+        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
-            OutputStructure output = valueFactory.CreateStructure(input);
+            reader.AddStructureReference(input);
 
-            foreach (KeyValuePair<PropertyDefinition, object> property in GetSerializableProperties(input, valueFactory.SerializeAllTypes))
+
+            if (writeTypeIdentifier)
+                writer.BeginStructure(CurrentTypeHandler.GetTypeIdentifier(Type), reader.GetType());
+            else
+                writer.BeginStructure(Type);
+
+            foreach (KeyValuePair<PropertyDefinition, object> property in GetSerializableProperties(input, reader.SerializeAllTypes))
             {
-                valueFactory.ReadProperty(input, property.Key, output);
+                writer.AddProperty(property.Key.Name);
+                reader.Read(property.Value, property.Key.ShouldWriteTypeIdentifier(property.Value));
             }
 
-            return output;
+            writer.EndStructure();
         }
 
-        public override TypedObject CreateStructure()
+        public override ObjectContainer CreateStructure()
         {
-            return new TypedRegularObject(this);
+            return new DefaultObjectStructure(this);
         }
 
         private IEnumerable<KeyValuePair<PropertyDefinition, object>> GetSerializableProperties(object obj, bool serializeAllTypes)

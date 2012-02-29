@@ -6,19 +6,19 @@ namespace json.Objects
     {
         public GetMethod GetPropertyGetter(PropertyInfo property)
         {
-            MethodInfo getMethod = property.GetGetMethod();
+            MethodInfo getMethod = property.GetGetMethod(true);
             return s => getMethod.Invoke(s, new object[] { });
         }
 
         public SetMethod GetPropertySetter(PropertyInfo property)
         {
-            MethodInfo setMethod = property.GetSetMethod();
+            MethodInfo setMethod = property.GetSetMethod(true);
             return (t, v) => setMethod.Invoke(t, new[] { v });
         }
 
-        public FuncMethod GetFunc(MethodInfo method)
+        public StaticFuncMethod GetStaticFunc(MethodInfo method)
         {
-            return (o, args) => method.Invoke(o, args);
+            return args => method.Invoke(null, args);
         }
 
         public ActionMethod GetAction(MethodInfo method)

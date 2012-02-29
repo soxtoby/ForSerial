@@ -39,25 +39,28 @@
     <AssemblyOriginatorKeyFile>..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NSubstitute">
+      <HintPath>..\packages\NSubstitute.1.3.0.0\lib\NET35\NSubstitute.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.5.10.11092\lib\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="JsonObjects\Input\JsonObjectReaderTests.cs" />
-    <Compile Include="JsonObjects\Output\JsonObjectBuilderTests.cs" />
+    <Compile Include="JsonObjects\Output\JsonObjectWriterTests.cs" />
     <Compile Include="Json\Input\JsonReaderTests.cs" />
     <Compile Include="Json\Input\ScannerTests.cs" />
-    <Compile Include="Json\Output\JsonStringBuilderTests.cs" />
+    <Compile Include="Json\Output\JsonStringWriterTests.cs" />
     <Compile Include="Objects\Input\ObjectReaderTests.cs" />
     <Compile Include="Objects\Output\DynamicMethodProviderStructTests.cs" />
     <Compile Include="Objects\Output\DynamicMethodProviderClassTests.cs" />
-    <Compile Include="Objects\Output\TypedObjectBuilderTests.cs" />
-    <Compile Include="Objects\Output\TypedObjectConstructorOnlyObjectTests.cs" />
+    <Compile Include="Objects\Output\ObjectWriterTests.cs" />
     <Compile Include="Objects\TypeDefinitionTests.cs" />
-    <Compile Include="Output\TestOutputs.cs" />
+    <Compile Include="Output\SameReferenceTwice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionTesting.cs" />
+    <Compile Include="EasyAssertions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

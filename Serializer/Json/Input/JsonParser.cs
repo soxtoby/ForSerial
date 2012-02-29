@@ -1,19 +1,25 @@
+using System;
 using System.Collections.Generic;
 
 namespace json.Json
 {
-    internal class JsonParser : Reader
+    internal class JsonParser
     {
+        private readonly Writer writer;
         private IEnumerator<Token> tokenEnumerator;
-        private readonly List<OutputStructure> objectReferences = new List<OutputStructure>();
 
-        private JsonParser(Writer writer) : base(writer) { }
+        private JsonParser(Writer writer)
+        {
+            if (writer == null) throw new ArgumentNullException("writer");
 
-        public static Output Parse(string json, Writer valueFactory)
+            this.writer = writer;
+        }
+
+        public static void Parse(string json, Writer writer)
         {
             try
             {
-                return Parse(Scanner.Scan(json), valueFactory);
+                Parse(Scanner.Scan(json), writer);
             }
             catch (ParseException e)
             {
@@ -21,16 +27,16 @@ namespace json.Json
             }
         }
 
-        private static Output Parse(IEnumerable<Token> tokens, Writer valueFactory)
+        private static void Parse(IEnumerable<Token> tokens, Writer writer)
         {
-            JsonParser parser = new JsonParser(valueFactory);
-            return parser.ParseTokens(tokens);
+            JsonParser parser = new JsonParser(writer);
+            parser.ParseTokens(tokens);
         }
 
-        public override Output ReadSubStructure(Writer subWriter)
+        public void ReadSubStructure(Writer subWriter)
         {
             MoveNextIfSymbol(",");
-            return Parse(GetSubObjectTokens(), subWriter);
+            Parse(GetSubObjectTokens(), subWriter);
         }
 
         private IEnumerable<Token> GetSubObjectTokens()
@@ -43,42 +49,46 @@ namespace json.Json
                 yield return tokenEnumerator.Current;
         }
 
-        private Output ParseTokens(IEnumerable<Token> tokens)
+        private void ParseTokens(IEnumerable<Token> tokens)
         {
             using (tokenEnumerator = tokens.GetEnumerator())
             {
                 NextToken();
 
-                return CurrentToken.TokenType == TokenType.EOF
-                    ? null
-                    : ParseValue();
+                if (CurrentToken.TokenType != TokenType.EOF)
+                    ParseValue();
             }
         }
 
-        private Output ParseValue()
+        private void ParseValue()
         {
             switch (CurrentToken.TokenType)
             {
                 case TokenType.Numeric:
-                    return ParseNumber();
+                    ParseNumber();
+                    return;
 
                 case TokenType.String:
-                    return ParseString();
+                    ParseString();
+                    return;
 
                 case TokenType.Word:
                     switch (CurrentToken.StringValue)
                     {
                         case "true":
                             NextToken();
-                            return writer.Current.CreateValue(true);
+                            writer.Write(true);
+                            return;
 
                         case "false":
                             NextToken();
-                            return writer.Current.CreateValue(false);
+                            writer.Write(false);
+                            return;
 
                         case "null":
                             NextToken();
-                            return writer.Current.CreateValue(null);
+                            writer.Write(null);
+                            return;
 
                         default:
                             throw new ParseException("Expected value.", CurrentToken);
@@ -88,9 +98,11 @@ namespace json.Json
                     switch (CurrentToken.StringValue)
                     {
                         case "{":
-                            return ParseObject();
+                            ParseObject();
+                            return;
                         case "[":
-                            return ParseArray();
+                            ParseArray();
+                            return;
                         default:
                             throw new ParseException("Expected value.", CurrentToken);
                     }
@@ -100,35 +112,31 @@ namespace json.Json
             }
         }
 
-        private Output ParseNumber()
+        private void ParseNumber()
         {
             if (CurrentToken.TokenType != TokenType.Numeric)
                 throw new ParseException("Expected number.", CurrentToken);
 
-            Output number = writer.Current.CreateValue(CurrentToken.NumericValue);
+            writer.Write(CurrentToken.NumericValue);
             NextToken();
-            return number;
         }
 
-        private Output ParseString()
+        private void ParseString()
         {
             if (CurrentToken.TokenType != TokenType.String)
                 throw new ParseException("Expected string.", CurrentToken);
 
-            Output str = writer.Current.CreateValue(CurrentToken.StringValue);
+            writer.Write(CurrentToken.StringValue);
             NextToken();
-            return str;
         }
 
-        private OutputStructure ParseObject()
+        private void ParseObject()
         {
             ExpectSymbol("{");
 
-            OutputStructure obj;
-
             if (IsSymbol("}"))
             {
-                obj = writer.Current.CreateStructure();
+                writer.BeginStructure(GetType());
             }
             else
             {
@@ -143,28 +151,21 @@ namespace json.Json
                     propertyParser.ParsePropertyValue(name);
 
                     if (propertyParser.ReturnImmediately)
-                        return propertyParser.OutputStructure;
+                        return;
 
                     propertyParser = propertyParser.NextPropertyParser;
 
                 } while (MoveNextIfSymbol(","));
-
-                obj = propertyParser.OutputStructure;
             }
 
             ExpectSymbol("}");
 
-            return obj;
+            writer.EndStructure();
         }
 
         private abstract class PropertyParser
         {
             protected readonly JsonParser parser;
-
-            /// <summary>
-            /// The OutputStructure to be returned.
-            /// </summary>
-            public OutputStructure OutputStructure { get; protected set; }
 
             /// <summary>
             /// Set to True if OutputStructure should be returned immediately without parsing anymore properties.
@@ -195,37 +196,29 @@ namespace json.Json
             {
                 if (name == "_ref")
                 {
-                    OutputStructure = parser.ReferenceObject();
-                    NextPropertyParser = new IgnorePropertyParser(parser, OutputStructure);
-                    return;
+                    parser.ReferenceObject();
+                    NextPropertyParser = new IgnorePropertyParser(parser);
                 }
-
-                OutputStructure = parser.writer.Current.CreateStructure();
-
-                if (name == "_type")
+                else if (name == "_type")
                 {
-                    if (parser.SetObjectType(OutputStructure))
-                        ReturnImmediately = true; // Object was pre-built
-                    else
-                        NextPropertyParser = new RegularPropertyParser(parser, OutputStructure);
+                    parser.BeginTypedStructure();
+                    NextPropertyParser = new RegularPropertyParser(parser);
                 }
                 else
                 {
-                    NextPropertyParser = new RegularPropertyParser(parser, OutputStructure);
+                    parser.BeginStructure();
+                    NextPropertyParser = new RegularPropertyParser(parser);
                     NextPropertyParser.ParsePropertyValue(name);
                 }
-
-                parser.objectReferences.Add(OutputStructure);
             }
         }
 
         private class IgnorePropertyParser : PropertyParser
         {
-            public IgnorePropertyParser(JsonParser parser, OutputStructure outputStructure)
+            public IgnorePropertyParser(JsonParser parser)
                 : base(parser)
             {
                 NextPropertyParser = this;
-                OutputStructure = outputStructure;
             }
 
             public override void ParsePropertyValue(string name) { }
@@ -233,30 +226,34 @@ namespace json.Json
 
         private class RegularPropertyParser : PropertyParser
         {
-            public RegularPropertyParser(JsonParser parser, OutputStructure outputStructure)
+            public RegularPropertyParser(JsonParser parser)
                 : base(parser)
             {
                 NextPropertyParser = this;
-                OutputStructure = outputStructure;
             }
 
             public override void ParsePropertyValue(string name)
             {
-                using (parser.UseObjectPropertyContext(OutputStructure, name))
-                    parser.ParseValue().AddToStructure(OutputStructure, name);
+                parser.writer.AddProperty(name);
+                parser.ParseValue();
             }
         }
 
-        private OutputStructure ReferenceObject()
+        private void ReferenceObject()
         {
-            int referenceId = System.Convert.ToInt32(GetNumber());
-            return writer.Current.CreateReference(objectReferences[referenceId]);
+            int referenceId = Convert.ToInt32(GetNumber());
+            writer.WriteReference(referenceId);
         }
 
-        private bool SetObjectType(OutputStructure obj)
+        private void BeginStructure()
+        {
+            writer.BeginStructure(GetType());
+        }
+
+        private void BeginTypedStructure()
         {
             string typeIdentifier = GetString();
-            return obj.SetType(typeIdentifier, this);
+            writer.BeginStructure(typeIdentifier, GetType());
         }
 
         private string GetString()
@@ -283,26 +280,23 @@ namespace json.Json
             return value;
         }
 
-        private SequenceOutput ParseArray()
+        private void ParseArray()
         {
             ExpectSymbol("[");
 
-            SequenceOutput array = writer.Current.CreateSequence();
+            writer.BeginSequence();
 
             if (!IsSymbol("]"))
             {
-                using (UseArrayContext(array))
+                do
                 {
-                    do
-                    {
-                        ParseValue().AddToSequence(array);
-                    } while (MoveNextIfSymbol(","));
-                }
+                    ParseValue();
+                } while (MoveNextIfSymbol(","));
             }
 
             ExpectSymbol("]");
 
-            return array;
+            writer.EndSequence();
         }
 
         private void ExpectSymbol(string value)

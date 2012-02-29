@@ -25,6 +25,11 @@ namespace json.Objects
             return Current.GetTypeIdentifier(type);
         }
 
+        public static TypeDefinition GetTypeDefinition(object value)
+        {
+            return GetTypeDefinition(value == null ? null : value.GetType());
+        }
+
         public static TypeDefinition GetTypeDefinition(string typeIdentifier)
         {
             return Current.GetTypeDefinition(typeIdentifier);
