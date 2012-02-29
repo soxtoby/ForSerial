@@ -77,6 +77,7 @@
     <Compile Include="JsonObjects\Output\JsonValue.cs" />
     <Compile Include="JsonObjects\PreDeserializeAttribute.cs" />
     <Compile Include="Json\Output\JsonStringWriter.cs" />
+    <Compile Include="Json\Output\PrettyPrintingJsonStringWriter.cs" />
     <Compile Include="Objects\ConstructorDefinition.cs" />
     <Compile Include="Objects\DefaultTypeHandler.cs" />
     <Compile Include="Objects\DynamicMethodProvider.cs" />

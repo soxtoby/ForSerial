@@ -8,6 +8,7 @@ namespace json.Json
     public class JsonStringWriter : Writer
     {
         private readonly TextWriter json;
+        protected TextWriter Json { get { return json; } }
         private bool suppressDelimiter = true;
 
         public JsonStringWriter(TextWriter textWriter)
@@ -48,70 +49,48 @@ namespace json.Json
             }
         }
 
-        private void WriteString(string value)
-        {
-            json.Write('"');
-            json.Write(EscapeForJson(value));
-            json.Write('"');
-        }
-
-        private void WriteNumber(double value)
-        {
-            json.Write(value);
-        }
-
-        private void WriteBoolean(bool value)
-        {
-            json.Write(value ? "true" : "false");
-        }
-
-        private void WriteNull()
-        {
-            json.Write("null");
-        }
-
-        public void BeginStructure(Type readerType)
+        public virtual void BeginStructure(Type readerType)
         {
             Delimit();
-            json.Write('{');
+            Json.Write('{');
             suppressDelimiter = true;
         }
 
-        public void BeginStructure(string typeIdentifier, Type readerType)
+        public virtual void BeginStructure(string typeIdentifier, Type readerType)
         {
             BeginStructure(readerType);
             AddProperty("_type");
             Write(typeIdentifier);
         }
 
-        public void EndStructure()
+        public virtual void EndStructure()
         {
-            json.Write('}');
+            Json.Write('}');
             suppressDelimiter = false;
         }
 
-        public void AddProperty(string name)
+        public virtual void AddProperty(string name)
         {
             Delimit();
             WriteString(name);
-            json.Write(':');
+            Json.Write(':');
             suppressDelimiter = true;
         }
 
-        public void BeginSequence()
+        public virtual void BeginSequence()
         {
             Delimit();
-            json.Write('[');
+            Json.Write('[');
             suppressDelimiter = true;
         }
 
-        public void EndSequence()
+        public virtual void EndSequence()
         {
-            json.Write(']');
+            Json.Write(']');
             suppressDelimiter = false;
         }
 
-        public void WriteReference(int referenceIndex)
+        public virtual void WriteReference(int referenceIndex)
         {
             BeginStructure(null); // FIXME readerType isn't being used in this class, but I'm not sure I like passing in null
             AddProperty("_ref");
@@ -119,15 +98,36 @@ namespace json.Json
             EndStructure();
         }
 
-        private void Delimit()
+        protected virtual void Delimit()
         {
             if (!suppressDelimiter)
-                json.Write(',');
+                Json.Write(',');
             suppressDelimiter = false;
         }
 
-        // TODO escape control characters as well
+        private void WriteString(string value)
+        {
+            Json.Write('"');
+            Json.Write(EscapeForJson(value));
+            Json.Write('"');
+        }
 
+        private void WriteNumber(double value)
+        {
+            Json.Write(value);
+        }
+
+        private void WriteBoolean(bool value)
+        {
+            Json.Write(value ? "true" : "false");
+        }
+
+        private void WriteNull()
+        {
+            Json.Write("null");
+        }
+
+        // TODO escape control characters as well
         private static readonly Regex CharactersToEscape = new Regex(@"[""\\]", RegexOptions.Compiled);
 
         private static string EscapeForJson(string value)

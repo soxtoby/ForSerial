@@ -13,6 +13,10 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <SccProjectName>&lt;Project Location In Database&gt;</SccProjectName>
+    <SccLocalPath>&lt;Local Binding Root of Project&gt;</SccLocalPath>
+    <SccAuxPath>&lt;Source Control Database&gt;</SccAuxPath>
+    <SccProvider>Mercurial Source Control Package</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,6 +56,7 @@
     <Compile Include="Json\Input\JsonReaderTests.cs" />
     <Compile Include="Json\Input\ScannerTests.cs" />
     <Compile Include="Json\Output\JsonStringWriterTests.cs" />
+    <Compile Include="Json\Output\PrettyPrintingJsonStringWriterTests.cs" />
     <Compile Include="Objects\Input\ObjectReaderTests.cs" />
     <Compile Include="Objects\Output\DynamicMethodProviderStructTests.cs" />
     <Compile Include="Objects\Output\DynamicMethodProviderClassTests.cs" />
