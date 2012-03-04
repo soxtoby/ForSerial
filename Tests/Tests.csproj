@@ -54,7 +54,6 @@
     <Compile Include="JsonObjects\Input\JsonObjectReaderTests.cs" />
     <Compile Include="JsonObjects\Output\JsonObjectWriterTests.cs" />
     <Compile Include="Json\Input\JsonReaderTests.cs" />
-    <Compile Include="Json\Input\ScannerTests.cs" />
     <Compile Include="Json\Output\JsonStringWriterTests.cs" />
     <Compile Include="Json\Output\PrettyPrintingJsonStringWriterTests.cs" />
     <Compile Include="Objects\Input\ObjectReaderTests.cs" />

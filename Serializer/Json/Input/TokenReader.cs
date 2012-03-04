@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text;
 
 namespace json.Json
@@ -8,9 +7,9 @@ namespace json.Json
         private readonly string json;
         private int position = -1;
 
-        public TokenReader(TextReader reader)
+        public TokenReader(string json)
         {
-            json = reader.ReadToEnd();
+            this.json = json;
             GetNextChar();
         }
 
@@ -23,19 +22,17 @@ namespace json.Json
         /// <summary>
         /// The next character to be read.
         /// </summary>
-        internal char NextChar;
-
-        internal char LastChar;
+        internal char CurrentChar;
 
         /// <summary>
         /// Reads the next character and returns it.
         /// </summary>
         internal void MoveNext()
         {
-            LastChar = NextChar;
+            char lastChar = CurrentChar;
             GetNextChar();
 
-            if (LastChar == '\n')
+            if (lastChar == '\n')
             {
                 currentLine++;
                 currentPosition = 0;
@@ -50,44 +47,29 @@ namespace json.Json
         {
             position++;
             EndOfFile = position >= json.Length;
-            NextChar = EndOfFile
+            CurrentChar = EndOfFile
                 ? char.MinValue
                 : json[position];
         }
 
-        readonly StringBuilder tokenValue = new StringBuilder();
-        int tokenLine;
-        int tokenPosition;
+        private readonly StringBuilder tokenValue = new StringBuilder();
 
         /// <summary>
         /// Reads the next character and stores it in the current token.
         /// </summary>
         internal void KeepNextChar()
         {
-            if (tokenValue.Length == 0)
-            {
-                tokenLine = CurrentLine;
-                tokenPosition = CurrentPosition;
-            }
-
+            tokenValue.Append(CurrentChar);
             MoveNext();
-            tokenValue.Append(LastChar);
         }
 
-        /// <summary>
-        /// Returns a token of the specified type, using the currently stored token text, line & position,
-        /// and clears the buffer, ready for the next token.
-        /// </summary>
-        internal Token ExtractToken(TokenType type)
+        internal string ExtractToken()
         {
-            Token token = new Token(tokenValue.ToString(), type, tokenLine, tokenPosition);
+            string token = tokenValue.ToString();
             tokenValue.Length = 0;
             return token;
         }
 
-        /// <summary>
-        /// True if the next character to be read is past the end of the file.
-        /// </summary>
         internal bool EndOfFile;
     }
 }

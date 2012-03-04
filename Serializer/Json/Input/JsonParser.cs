@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 
 namespace json.Json
 {
     public class JsonParser
     {
         private readonly Writer writer;
-        private IEnumerator<Token> tokenEnumerator;
+        private TokenReader reader;
 
         private JsonParser(Writer writer)
         {
@@ -19,7 +18,7 @@ namespace json.Json
         {
             try
             {
-                Parse(Scanner.Scan(json), writer);
+                Parse(new TokenReader(json), writer);
             }
             catch (ParseException e)
             {
@@ -27,105 +26,98 @@ namespace json.Json
             }
         }
 
-        private static void Parse(IEnumerable<Token> tokens, Writer writer)
+        private static void Parse(TokenReader tokenReader, Writer writer)
         {
             JsonParser parser = new JsonParser(writer);
-            try
-            {
-                parser.ParseTokens(tokens);
-            }
-            catch (Exception e)
-            {
-                throw new ParseException(e.Message, parser.CurrentToken);
-            }
+            parser.ParseTokens(tokenReader);
         }
 
-        private void ParseTokens(IEnumerable<Token> tokens)
+        private void ParseTokens(TokenReader tokenReader)
         {
-            using (tokenEnumerator = tokens.GetEnumerator())
-            {
-                NextToken();
+            reader = tokenReader;
 
-                if (CurrentToken.TokenType != TokenType.EOF)
-                    ParseValue();
-            }
+            NextToken();
+
+            if (!reader.EndOfFile)
+                ParseValue();
         }
 
         private void ParseValue()
         {
-            switch (CurrentToken.TokenType)
+            if (char.IsNumber(reader.CurrentChar))
             {
-                case TokenType.Numeric:
-                    ParseNumber();
-                    return;
+                ParseNumber();
+            }
+            else if (reader.CurrentChar == '"')
+            {
+                ParseString();
+            }
+            else if (char.IsLetter(reader.CurrentChar))
+            {
+                ParseWord();
+            }
+            else
+                switch (reader.CurrentChar)
+                {
+                    case '{':
+                        ParseObject();
+                        return;
+                    case '[':
+                        ParseArray();
+                        return;
+                    default:
+                        throw new ExpectedValue(reader.ExtractToken(), reader.CurrentLine, reader.CurrentPosition);
+                }
+        }
 
-                case TokenType.String:
-                    ParseString();
-                    return;
+        private void ParseWord()
+        {
+            do
+            {
+                AssertNotEndOfFile();
+                reader.KeepNextChar();
 
-                case TokenType.Word:
-                    switch (CurrentToken.StringValue)
-                    {
-                        case "true":
-                            NextToken();
-                            writer.Write(true);
-                            return;
+            } while (char.IsLetterOrDigit(reader.CurrentChar));
 
-                        case "false":
-                            NextToken();
-                            writer.Write(false);
-                            return;
+            string word = reader.ExtractToken();
 
-                        case "null":
-                            NextToken();
-                            writer.Write(null);
-                            return;
+            switch (word)
+            {
+                case "true":
+                    writer.Write(true);
+                    break;
 
-                        default:
-                            throw new ParseException("Expected value.", CurrentToken);
-                    }
+                case "false":
+                    writer.Write(false);
+                    break;
 
-                case TokenType.Symbol:
-                    switch (CurrentToken.StringValue)
-                    {
-                        case "{":
-                            ParseObject();
-                            return;
-                        case "[":
-                            ParseArray();
-                            return;
-                        default:
-                            throw new ParseException("Expected value.", CurrentToken);
-                    }
+                case "null":
+                    writer.Write(null);
+                    break;
 
                 default:
-                    throw new ParseException("Expected value.", CurrentToken);
+                    throw new ExpectedValue(word, reader.CurrentLine, reader.CurrentPosition);
             }
+
+            NextToken();
         }
 
         private void ParseNumber()
         {
-            if (CurrentToken.TokenType != TokenType.Numeric)
-                throw new ParseException("Expected number.", CurrentToken);
-
-            writer.Write(CurrentToken.NumericValue);
-            NextToken();
+            writer.Write(GetNumber());
         }
 
         private void ParseString()
         {
-            if (CurrentToken.TokenType != TokenType.String)
-                throw new ParseException("Expected string.", CurrentToken);
-
-            writer.Write(CurrentToken.StringValue);
+            writer.Write(GetString());
             NextToken();
         }
 
         private void ParseObject()
         {
-            ExpectSymbol("{");
+            ExpectSymbol('{');
 
-            if (IsSymbol("}"))
+            if (reader.CurrentChar == '}')
             {
                 writer.BeginStructure(GetType());
             }
@@ -137,7 +129,7 @@ namespace json.Json
                 {
                     string name = GetString();
 
-                    ExpectSymbol(":");
+                    ExpectSymbol(':');
 
                     propertyParser.ParsePropertyValue(name);
 
@@ -146,10 +138,10 @@ namespace json.Json
 
                     propertyParser = propertyParser.NextPropertyParser;
 
-                } while (MoveNextIfSymbol(","));
+                } while (MoveNextIfSymbol(','));
             }
 
-            ExpectSymbol("}");
+            ExpectSymbol('}');
 
             writer.EndStructure();
         }
@@ -188,7 +180,7 @@ namespace json.Json
                 if (name == "_ref")
                 {
                     parser.ReferenceObject();
-                    parser.ExpectSymbol("}");
+                    parser.ExpectSymbol('}');
                     ReturnImmediately = true;
                 }
                 else if (name == "_type")
@@ -239,10 +231,26 @@ namespace json.Json
 
         private string GetString()
         {
-            if (CurrentToken.TokenType != TokenType.String)
-                throw new ParseException("Expected string.", CurrentToken);
+            // Don't keep opening char
+            reader.MoveNext();
 
-            string value = CurrentToken.StringValue;
+            while (reader.CurrentChar != '"')
+            {
+                AssertNotEndOfFile();
+
+                if (reader.CurrentChar == '\\')
+                {
+                    // Skip '\' and keep next char
+                    reader.MoveNext();
+                }
+
+                reader.KeepNextChar();
+            }
+
+            // Don't keep closing char
+            reader.MoveNext();
+
+            string value = reader.ExtractToken();
 
             NextToken();
 
@@ -251,10 +259,15 @@ namespace json.Json
 
         private double GetNumber()
         {
-            if (CurrentToken.TokenType != TokenType.Numeric)
-                throw new ParseException("Expected number.", CurrentToken);
+            bool decimalSeparator = false;
+            do
+            {
+                reader.KeepNextChar();
+            } while (!reader.EndOfFile && (char.IsNumber(reader.CurrentChar) || !decimalSeparator && (decimalSeparator = reader.CurrentChar == '.')));
 
-            double value = CurrentToken.NumericValue;
+            string number = reader.ExtractToken();
+
+            double value = double.Parse(number);
 
             NextToken();
 
@@ -263,54 +276,76 @@ namespace json.Json
 
         private void ParseArray()
         {
-            ExpectSymbol("[");
+            ExpectSymbol('[');
 
             writer.BeginSequence();
 
-            if (!IsSymbol("]"))
+            if (!(reader.CurrentChar == ']'))
             {
                 do
                 {
                     ParseValue();
-                } while (MoveNextIfSymbol(","));
+                } while (MoveNextIfSymbol(','));
             }
 
-            ExpectSymbol("]");
+            ExpectSymbol(']');
 
             writer.EndSequence();
         }
 
-        private void ExpectSymbol(string value)
+        private void ExpectSymbol(char value)
         {
-            if (!IsSymbol(value))
-                throw new ParseException("Expected {0}.".FormatWith(value), CurrentToken);
+            if (reader.CurrentChar != value)
+                throw new ExpectedToken(value, reader.CurrentChar, reader.CurrentLine, reader.CurrentPosition);
 
+            reader.MoveNext();
             NextToken();
         }
 
-        private bool MoveNextIfSymbol(string value)
+        private bool MoveNextIfSymbol(char value)
         {
-            bool match = IsSymbol(value);
+            bool match = reader.CurrentChar == value;
 
             if (match)
+            {
+                reader.MoveNext();
                 NextToken();
+            }
 
             return match;
         }
 
-        private bool IsSymbol(string value)
-        {
-            return CurrentToken.TokenType == TokenType.Symbol && CurrentToken.StringValue == value;
-        }
-
-        private Token CurrentToken
-        {
-            get { return tokenEnumerator.Current; }
-        }
-
         private void NextToken()
         {
-            tokenEnumerator.MoveNext();
+            while (!reader.EndOfFile && Char.IsWhiteSpace(reader.CurrentChar))
+                reader.MoveNext();
+        }
+
+        private void AssertNotEndOfFile()
+        {
+            if (reader.EndOfFile)
+                throw new UnexpectedEndOfFile(reader.CurrentLine, reader.CurrentPosition);
+        }
+
+        internal class ExpectedToken : ParseException
+        {
+            public ExpectedToken(char expectedToken, char actualToken, int line, int position)
+                : base("Expected {0}.".FormatWith(expectedToken), actualToken.ToString(), line, position)
+            {
+            }
+        }
+
+        internal class UnexpectedEndOfFile : ParseException
+        {
+            public UnexpectedEndOfFile(int line, int position) : base("Unexpected end of file.", string.Empty, line, position) { }
+        }
+
+        internal class ExpectedValue : ParseException
+        {
+            protected internal ExpectedValue(string tokenString, int line, int position)
+                : base("Expected value. ", tokenString, line, position)
+            {
+            }
         }
     }
 }
