@@ -20,11 +20,6 @@ namespace json.Objects.TypeDefinitions
             return type.GetGenericInterfaceType(typeof(IEnumerable<>)) ?? typeof(object);
         }
 
-        public override bool IsSerializable
-        {
-            get { return ItemTypeDef.IsSerializable; }
-        }
-
         public override ObjectContainer CreateSequence()
         {
             return new EnumerableSequence(this);

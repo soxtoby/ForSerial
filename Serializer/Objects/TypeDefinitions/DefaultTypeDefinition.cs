@@ -17,13 +17,12 @@ namespace json.Objects.TypeDefinitions
         {
             reader.AddStructureReference(input);
 
-
             if (writeTypeIdentifier)
                 writer.BeginStructure(CurrentTypeHandler.GetTypeIdentifier(Type), reader.GetType());
             else
                 writer.BeginStructure(Type);
 
-            foreach (KeyValuePair<PropertyDefinition, object> property in GetSerializableProperties(input, reader.SerializeAllTypes))
+            foreach (KeyValuePair<PropertyDefinition, object> property in GetSerializableProperties(input))
             {
                 writer.AddProperty(property.Key.Name);
                 reader.Read(property.Value, property.Key.ShouldWriteTypeIdentifier(property.Value));
@@ -37,12 +36,11 @@ namespace json.Objects.TypeDefinitions
             return new DefaultObjectStructure(this);
         }
 
-        private IEnumerable<KeyValuePair<PropertyDefinition, object>> GetSerializableProperties(object obj, bool serializeAllTypes)
+        private IEnumerable<KeyValuePair<PropertyDefinition, object>> GetSerializableProperties(object obj)
         {
             return Properties.Values
                 .Where(p => p.CanGet)
-                .Select(p => new KeyValuePair<PropertyDefinition, object>(p, p.GetFrom(obj)))
-                .Where(p => serializeAllTypes || ValueIsSerializable(p.Value));
+                .Select(p => new KeyValuePair<PropertyDefinition, object>(p, p.GetFrom(obj)));
         }
     }
 }

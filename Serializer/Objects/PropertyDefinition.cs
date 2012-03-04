@@ -58,8 +58,8 @@ namespace json.Objects
             if (forceTypeIdentifierSerialization)
                 return true;
 
-            TypeDefinition valueTypeDef = CurrentTypeHandler.GetTypeDefinition(value);
-            return valueTypeDef != TypeDef;
+            return value != null
+                && value.GetType() != TypeDef.Type;
         }
     }
 }

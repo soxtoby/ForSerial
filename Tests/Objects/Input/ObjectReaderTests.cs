@@ -429,7 +429,7 @@ namespace json.Tests.Objects
 
         private static string ConvertToJson(object obj, TypeInformationLevel serializeTypeInformation = TypeInformationLevel.None)
         {
-            var options = new ObjectParsingOptions { SerializeAllTypes = true, SerializeTypeInformation = serializeTypeInformation };
+            var options = new ObjectParsingOptions { SerializeTypeInformation = serializeTypeInformation };
             StringWriter stringWriter = new StringWriter();
             JsonStringWriter jsonWriter = new JsonStringWriter(stringWriter);
             ObjectReader.Read(obj, jsonWriter, options);

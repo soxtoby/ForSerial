@@ -5,14 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{88A35D84-0BFB-4144-AA77-3C5086D8214A}</ProjectGuid>
+    <ProjectGuid>{D31B3257-0836-465D-A424-818F6CE24705}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>json.Tests</RootNamespace>
-    <AssemblyName>Tests</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>json.PerformanceTests</RootNamespace>
+    <AssemblyName>PerformanceTests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
     <SccProjectName>&lt;Project Location In Database&gt;</SccProjectName>
     <SccLocalPath>&lt;Local Binding Root of Project&gt;</SccLocalPath>
     <SccAuxPath>&lt;Source Control Database&gt;</SccAuxPath>
@@ -26,7 +25,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,44 +34,44 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\key.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NSubstitute">
-      <HintPath>..\packages\NSubstitute.1.3.0.0\lib\NET35\NSubstitute.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.5.10.11092\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\packages\ServiceStack.Text.3.5.7\lib\net35\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JsonObjects\Input\JsonObjectReaderTests.cs" />
-    <Compile Include="JsonObjects\Output\JsonObjectWriterTests.cs" />
-    <Compile Include="Json\Input\JsonReaderTests.cs" />
-    <Compile Include="Json\Input\ScannerTests.cs" />
-    <Compile Include="Json\Output\JsonStringWriterTests.cs" />
-    <Compile Include="Json\Output\PrettyPrintingJsonStringWriterTests.cs" />
-    <Compile Include="Objects\Input\ObjectReaderTests.cs" />
-    <Compile Include="Objects\Output\DynamicMethodProviderStructTests.cs" />
-    <Compile Include="Objects\Output\DynamicMethodProviderClassTests.cs" />
-    <Compile Include="Objects\Output\ObjectWriterTests.cs" />
-    <Compile Include="Output\SameReferenceTwice.cs" />
+    <Compile Include="Data\DatabaseCompat.cs" />
+    <Compile Include="Data\Database.cs" />
+    <Compile Include="PerformanceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReflectionTesting.cs" />
-    <Compile Include="EasyAssertions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <EmbeddedResource Include="Data\northwind.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Serializer\json.csproj">
       <Project>{11E6558C-B8CF-495E-811C-0BD656FEB3C4}</Project>
       <Name>json</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tests\Tests.csproj">
+      <Project>{88A35D84-0BFB-4144-AA77-3C5086D8214A}</Project>
+      <Name>Tests</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text.RegularExpressions;
 using json.Objects;
 
 namespace json.Json
@@ -127,12 +126,13 @@ namespace json.Json
             Json.Write("null");
         }
 
-        // TODO escape control characters as well
-        private static readonly Regex CharactersToEscape = new Regex(@"[""\\]", RegexOptions.Compiled);
-
         private static string EscapeForJson(string value)
         {
-            return CharactersToEscape.Replace(value, @"\$0");
+            return value
+                .Replace("\\", "\\\\")
+                .Replace("\"", "\\\"")
+                .Replace("\r", "")
+                .Replace("\n", "\\n");
         }
     }
 }

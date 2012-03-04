@@ -18,11 +18,6 @@ namespace json.Objects
             this.options = options;
         }
 
-        public bool SerializeAllTypes
-        {
-            get { return options.SerializeAllTypes; }
-        }
-
         public static void Read(object obj, Writer writer, ObjectParsingOptions options = null)
         {
             ObjectReader reader = new ObjectReader(writer, options ?? new ObjectParsingOptions());

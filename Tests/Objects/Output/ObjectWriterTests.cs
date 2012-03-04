@@ -650,11 +650,6 @@ namespace json.Tests.Objects
             sut.Result.ShouldBe(new Guid("d0a227da-c42a-4a5d-ad3d-adf7d0b352a2"));
         }
 
-        private class NullableIntPropertyClass
-        {
-            public int? Property { get; set; }
-        }
-
         private static T DeserializeJson<T>(string json)
         {
             ObjectWriter<T> writer = new ObjectWriter<T>();
@@ -670,7 +665,7 @@ namespace json.Tests.Objects
         private static T CopyTo<T>(object obj)
         {
             ObjectWriter<T> writer = new ObjectWriter<T>();
-            ObjectReader.Read(obj, writer, new ObjectParsingOptions { SerializeAllTypes = true, SerializeTypeInformation = TypeInformationLevel.Minimal });
+            ObjectReader.Read(obj, writer, new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.Minimal });
             return writer.Result;
         }
     }

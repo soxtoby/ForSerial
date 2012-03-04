@@ -19,7 +19,8 @@ namespace json.Objects
             return type.AssemblyQualifiedName;
         }
 
-        private readonly Dictionary<string, TypeDefinition> knownTypes = new Dictionary<string, TypeDefinition>();
+        private readonly Dictionary<string, TypeDefinition> knownTypesByIdentifier = new Dictionary<string, TypeDefinition>();
+        private readonly Dictionary<Type, TypeDefinition> knownTypesByType = new Dictionary<Type, TypeDefinition>();
 
         private readonly List<Func<Type, TypeDefinition>> typeDefinitionFactories = new List<Func<Type, TypeDefinition>>
             {
@@ -36,8 +37,8 @@ namespace json.Objects
 
         public TypeDefinition GetTypeDefinition(string assemblyQualifiedName)
         {
-            return knownTypes.ContainsKey(assemblyQualifiedName)
-                ? knownTypes[assemblyQualifiedName]
+            return knownTypesByIdentifier.ContainsKey(assemblyQualifiedName)
+                ? knownTypesByIdentifier[assemblyQualifiedName]
                 : GetTypeDefinition(Type.GetType(assemblyQualifiedName));
         }
 
@@ -45,21 +46,23 @@ namespace json.Objects
         {
             if (type == null) return NullTypeDefinition.Instance;
 
-            if (!knownTypes.ContainsKey(GetTypeIdentifier(type)))
+            TypeDefinition typeDef;
+            if (!knownTypesByType.TryGetValue(type, out typeDef))
             {
                 // Since this is where we automatically create a TypeDefinition, 
                 // we need to register before we populate, in case the type contains itself.
-                TypeDefinition typeDef = CreateTypeDefinition(type);
+                typeDef = CreateTypeDefinition(type);
                 RegisterTypeDefinition(typeDef);
                 typeDef.Populate();
             }
 
-            return knownTypes[GetTypeIdentifier(type)];
+            return typeDef;
         }
 
         private void RegisterTypeDefinition(TypeDefinition typeDef)
         {
-            knownTypes[GetTypeIdentifier(typeDef.Type)] = typeDef;
+            knownTypesByIdentifier[GetTypeIdentifier(typeDef.Type)] = typeDef;
+            knownTypesByType[typeDef.Type] = typeDef;
         }
 
         private TypeDefinition CreateTypeDefinition(Type type)

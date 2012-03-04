@@ -2,7 +2,6 @@
 {
     public class ObjectParsingOptions
     {
-        public bool SerializeAllTypes { get; set; }
         public TypeInformationLevel SerializeTypeInformation { get; set; }
     }
 

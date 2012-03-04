@@ -164,6 +164,20 @@ namespace json.Tests.Json
         }
 
         [Test]
+        public void ReferenceList()
+        {
+            sut.BeginSequence();
+            sut.WriteReference(1);
+            sut.WriteReference(2);
+            sut.EndSequence();
+
+            Json.ShouldBe(@"[" + lf
+                        + @"  { ""_ref"": 1 }," + lf
+                        + @"  { ""_ref"": 2 }" + lf
+                        + @"]");
+        }
+
+        [Test]
         public void TypedStructure()
         {
             sut.BeginStructure("foo", null);

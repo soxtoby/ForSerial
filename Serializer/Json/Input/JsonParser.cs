@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace json.Json
 {
-    internal class JsonParser
+    public class JsonParser
     {
         private readonly Writer writer;
         private IEnumerator<Token> tokenEnumerator;

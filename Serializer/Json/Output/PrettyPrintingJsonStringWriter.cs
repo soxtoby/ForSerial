@@ -46,6 +46,7 @@ namespace json.Json
 
         public override void WriteReference(int referenceIndex)
         {
+            Delimit();
             Json.Write(@"{ ""_ref"": ");
             Json.Write(referenceIndex);
             Json.Write(" }");

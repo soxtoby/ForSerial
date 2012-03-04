@@ -25,23 +25,6 @@ namespace json.Objects
             typeCode = Type.GetTypeCode(type);
         }
 
-        private bool? isSerializable;
-
-        public virtual bool IsSerializable
-        {
-            get
-            {
-                return isSerializable ?? (bool)(isSerializable =
-                    !Type.IsAbstract
-                    && (Type.IsSerializable || HasDefaultConstructor));
-            }
-        }
-
-        private bool HasDefaultConstructor
-        {
-            get { return Type.GetConstructor(new Type[] { }) != null; }
-        }
-
         internal void Populate()
         {
             PopulateConstructors();
@@ -128,14 +111,6 @@ namespace json.Objects
         }
 
         public abstract void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier);
-
-        protected static bool ValueIsSerializable(object value)
-        {
-            if (value == null) return true;
-
-            TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(value.GetType());
-            return typeDef.IsSerializable;
-        }
 
         public virtual ObjectContainer CreateStructure()
         {
