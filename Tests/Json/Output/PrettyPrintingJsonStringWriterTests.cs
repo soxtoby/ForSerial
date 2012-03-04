@@ -11,7 +11,7 @@ namespace json.Tests.Json
         private PrettyPrintingJsonStringWriter sut;
         private StringWriter stringWriter;
         private string Json { get { return stringWriter.ToString(); } }
-        private string lf = Environment.NewLine;
+        private readonly string lf = Environment.NewLine;
 
         [SetUp]
         public void Initialize()
@@ -161,6 +161,20 @@ namespace json.Tests.Json
             sut.WriteReference(1);
 
             Json.ShouldBe(@"{ ""_ref"": 1 }");
+        }
+
+        [Test]
+        public void TypedStructure()
+        {
+            sut.BeginStructure("foo", null);
+            sut.AddProperty("bar");
+            sut.Write(1);
+            sut.EndStructure();
+
+            Json.ShouldBe(@"{" + lf
+                        + @"  ""_type"": ""foo""," + lf
+                        + @"  ""bar"": 1" + lf
+                        + @"}");
         }
     }
 }

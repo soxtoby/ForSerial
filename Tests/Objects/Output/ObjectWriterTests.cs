@@ -630,6 +630,31 @@ namespace json.Tests.Objects
             public IntPropertyClass More { get; set; }
         }
 
+        [Test]
+        public void ConvertDoubleToNullableInt()
+        {
+            ObjectWriter<int?> sut = new ObjectWriter<int?>();
+
+            sut.Write(1d);
+
+            sut.Result.ShouldBe(1);
+        }
+
+        [Test]
+        public void ConvertStringToNullableGuid()
+        {
+            ObjectWriter<Guid?> sut = new ObjectWriter<Guid?>();
+
+            sut.Write("d0a227da-c42a-4a5d-ad3d-adf7d0b352a2");
+
+            sut.Result.ShouldBe(new Guid("d0a227da-c42a-4a5d-ad3d-adf7d0b352a2"));
+        }
+
+        private class NullableIntPropertyClass
+        {
+            public int? Property { get; set; }
+        }
+
         private static T DeserializeJson<T>(string json)
         {
             ObjectWriter<T> writer = new ObjectWriter<T>();

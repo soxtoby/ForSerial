@@ -23,12 +23,6 @@ namespace json.Json
             isBeginningOfContainer = true;
         }
 
-        public override void BeginStructure(string typeIdentifier, Type readerType)
-        {
-            base.BeginStructure(typeIdentifier, readerType);
-            isBeginningOfContainer = true;
-        }
-
         public override void BeginSequence()
         {
             base.BeginSequence();

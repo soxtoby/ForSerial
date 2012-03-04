@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using json.Json;
 using json.JsonObjects;
@@ -164,6 +165,17 @@ namespace json.Tests.Json
             JsonParser.Parse(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}", writer);
 
             writer.Received().WriteReference(1);
+        }
+
+        [Test]
+        public void ReferenceNotCountedAsStructure()
+        {
+            Writer writer = Substitute.For<Writer>();
+
+            JsonParser.Parse(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}", writer);
+
+            writer.Received(2).BeginStructure(Arg.Any<Type>());
+            writer.Received(2).EndStructure();
         }
 
         [Test]

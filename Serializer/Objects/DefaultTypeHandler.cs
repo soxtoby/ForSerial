@@ -29,6 +29,7 @@ namespace json.Objects
                 JsonDictionaryDefinition.CreateDictionaryDefinition,
                 ValueTypeDefinition.CreateValueTypeDefinition,
                 PrimitiveDefinition.CreatePrimitiveTypeDefinition,
+                NullableTypeDefinition.CreateNullableTypeDefinition,
                 GuidDefinition.CreateGuidDefinition,
                 DateTimeDefinition.CreateDateTimeDefinition,    // TODO why not just put these in the dictionary directly?
             };
@@ -42,7 +43,7 @@ namespace json.Objects
 
         public TypeDefinition GetTypeDefinition(Type type)
         {
-            if (type == null) return null;
+            if (type == null) return NullTypeDefinition.Instance;
 
             if (!knownTypes.ContainsKey(GetTypeIdentifier(type)))
             {

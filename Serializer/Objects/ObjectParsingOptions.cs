@@ -8,8 +8,8 @@
 
     public enum TypeInformationLevel
     {
-        None,
         Minimal,
-        All
+        All,
+        None
     }
 }

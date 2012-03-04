@@ -30,7 +30,14 @@ namespace json.Json
         private static void Parse(IEnumerable<Token> tokens, Writer writer)
         {
             JsonParser parser = new JsonParser(writer);
-            parser.ParseTokens(tokens);
+            try
+            {
+                parser.ParseTokens(tokens);
+            }
+            catch (Exception e)
+            {
+                throw new ParseException(e.Message, parser.CurrentToken);
+            }
         }
 
         public void ReadSubStructure(Writer subWriter)
@@ -197,7 +204,8 @@ namespace json.Json
                 if (name == "_ref")
                 {
                     parser.ReferenceObject();
-                    NextPropertyParser = new IgnorePropertyParser(parser);
+                    parser.ExpectSymbol("}");
+                    ReturnImmediately = true;
                 }
                 else if (name == "_type")
                 {

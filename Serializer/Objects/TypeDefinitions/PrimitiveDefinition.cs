@@ -26,7 +26,7 @@ namespace json.Objects.TypeDefinitions
 
         public override ObjectValue CreateValue(object value)
         {
-            return new DefaultObjectValue(value);
+            return new DefaultObjectValue(ConvertToCorrectType(value));
         }
     }
 }
