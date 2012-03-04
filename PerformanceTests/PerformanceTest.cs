@@ -80,6 +80,19 @@ namespace json.PerformanceTests
                 });
         }
 
+        [Test]
+        public void Deserialize()
+        {
+            GetNorthwindObject();
+            string json = GetNorthwindJson();
+
+            Time(() =>
+                {
+                    for (int i = 0; i < 10; i++)
+                        JsonParser.Parse(json, new ObjectWriter<DatabaseCompat>());
+                });
+        }
+
         private static void Time(Action action, string title = null)
         {
             Stopwatch watch = Stopwatch.StartNew();

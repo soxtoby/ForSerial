@@ -5,78 +5,73 @@ namespace json.Json
 {
     public class TokenReader
     {
+        private readonly string json;
+        private int position = -1;
+
         public TokenReader(TextReader reader)
         {
-            _reader = reader;
-            CurrentLine = 0;
-            CurrentPosition = 0;
+            json = reader.ReadToEnd();
+            GetNextChar();
         }
 
-        readonly TextReader _reader;
-        char _nextChar;
+        private int currentLine;
+        internal int CurrentLine { get { return currentLine; } }
 
-        internal int CurrentLine { get; set; }
-        internal int CurrentPosition { get; set; }
+        private int currentPosition;
+        internal int CurrentPosition { get { return currentPosition; } }
 
         /// <summary>
         /// The next character to be read.
         /// </summary>
-        internal char NextChar
-        {
-            get
-            {
-                if (_nextChar == char.MinValue)
-                {
-                    _nextChar = (char)_reader.Peek();
-                }
-                return _nextChar;
-            }
-        }
+        internal char NextChar;
 
-        internal char LastChar { get; set; }
+        internal char LastChar;
 
         /// <summary>
         /// Reads the next character and returns it.
         /// </summary>
-        internal char DiscardNextChar()
+        internal void MoveNext()
         {
-            _nextChar = char.MinValue;
-            LastChar = (char)_reader.Read();
+            LastChar = NextChar;
+            GetNextChar();
 
             if (LastChar == '\n')
             {
-                CurrentLine++;
-                CurrentPosition = 0;
-            }
-
-            else if (LastChar == '\r')
-            {
-                CurrentPosition++;
+                currentLine++;
+                currentPosition = 0;
             }
             else
             {
-                CurrentPosition++;
+                currentPosition++;
             }
-
-            return LastChar;
         }
 
-        readonly StringBuilder _tokenValue = new StringBuilder();
-        int _tokenLine;
-        int _tokenPosition;
+        private void GetNextChar()
+        {
+            position++;
+            EndOfFile = position >= json.Length;
+            NextChar = EndOfFile
+                ? char.MinValue
+                : json[position];
+        }
+
+        readonly StringBuilder tokenValue = new StringBuilder();
+        int tokenLine;
+        int tokenPosition;
 
         /// <summary>
         /// Reads the next character and stores it in the current token.
         /// </summary>
         internal void KeepNextChar()
         {
-            if (_tokenValue.Length == 0)
+            if (tokenValue.Length == 0)
             {
-                _tokenLine = CurrentLine;
-                _tokenPosition = CurrentPosition;
+                tokenLine = CurrentLine;
+                tokenPosition = CurrentPosition;
             }
 
-            _tokenValue.Append(DiscardNextChar());
+            MoveNext();
+            tokenValue.Append(LastChar);
         }
 
         /// <summary>
@@ -85,17 +80,14 @@ namespace json.Json
         /// </summary>
         internal Token ExtractToken(TokenType type)
         {
-            Token token = new Token(_tokenValue.ToString(), type, _tokenLine, _tokenPosition);
-            _tokenValue.Length = 0;
+            Token token = new Token(tokenValue.ToString(), type, tokenLine, tokenPosition);
+            tokenValue.Length = 0;
             return token;
         }
 
         /// <summary>
         /// True if the next character to be read is past the end of the file.
         /// </summary>
-        internal bool EndOfFile
-        {
-            get { return _reader.Peek() == -1; }
-        }
+        internal bool EndOfFile;
     }
 }

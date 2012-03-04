@@ -37,7 +37,7 @@ namespace json.Json
             {
                 if (char.IsWhiteSpace(reader.NextChar))
                 {
-                    reader.DiscardNextChar();
+                    reader.MoveNext();
                 }
                 else if (char.IsLetter(reader.NextChar) || reader.NextChar == '_')
                 {
@@ -101,7 +101,7 @@ namespace json.Json
         private Token ScanString()
         {
             // Don't keep opening char
-            reader.DiscardNextChar();
+            reader.MoveNext();
 
             while (reader.NextChar != '"')
             {
@@ -110,14 +110,14 @@ namespace json.Json
                 if (reader.NextChar == '\\')
                 {
                     // Skip '\' and keep next char
-                    reader.DiscardNextChar();
+                    reader.MoveNext();
                 }
 
                 reader.KeepNextChar();
             }
 
             // Don't keep closing char
-            reader.DiscardNextChar();
+            reader.MoveNext();
 
             return reader.ExtractToken(TokenType.String);
         }

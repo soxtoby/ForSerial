@@ -40,22 +40,6 @@ namespace json.Json
             }
         }
 
-        public void ReadSubStructure(Writer subWriter)
-        {
-            MoveNextIfSymbol(",");
-            Parse(GetSubObjectTokens(), subWriter);
-        }
-
-        private IEnumerable<Token> GetSubObjectTokens()
-        {
-            yield return new Token("{", TokenType.Symbol, 0, 0);
-
-            yield return tokenEnumerator.Current;
-
-            while (tokenEnumerator.MoveNext())
-                yield return tokenEnumerator.Current;
-        }
-
         private void ParseTokens(IEnumerable<Token> tokens)
         {
             using (tokenEnumerator = tokens.GetEnumerator())
@@ -219,17 +203,6 @@ namespace json.Json
                     NextPropertyParser.ParsePropertyValue(name);
                 }
             }
-        }
-
-        private class IgnorePropertyParser : PropertyParser
-        {
-            public IgnorePropertyParser(JsonParser parser)
-                : base(parser)
-            {
-                NextPropertyParser = this;
-            }
-
-            public override void ParsePropertyValue(string name) { }
         }
 
         private class RegularPropertyParser : PropertyParser
