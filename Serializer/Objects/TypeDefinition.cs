@@ -12,7 +12,7 @@ namespace json.Objects
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
 
         public Type Type { get; private set; }
-        public IDictionary<string, PropertyDefinition> Properties { get; private set; }
+        public IDictionary<string, PropertyDefinition> Properties { get; private set; }// TODO use a KeyedCollection when moving out of TypeDefinition
         public List<ConstructorDefinition> Constructors { get; private set; }
 
         protected static readonly ObjectInterfaceProvider ObjectInterfaceProvider = new DynamicMethodProvider();
@@ -174,7 +174,7 @@ namespace json.Objects
         public bool CanCreateValueForProperty(string name, object value)
         {
             PropertyDefinition property = Properties.Get(name);
-            return property != null && property.TypeDef.CanCreateValue(value);
+            return property != null && property.CanCreateValue(value);
         }
 
         public virtual ObjectValue CreateValueForProperty(string name, object value)
@@ -201,4 +201,3 @@ namespace json.Objects
         }
     }
 }
-

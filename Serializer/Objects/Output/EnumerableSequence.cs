@@ -21,7 +21,7 @@ namespace json.Objects
 
         public override object GetTypedValue()
         {
-            Type listType = typeof(List<>).MakeGenericType(enumerableDef.ItemTypeDef.Type);
+            Type listType = typeof(List<>).MakeGenericType(enumerableDef.ItemType);
             return GetTypedValue((CollectionDefinition)CurrentTypeHandler.GetTypeDefinition(listType));
         }
     }

@@ -65,10 +65,20 @@ namespace json.Objects
             if (value == null)
                 return true;
 
-            TypeCodeType typeCodeType = value.GetType().GetTypeCodeType();
-            return typeCodeType == TypeCodeType.Number
-                || typeCodeType == TypeCodeType.Boolean
-                || typeCodeType == TypeCodeType.String;
+            Type valueType = value.GetType();
+            return valueType == typeof(bool)
+                || valueType == typeof(string)
+                || valueType == typeof(char)
+                || valueType == typeof(byte)
+                || valueType == typeof(Int16)
+                || valueType == typeof(Int32)
+                || valueType == typeof(Int64)
+                || valueType == typeof(UInt16)
+                || valueType == typeof(UInt32)
+                || valueType == typeof(UInt64)
+                || valueType == typeof(Single)
+                || valueType == typeof(double)
+                || valueType == typeof(decimal);
         }
     }
 

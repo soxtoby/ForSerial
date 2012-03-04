@@ -6,15 +6,14 @@ namespace json.Json
 {
     public class JsonStringWriter : Writer
     {
-        private readonly TextWriter json;
-        protected TextWriter Json { get { return json; } }
+        protected readonly TextWriter Json;
         private bool suppressDelimiter = true;
 
         public JsonStringWriter(TextWriter textWriter)
         {
             if (textWriter == null) throw new ArgumentNullException("textWriter");
 
-            json = textWriter;
+            Json = textWriter;
         }
 
         public bool CanWrite(object value)
@@ -32,20 +31,13 @@ namespace json.Json
                 return;
             }
 
-            switch (value.GetType().GetTypeCodeType())
-            {
-                case TypeCodeType.Boolean:
-                    WriteBoolean((bool)value);
-                    break;
-
-                case TypeCodeType.String:
-                    WriteString((string)value);
-                    break;
-
-                case TypeCodeType.Number:
-                    WriteNumber(Convert.ToDouble(value));
-                    break;
-            }
+            Type valueType = value.GetType();
+            if (valueType == typeof(bool))
+                WriteBoolean((bool)value);
+            else if (valueType == typeof(string))
+                WriteString((string)value);
+            else
+                WriteNumber(Convert.ToDouble(value));
         }
 
         public virtual void BeginStructure(Type readerType)
@@ -71,7 +63,7 @@ namespace json.Json
         public virtual void AddProperty(string name)
         {
             Delimit();
-            WriteString(name);
+            WriteRawString(name);
             Json.Write(':');
             suppressDelimiter = true;
         }
@@ -91,23 +83,31 @@ namespace json.Json
 
         public virtual void WriteReference(int referenceIndex)
         {
-            BeginStructure(null); // FIXME readerType isn't being used in this class, but I'm not sure I like passing in null
-            AddProperty("_ref");
-            Write(referenceIndex);
-            EndStructure();
+            Delimit();
+            Json.Write(@"{""_ref"":");
+            Json.Write(referenceIndex);
+            Json.Write('}');
         }
 
         protected virtual void Delimit()
         {
-            if (!suppressDelimiter)
+            if (suppressDelimiter)
+                suppressDelimiter = false;
+            else
                 Json.Write(',');
-            suppressDelimiter = false;
         }
 
         private void WriteString(string value)
         {
             Json.Write('"');
             Json.Write(EscapeForJson(value));
+            Json.Write('"');
+        }
+
+        private void WriteRawString(string value)
+        {
+            Json.Write('"');
+            Json.Write(value);
             Json.Write('"');
         }
 

@@ -5,15 +5,15 @@ namespace json.Objects
     {
         public PropertyDefinition(TypeDefinition typeDef, string name, GetMethod getter, SetMethod setter, bool forceTypeIdentifierSerialization)
         {
+            Name = name;
             this.getter = getter;
             this.setter = setter;
-            Name = name;
-            TypeDef = typeDef;
+            this.typeDef = typeDef;
             this.forceTypeIdentifierSerialization = forceTypeIdentifierSerialization;
         }
 
         public string Name { get; private set; }
-        public TypeDefinition TypeDef { get; private set; }
+        private readonly TypeDefinition typeDef;
         private readonly bool forceTypeIdentifierSerialization;
 
         private readonly GetMethod getter;
@@ -30,36 +30,39 @@ namespace json.Objects
         public void SetOn(object target, object value)
         {
             if (CanSet)
-                setter(target, TypeDef.ConvertToCorrectType(value));
+                setter(target, typeDef.ConvertToCorrectType(value));
         }
 
         public ObjectContainer CreateStructure()
         {
-            return TypeDef.CreateStructure();
+            return typeDef.CreateStructure();
         }
 
         public ObjectContainer CreateStructure(string typeIdentifier)
         {
-            return TypeDef.CreateStructure(typeIdentifier);
+            return typeDef.CreateStructure(typeIdentifier);
         }
 
         public ObjectContainer CreateSequence()
         {
-            return TypeDef.CreateSequence();
+            return typeDef.CreateSequence();
+        }
+
+        public bool CanCreateValue(object value)
+        {
+            return typeDef.CanCreateValue(value);
         }
 
         public ObjectValue CreateValue(object value)
         {
-            return TypeDef.CreateValue(value);
+            return typeDef.CreateValue(value);
         }
 
         public bool ShouldWriteTypeIdentifier(object value)
         {
-            if (forceTypeIdentifierSerialization)
-                return true;
-
-            return value != null
-                && value.GetType() != TypeDef.Type;
+            return forceTypeIdentifierSerialization
+                || value != null
+                    && value.GetType() != typeDef.Type;
         }
     }
 }

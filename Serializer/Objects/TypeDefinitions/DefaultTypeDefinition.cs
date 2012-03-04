@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace json.Objects.TypeDefinitions
 {
@@ -22,10 +20,14 @@ namespace json.Objects.TypeDefinitions
             else
                 writer.BeginStructure(Type);
 
-            foreach (KeyValuePair<PropertyDefinition, object> property in GetSerializableProperties(input))
+            foreach (PropertyDefinition property in Properties.Values)
             {
-                writer.AddProperty(property.Key.Name);
-                reader.Read(property.Value, property.Key.ShouldWriteTypeIdentifier(property.Value));
+                if (property.CanGet)
+                {
+                    writer.AddProperty(property.Name);
+                    object value = property.GetFrom(input);
+                    reader.Read(value, property.ShouldWriteTypeIdentifier(value));
+                }
             }
 
             writer.EndStructure();
@@ -34,13 +36,6 @@ namespace json.Objects.TypeDefinitions
         public override ObjectContainer CreateStructure()
         {
             return new DefaultObjectStructure(this);
-        }
-
-        private IEnumerable<KeyValuePair<PropertyDefinition, object>> GetSerializableProperties(object obj)
-        {
-            return Properties.Values
-                .Where(p => p.CanGet)
-                .Select(p => new KeyValuePair<PropertyDefinition, object>(p, p.GetFrom(obj)));
         }
     }
 }

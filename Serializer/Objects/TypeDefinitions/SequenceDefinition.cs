@@ -5,13 +5,15 @@ namespace json.Objects.TypeDefinitions
 {
     public class SequenceDefinition : TypeDefinition
     {
-        public TypeDefinition ItemTypeDef { get; private set; }
+        protected readonly TypeDefinition ItemTypeDef;
 
         protected SequenceDefinition(Type type, Type itemType)
             : base(type)
         {
             ItemTypeDef = CurrentTypeHandler.GetTypeDefinition(itemType);
         }
+
+        public Type ItemType { get { return ItemTypeDef.Type; } }
 
         public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
         {
@@ -21,7 +23,7 @@ namespace json.Objects.TypeDefinitions
             writer.BeginSequence();
 
             foreach (object item in inputArray)
-                reader.Read(item, writeTypeIdentifier || CurrentTypeHandler.GetTypeDefinition(item) != ItemTypeDef);
+                reader.Read(item, writeTypeIdentifier || item.GetType() != ItemType);
 
             writer.EndSequence();
         }

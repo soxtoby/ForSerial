@@ -16,6 +16,8 @@ namespace json.PerformanceTests
     [TestFixture]
     public class PerformanceTest
     {
+        private const int Iterations = 100;
+
         [Test]
         public void VerifyNorthwindDeserializeReserialize()
         {
@@ -40,12 +42,13 @@ namespace json.PerformanceTests
         public void SerializeToNull()
         {
             DatabaseCompat db = GetNorthwindObject();
-            Warmup(db);
+            ObjectReader.Read(db, new JsonStringWriter(NullTextWriter.Instance));
 
-            Stopwatch watch = Stopwatch.StartNew();
-            SerializeManyTimes(db, new JsonStringWriter(TextWriter.Null));
-            watch.Stop();
-            Console.WriteLine(watch.ElapsedMilliseconds);
+            Time(() =>
+                {
+                    for (int i = 0; i < Iterations; i++)
+                        ObjectReader.Read(db, new JsonStringWriter(TextWriter.Null));
+                });
         }
 
         [Test]
@@ -56,11 +59,11 @@ namespace json.PerformanceTests
             XmlSerializer serializer = new XmlSerializer(typeof(DatabaseCompat));
             serializer.Serialize(Stream.Null, db);
 
-            Stopwatch watch = Stopwatch.StartNew();
-            for (int i = 0; i < 1000; i++)
-                serializer.Serialize(Stream.Null, db);
-            watch.Stop();
-            Console.WriteLine(watch.ElapsedMilliseconds);
+            Time(() =>
+                {
+                    for (int i = 0; i < Iterations; i++)
+                        serializer.Serialize(Stream.Null, db);
+                });
         }
 
         [Test]
@@ -70,16 +73,23 @@ namespace json.PerformanceTests
             JsonSerializer<DatabaseCompat> serializer = new JsonSerializer<DatabaseCompat>();
             serializer.SerializeToWriter(db, TextWriter.Null);
 
-            Stopwatch watch = Stopwatch.StartNew();
-            for (int i = 0; i < 1000; i++)
-                serializer.SerializeToWriter(db, TextWriter.Null);
-            watch.Stop();
-            Console.WriteLine(watch.ElapsedMilliseconds);
+            Time(() =>
+                {
+                    for (int i = 0; i < Iterations; i++)
+                        serializer.SerializeToWriter(db, TextWriter.Null);
+                });
         }
 
-        private static void Warmup(DatabaseCompat db)
+        private static void Time(Action action, string title = null)
         {
-            ObjectReader.Read(db, new JsonStringWriter(NullTextWriter.Instance));
+            Stopwatch watch = Stopwatch.StartNew();
+            action();
+            watch.Stop();
+
+            if (title != null)
+                Console.WriteLine(title + ": " + watch.ElapsedMilliseconds);
+            else
+                Console.WriteLine(watch.ElapsedMilliseconds);
         }
 
         private DatabaseCompat GetNorthwindObject()
@@ -88,12 +98,6 @@ namespace json.PerformanceTests
             ObjectWriter<DatabaseCompat> objectWriter = new ObjectWriter<DatabaseCompat>();
             JsonParser.Parse(json, objectWriter);
             return objectWriter.Result;
-        }
-
-        private static void SerializeManyTimes(DatabaseCompat db, Writer writer)
-        {
-            for (int i = 0; i < 1000; i++)
-                ObjectReader.Read(db, writer);
         }
 
         private string GetNorthwindJson()
