@@ -6,6 +6,26 @@ namespace json.Json
 {
     public class JsonStringWriter : Writer
     {
+        private const char QuoteChar = '"';
+        private const char Comma = ',';
+        private const char OpenBrace = '{';
+        private const char CloseBrace = '}';
+        private const char Colon = ':';
+        private const char OpenBracket = '[';
+        private const char CloseBracket = ']';
+        private const string TypePropertyName = "_type";
+        private const string ReferenceProperty = @"{""_ref"":";
+        private const string True = "true";
+        private const string False = "false";
+        private const string Null = "null";
+        private const string Backslash = "\\";
+        private const string EscapedBackslash = "\\\\";
+        private const string QuoteString = "\"";
+        private const string EscapedQuote = "\\\"";
+        private const string Return = "\r";
+        private const string NewLine = "\n";
+        private const string EscapedNewLine = "\\n";
+
         protected readonly TextWriter Json;
         private bool suppressDelimiter = true;
 
@@ -43,20 +63,20 @@ namespace json.Json
         public virtual void BeginStructure(Type readerType)
         {
             Delimit();
-            Json.Write('{');
+            Json.Write(OpenBrace);
             suppressDelimiter = true;
         }
 
         public virtual void BeginStructure(string typeIdentifier, Type readerType)
         {
             BeginStructure(readerType);
-            AddProperty("_type");
+            AddProperty(TypePropertyName);
             Write(typeIdentifier);
         }
 
         public virtual void EndStructure()
         {
-            Json.Write('}');
+            Json.Write(CloseBrace);
             suppressDelimiter = false;
         }
 
@@ -64,29 +84,29 @@ namespace json.Json
         {
             Delimit();
             WriteRawString(name);
-            Json.Write(':');
+            Json.Write(Colon);
             suppressDelimiter = true;
         }
 
         public virtual void BeginSequence()
         {
             Delimit();
-            Json.Write('[');
+            Json.Write(OpenBracket);
             suppressDelimiter = true;
         }
 
         public virtual void EndSequence()
         {
-            Json.Write(']');
+            Json.Write(CloseBracket);
             suppressDelimiter = false;
         }
 
         public virtual void WriteReference(int referenceIndex)
         {
             Delimit();
-            Json.Write(@"{""_ref"":");
+            Json.Write(ReferenceProperty);
             Json.Write(referenceIndex);
-            Json.Write('}');
+            Json.Write(CloseBrace);
         }
 
         protected virtual void Delimit()
@@ -94,21 +114,21 @@ namespace json.Json
             if (suppressDelimiter)
                 suppressDelimiter = false;
             else
-                Json.Write(',');
+                Json.Write(Comma);
         }
 
         private void WriteString(string value)
         {
-            Json.Write('"');
+            Json.Write(QuoteChar);
             Json.Write(EscapeForJson(value));
-            Json.Write('"');
+            Json.Write(QuoteChar);
         }
 
         private void WriteRawString(string value)
         {
-            Json.Write('"');
+            Json.Write(QuoteChar);
             Json.Write(value);
-            Json.Write('"');
+            Json.Write(QuoteChar);
         }
 
         private void WriteNumber(double value)
@@ -118,21 +138,21 @@ namespace json.Json
 
         private void WriteBoolean(bool value)
         {
-            Json.Write(value ? "true" : "false");
+            Json.Write(value ? True : False);
         }
 
         private void WriteNull()
         {
-            Json.Write("null");
+            Json.Write(Null);
         }
 
         private static string EscapeForJson(string value)
         {
             return value
-                .Replace("\\", "\\\\")
-                .Replace("\"", "\\\"")
-                .Replace("\r", "")
-                .Replace("\n", "\\n");
+                .Replace(Backslash, EscapedBackslash)
+                .Replace(QuoteString, EscapedQuote)
+                .Replace(Return, string.Empty)
+                .Replace(NewLine, EscapedNewLine);
         }
     }
 }
