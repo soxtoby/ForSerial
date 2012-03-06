@@ -167,13 +167,13 @@ namespace json.Tests.Objects
         [ExpectedException(typeof(ArgumentException))]
         public void IgnorePropertyWithAttributeOfNonAttributeType()
         {
-            TypeDefinition.IgnorePropertiesMarkedWithAttribute(typeof(IgnoredPropertyClass));
+            StructureDefinition.IgnorePropertiesMarkedWithAttribute(typeof(IgnoredPropertyClass));
         }
 
         [Test]
         public void IgnorePropertyWithAttribute()
         {
-            TypeDefinition.IgnorePropertiesMarkedWithAttribute(typeof(IgnoreMeAttribute));
+            StructureDefinition.IgnorePropertiesMarkedWithAttribute(typeof(IgnoreMeAttribute));
             Assert.AreEqual(@"{""Serialized"":2}", ConvertToJson(new IgnoredPropertyClass { Ignored = 1, Serialized = 2 }));
         }
 

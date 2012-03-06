@@ -2,7 +2,7 @@
 
 namespace json.Objects.TypeDefinitions
 {
-    public class ValueTypeDefinition : DefaultTypeDefinition
+    public class ValueTypeDefinition : DefaultStructureDefinition
     {
         private ValueTypeDefinition(Type type) : base(type) { }
 

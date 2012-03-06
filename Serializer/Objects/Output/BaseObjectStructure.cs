@@ -5,14 +5,15 @@ namespace json.Objects
 {
     public abstract class BaseObjectStructure : ObjectContainer
     {
+        protected readonly StructureDefinition StructureDef;
         private string currentProperty;
         protected readonly Dictionary<string, ObjectOutput> Properties = new Dictionary<string, ObjectOutput>(StringComparer.OrdinalIgnoreCase);
 
-        public TypeDefinition TypeDef { get; private set; }
+        public TypeDefinition TypeDef { get { return StructureDef; } }
 
-        protected BaseObjectStructure(TypeDefinition typeDef)
+        protected BaseObjectStructure(StructureDefinition typeDef)
         {
-            TypeDef = typeDef;
+            StructureDef = typeDef;
         }
 
         public abstract void AssignToProperty(object obj, PropertyDefinition property);
@@ -24,27 +25,27 @@ namespace json.Objects
 
         public ObjectContainer CreateStructure()
         {
-            return TypeDef.CreateStructureForProperty(currentProperty);
+            return StructureDef.CreateStructureForProperty(currentProperty);
         }
 
         public ObjectContainer CreateStructure(string typeIdentifier)
         {
-            return TypeDef.CreateStructureForProperty(currentProperty, typeIdentifier);
+            return StructureDef.CreateStructureForProperty(currentProperty, typeIdentifier);
         }
 
         public ObjectContainer CreateSequence()
         {
-            return TypeDef.CreateSequenceForProperty(currentProperty);
+            return StructureDef.CreateSequenceForProperty(currentProperty);
         }
 
         public bool CanCreateValue(object value)
         {
-            return TypeDef.CanCreateValueForProperty(currentProperty, value);
+            return StructureDef.CanCreateValueForProperty(currentProperty, value);
         }
 
         public void WriteValue(object value)
         {
-            Add(TypeDef.CreateValueForProperty(currentProperty, value));
+            Add(StructureDef.CreateValueForProperty(currentProperty, value));
         }
 
         public void Add(ObjectOutput value)

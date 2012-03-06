@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -82,6 +83,13 @@ namespace json
         {
             TValue val;
             return dictionary.TryGetValue(key, out val) ? val : default(TValue);
+        }
+
+        public static TValue Get<TKey, TValue>(this KeyedCollection<TKey, TValue> keyedCollection, TKey key)
+        {
+            return keyedCollection.Contains(key)
+                ? keyedCollection[key]
+                : default(TValue);
         }
 
         public static bool IsSingular<T>(this IEnumerable<T> enumerable)

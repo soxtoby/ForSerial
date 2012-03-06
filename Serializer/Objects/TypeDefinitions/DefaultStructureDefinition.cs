@@ -2,13 +2,13 @@
 
 namespace json.Objects.TypeDefinitions
 {
-    public class DefaultTypeDefinition : TypeDefinition
+    public class DefaultStructureDefinition : StructureDefinition
     {
-        protected DefaultTypeDefinition(Type type) : base(type) { }
+        protected DefaultStructureDefinition(Type type) : base(type) { }
 
-        internal static DefaultTypeDefinition CreateDefaultTypeDefinition(Type type)
+        internal static DefaultStructureDefinition CreateDefaultStructureDefinition(Type type)
         {
-            return new DefaultTypeDefinition(type);
+            return new DefaultStructureDefinition(type);
         }
 
         public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
@@ -21,14 +21,12 @@ namespace json.Objects.TypeDefinitions
             else
                 writer.BeginStructure(Type);
 
-            foreach (PropertyDefinition property in Properties.Values)
+            for (int i = 0; i < SerializableProperties.Length; i++)
             {
-                if (property.CanGet)    // TODO Put serializable properties in an array in populate
-                {
-                    writer.AddProperty(property.Name);
-                    object value = property.GetFrom(input);
-                    property.Read(value, reader, writer);
-                }
+                PropertyDefinition property = SerializableProperties[i];
+                writer.AddProperty(property.Name);
+                object value = property.GetFrom(input);
+                property.Read(value, reader, writer);
             }
 
             writer.EndStructure();

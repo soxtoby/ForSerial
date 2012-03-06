@@ -9,7 +9,7 @@ namespace json.Objects
         private object typedValue;
         private readonly List<object> constructorArguments = new List<object>();
 
-        public DefaultObjectStructure(TypeDefinition typeDef) : base(typeDef) { }
+        public DefaultObjectStructure(StructureDefinition typeDef) : base(typeDef) { }
 
         public override void AssignToProperty(object obj, PropertyDefinition property)
         {
@@ -36,7 +36,7 @@ namespace json.Objects
 
             foreach (KeyValuePair<string, ObjectOutput> property in Properties)
             {
-                PropertyDefinition propDef = TypeDef.Properties.Get(property.Key);
+                PropertyDefinition propDef = StructureDef.Properties.Get(property.Key);
                 if (propDef != null)
                     property.Value.AssignToProperty(typedValue, propDef);
             }

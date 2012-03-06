@@ -109,12 +109,13 @@
     <Compile Include="Objects\PropertyDefinitionBuilder.cs" />
     <Compile Include="Objects\ReflectionInterfaceProvider.cs" />
     <Compile Include="Objects\SerializeTypeAttribute.cs" />
+    <Compile Include="Objects\StructureDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\DateTimeDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\EnumerableDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\JsonDictionaryDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\SequenceDefinition.cs" />
     <Compile Include="Objects\PreBuildInfo.cs" />
-    <Compile Include="Objects\TypeDefinitions\DefaultTypeDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\DefaultStructureDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\GuidDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\PrimitiveDefinition.cs">
       <SubType>Code</SubType>

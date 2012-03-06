@@ -9,11 +9,10 @@ namespace json.Objects
     {
         private bool isSealed;
         private readonly TypeCode typeCode;
-        private static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
+        protected static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
 
         public Type Type { get; private set; }
-        public IDictionary<string, PropertyDefinition> Properties { get; private set; }// TODO use a KeyedCollection when moving out of TypeDefinition
         public List<ConstructorDefinition> Constructors { get; private set; }
 
         protected static readonly ObjectInterfaceProvider ObjectInterfaceProvider = new DynamicMethodProvider();
@@ -21,16 +20,14 @@ namespace json.Objects
         protected TypeDefinition(Type type)
         {
             Type = type;
-            Properties = new Dictionary<string, PropertyDefinition>();
             Constructors = new List<ConstructorDefinition>();
             typeCode = Type.GetTypeCode(type);
         }
 
-        internal void Populate()
+        internal virtual void Populate()
         {
             isSealed = Type.IsSealed;
             PopulateConstructors();
-            PopulateProperties();
             PopulatePreBuildMethods();
         }
 
@@ -46,31 +43,6 @@ namespace json.Objects
                 .Select(p => new ParameterDefinition(p.Name, p.ParameterType));
             ConstructorMethod constructorMethod = ObjectInterfaceProvider.GetConstructor(constructorInfo);
             return new ConstructorDefinition(constructorMethod, parameters);
-        }
-
-        private void PopulateProperties()
-        {
-            if (Type.IsInterface)
-                return;
-
-            PropertyDefinitionBuilder propBuilder = new PropertyDefinitionBuilder(ObjectInterfaceProvider);
-            IEnumerable<PropertyDefinition> properties = Type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
-                .Where(NotMarkedWithIgnoreAttribute)
-                .Select(propBuilder.Build);
-
-            foreach (PropertyDefinition property in properties)
-            {
-                Properties[property.Name] = property;
-            }
-        }
-
-        private static bool NotMarkedWithIgnoreAttribute(PropertyInfo property)
-        {
-            object[] attributes = property.GetCustomAttributes(true);
-            lock (IgnoreAttributes)
-            {
-                return attributes.None(a => IgnoreAttributes.Contains(a.GetType()));
-            }
         }
 
         private void PopulatePreBuildMethods()
@@ -158,46 +130,6 @@ namespace json.Objects
         {
             if (value == null) return new DefaultObjectValue(null);
             throw new NotAValue(Type);
-        }
-
-        // TODO this property stuff should be on StructureDefinition or something - SequenceDefinitions don't have properties
-
-        public virtual ObjectContainer CreateStructureForProperty(string name)
-        {
-            PropertyDefinition property = Properties.Get(name);
-            return property != null
-                ? property.CreateStructure()
-                : NullObjectStructure.Instance;
-        }
-
-        public ObjectContainer CreateStructureForProperty(string name, string typeIdentifier)
-        {
-            PropertyDefinition property = Properties.Get(name);
-            return property != null
-                ? property.CreateStructure(typeIdentifier)
-                : NullObjectStructure.Instance;
-        }
-
-        public virtual ObjectContainer CreateSequenceForProperty(string name)
-        {
-            PropertyDefinition property = Properties.Get(name);
-            return property != null
-                ? property.CreateSequence()
-                : NullObjectSequence.Instance;
-        }
-
-        public bool CanCreateValueForProperty(string name, object value)
-        {
-            PropertyDefinition property = Properties.Get(name);
-            return property != null && property.CanCreateValue(value);
-        }
-
-        public virtual ObjectValue CreateValueForProperty(string name, object value)
-        {
-            PropertyDefinition property = Properties.Get(name);
-            return property != null
-                ? property.CreateValue(value)
-                : NullObjectValue.Instance;
         }
 
         private class NotAValue : Exception

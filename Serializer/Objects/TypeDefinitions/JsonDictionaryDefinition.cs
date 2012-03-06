@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace json.Objects.TypeDefinitions
 {
-    public class JsonDictionaryDefinition : TypeDefinition
+    public class JsonDictionaryDefinition : StructureDefinition
     {
         private JsonDictionaryDefinition(Type dictionaryType)
             : base(dictionaryType)
