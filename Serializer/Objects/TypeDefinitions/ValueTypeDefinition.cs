@@ -24,6 +24,14 @@ namespace json.Objects.TypeDefinitions
                 && value.GetType() == Type;
         }
 
+        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        {
+            if (writer.CanWrite(input))
+                writer.Write(input);
+            else
+                base.Read(input, reader, writer, requestTypeIdentification);
+        }
+
         public override ObjectValue CreateValue(object value)
         {
             return new DefaultObjectValue(ConvertToCorrectType(value));

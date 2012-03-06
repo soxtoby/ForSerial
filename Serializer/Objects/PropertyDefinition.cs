@@ -58,11 +58,9 @@ namespace json.Objects
             return typeDef.CreateValue(value);
         }
 
-        public bool ShouldWriteTypeIdentifier(object value)
+        public void Read(object value, ObjectReader reader, Writer writer)
         {
-            return forceTypeIdentifierSerialization
-                || value != null
-                    && value.GetType() != typeDef.Type;
+            typeDef.ReadObject(value, reader, writer, forceTypeIdentifierSerialization);
         }
     }
 }

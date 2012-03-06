@@ -15,7 +15,7 @@ namespace json.Objects.TypeDefinitions
 
         public Type ItemType { get { return ItemTypeDef.Type; } }
 
-        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
+        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {
             IEnumerable inputArray = input as IEnumerable;
             if (inputArray == null) return;
@@ -23,7 +23,7 @@ namespace json.Objects.TypeDefinitions
             writer.BeginSequence();
 
             foreach (object item in inputArray)
-                reader.Read(item, writeTypeIdentifier || item.GetType() != ItemType);
+                ItemTypeDef.ReadObject(item, reader, writer, requestTypeIdentification);
 
             writer.EndSequence();
         }

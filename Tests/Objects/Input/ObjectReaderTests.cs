@@ -202,19 +202,6 @@ namespace json.Tests.Objects
         }
 
         [Test]
-        public void ValueIsWrittenAsValueIfWriterCanWriteIt()
-        {
-            Writer writer = Substitute.For<Writer>();
-            writer.CanWrite(Arg.Any<object>()).Returns(true);
-            object obj = new object();
-
-            ObjectReader.Read(obj, writer);
-
-            writer.Received().Write(obj);
-            writer.DidNotReceive().BeginStructure(Arg.Any<Type>());
-        }
-
-        [Test]
         public void StaticPropertyIsNotSerialized()
         {
             StaticPropertyClass.StaticProperty = 6;

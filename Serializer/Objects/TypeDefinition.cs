@@ -7,8 +7,9 @@ namespace json.Objects
 {
     public abstract class TypeDefinition
     {
-        private static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
+        private bool isSealed;
         private readonly TypeCode typeCode;
+        private static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
 
         public Type Type { get; private set; }
@@ -27,6 +28,7 @@ namespace json.Objects
 
         internal void Populate()
         {
+            isSealed = Type.IsSealed;
             PopulateConstructors();
             PopulateProperties();
             PopulatePreBuildMethods();
@@ -110,7 +112,20 @@ namespace json.Objects
             return readerType == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ReaderMatches(readerType));
         }
 
-        public abstract void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier);
+        public void ReadObject(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        {
+            if (input == null)
+                writer.Write(null);
+            else if (isSealed || input.GetType() == Type)
+                Read(input, reader, writer, requestTypeIdentification);
+            else
+            {
+                TypeDefinition inputTypeDef = CurrentTypeHandler.GetTypeDefinition(input);
+                inputTypeDef.Read(input, reader, writer, true);
+            }
+        }
+
+        public abstract void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification);
 
         public virtual ObjectContainer CreateStructure()
         {

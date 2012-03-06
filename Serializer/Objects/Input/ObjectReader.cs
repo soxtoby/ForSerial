@@ -31,34 +31,26 @@ namespace json.Objects
 
         public void Read(object input, bool requestTypeIdentification)
         {
-            if (writer.CanWrite(input))
-            {
-                writer.Write(input);
-            }
-            else
-            {
-                if (stuctureReferences.ContainsKey(input))
-                    writer.WriteReference(stuctureReferences[input]);
-                else
-                    ReadObject(input, ShouldWriteTypeIdentification(requestTypeIdentification));
-            }
+            TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(input);
+            typeDef.Read(input, this, writer, requestTypeIdentification);
         }
 
-        private bool ShouldWriteTypeIdentification(bool typeIdentifierRequested)
+        public bool ShouldWriteTypeIdentification(bool typeIdentifierRequested)
         {
             return options.SerializeTypeInformation == TypeInformationLevel.All
                 || options.SerializeTypeInformation == TypeInformationLevel.Minimal && typeIdentifierRequested;
         }
 
-        private void ReadObject(object input, bool writerTypeIdentifier)
+        public bool ReferenceStructure(object obj)
         {
-            TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(input.GetType());
-            typeDef.ReadObject(input, this, writer, writerTypeIdentifier);
-        }
+            if (stuctureReferences.ContainsKey(obj))
+            {
+                writer.WriteReference(stuctureReferences[obj]);
+                return true;
+            }
 
-        public void AddStructureReference(object obj)
-        {
             stuctureReferences[obj] = stuctureReferences.Count;
+            return false;
         }
     }
 }

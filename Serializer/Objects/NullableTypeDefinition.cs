@@ -21,9 +21,9 @@ namespace json.Objects
                 : new NullableTypeDefinition(type, underlyingType);
         }
 
-        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
+        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {
-            writer.Write(input);
+            underlyingTypeDef.Read(input, reader, writer, requestTypeIdentification);
         }
 
         public override ObjectValue CreateValue(object value)

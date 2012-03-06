@@ -6,7 +6,7 @@ namespace json.Objects
 
         public static readonly NullTypeDefinition Instance = new NullTypeDefinition();
 
-        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
+        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {
             writer.Write(null);
         }

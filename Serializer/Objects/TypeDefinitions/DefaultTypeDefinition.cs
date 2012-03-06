@@ -11,22 +11,23 @@ namespace json.Objects.TypeDefinitions
             return new DefaultTypeDefinition(type);
         }
 
-        public override void ReadObject(object input, ObjectReader reader, Writer writer, bool writeTypeIdentifier)
+        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {
-            reader.AddStructureReference(input);
+            if (reader.ReferenceStructure(input))
+                return;
 
-            if (writeTypeIdentifier)
+            if (reader.ShouldWriteTypeIdentification(requestTypeIdentification))
                 writer.BeginStructure(CurrentTypeHandler.GetTypeIdentifier(Type), reader.GetType());
             else
                 writer.BeginStructure(Type);
 
             foreach (PropertyDefinition property in Properties.Values)
             {
-                if (property.CanGet)
+                if (property.CanGet)    // TODO Put serializable properties in an array in populate
                 {
                     writer.AddProperty(property.Name);
                     object value = property.GetFrom(input);
-                    reader.Read(value, property.ShouldWriteTypeIdentifier(value));
+                    property.Read(value, reader, writer);
                 }
             }
 
