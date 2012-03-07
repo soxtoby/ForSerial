@@ -8,7 +8,7 @@ namespace json.Objects
     public abstract class TypeDefinition
     {
         private bool isSealed;
-        private readonly TypeCode typeCode;
+        protected readonly TypeCode typeCode;
         protected static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
 
@@ -87,7 +87,7 @@ namespace json.Objects
         public void ReadObject(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {
             if (input == null)
-                writer.Write(null);
+                writer.WriteNull();
             else if (isSealed || input.GetType() == Type)
                 Read(input, reader, writer, requestTypeIdentification);
             else

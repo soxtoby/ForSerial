@@ -1,4 +1,5 @@
-Clean up ObjectWriter - all those checks for PreBuildWriter are crap.
+Specific write functions for different number types.
+Optimise string escaping.
 
 
 Allow override of type resolution.

@@ -18,9 +18,10 @@ namespace json.Objects.TypeDefinitions
         public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {
             DateTime? dateTime = input as DateTime?;
-            writer.Write(dateTime == null
-                ? (object)null
-                : (dateTime.Value.ToUniversalTime() - BaseDate).TotalMilliseconds);
+            if (dateTime == null)
+                writer.WriteNull();
+            else
+                writer.Write((dateTime.Value.ToUniversalTime() - BaseDate).TotalMilliseconds);
         }
 
         public override ObjectValue CreateValue(object value)

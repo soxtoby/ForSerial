@@ -92,7 +92,7 @@ namespace json.Json
                     break;
 
                 case "null":
-                    writer.Write(null);
+                    writer.WriteNull();
                     break;
 
                 default:

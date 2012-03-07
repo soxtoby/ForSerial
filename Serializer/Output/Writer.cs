@@ -13,5 +13,16 @@ namespace json
         void BeginSequence();
         void EndSequence();
         void WriteReference(int referenceIndex);
+        void Write(bool value);
+        void Write(char value);
+        void Write(decimal value);
+        void Write(double value);
+        void Write(float value);
+        void Write(int value);
+        void Write(long value);
+        void Write(string value);
+        void Write(uint value);
+        void Write(ulong value);
+        void WriteNull();
     }
 }

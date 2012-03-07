@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using json.Json;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace json.Tests.Json
@@ -19,52 +21,108 @@ namespace json.Tests.Json
         }
 
         [Test]
-        public void WriteValue_GivenNumber_WritesNumber()
+        public void Write_GivenNumber_WritesNumber()
         {
             sut.Write(1);
             Json.ShouldBe("1");
         }
 
         [Test]
-        public void WriteValue_GivenString_WrapsStringInQuotes()
+        public void Write_GivenString_WrapsStringInQuotes()
         {
             sut.Write("foo");
             Json.ShouldBe(@"""foo""");
         }
 
         [Test]
-        public void WriteValue_GivenStringWithQuotes_EscapesQuotes()
+        public void Write_GivenStringWithQuotes_EscapesQuotes()
         {
             sut.Write(@"foo""bar");
             Json.ShouldBe(@"""foo\""bar""");
         }
 
         [Test]
-        public void WriteValue_GivenStringWithBackslash_EscapesBackslash()
+        public void Write_GivenStringWithBackslash_EscapesBackslash()
         {
             sut.Write("foo\\bar");
             Json.ShouldBe(@"""foo\\bar""");
         }
 
         [Test]
-        public void WriteValue_GivenTrue_WritesTrue()
+        public void Write_GivenTrue_WritesTrue()
         {
             sut.Write(true);
             Json.ShouldBe("true");
         }
 
         [Test]
-        public void WriteValue_GivenFalse_WritesFalse()
+        public void Write_GivenFalse_WritesFalse()
         {
             sut.Write(false);
             Json.ShouldBe("false");
         }
 
         [Test]
-        public void WriteValue_GivenNull_WritesNull()
+        public void WriteNull()
         {
-            sut.Write(null);
+            sut.WriteNull();
             Json.ShouldBe("null");
+        }
+
+        [Test]
+        public void Write_Char()
+        {
+            WriteCallsTextWriter(writer => writer.Write('a'), writer => writer.Write('a'));
+        }
+
+        [Test]
+        public void Write_Decimal()
+        {
+            WriteCallsTextWriter(writer => writer.Write(1m), writer => writer.Write(1m));
+        }
+
+        [Test]
+        public void Write_Double()
+        {
+            WriteCallsTextWriter(writer => writer.Write(1d), writer => writer.Write(1d));
+        }
+
+        [Test]
+        public void Write_Float()
+        {
+            WriteCallsTextWriter(writer => writer.Write(1f), writer => writer.Write(1f));
+        }
+
+        [Test]
+        public void Write_Int()
+        {
+            WriteCallsTextWriter(writer => writer.Write(1), writer => writer.Write(1));
+        }
+
+        [Test]
+        public void Write_Long()
+        {
+            WriteCallsTextWriter(writer => writer.Write(1L), writer => writer.Write(1L));
+        }
+
+        [Test]
+        public void Write_UInt()
+        {
+            WriteCallsTextWriter(writer => writer.Write(1U), writer => writer.Write(1U));
+        }
+
+        [Test]
+        public void Write_ULong()
+        {
+            WriteCallsTextWriter(writer => writer.Write(1UL), writer => writer.Write(1UL));
+        }
+
+        private static void WriteCallsTextWriter(Action<JsonStringWriter> jsonWriterCall, Action<TextWriter> expectedTextWriterCall)
+        {
+            TextWriter textWriter = Substitute.For<TextWriter>();
+            var sut = new JsonStringWriter(textWriter);
+            jsonWriterCall(sut);
+            expectedTextWriterCall(textWriter.Received());
         }
 
         [Test]

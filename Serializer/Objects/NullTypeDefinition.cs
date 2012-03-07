@@ -8,7 +8,7 @@ namespace json.Objects
 
         public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {
-            writer.Write(null);
+            writer.WriteNull();
         }
     }
 }

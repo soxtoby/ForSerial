@@ -25,12 +25,9 @@ namespace json.JsonObjects
         private void ReadValue(JsonObject input)
         {
             if (input == null)
-            {
-                writer.Write(null);
-                return;
-            }
-
-            input.Accept(this);
+                writer.WriteNull();
+            else
+                input.Accept(this);
         }
 
         public void Visit(JsonMap map)

@@ -26,6 +26,18 @@ namespace json.Objects
             preBuildWriter.Write(value);
         }
 
+        public void Write(bool value) { Write((object)value); }
+        public void Write(char value) { Write((object)value); }
+        public void Write(decimal value) { Write((object)value); }
+        public void Write(double value) { Write((object)value); }
+        public void Write(float value) { Write((object)value); }
+        public void Write(int value) { Write((object)value); }
+        public void Write(long value) { Write((object)value); }
+        public void Write(string value) { Write((object)value); }
+        public void Write(uint value) { Write((object)value); }
+        public void Write(ulong value) { Write((object)value); }
+        public void WriteNull() { Write((object)null); }
+
         public void BeginStructure(Type readerType)
         {
             preBuildDepth++;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using json.Objects;
+using json.Objects.TypeDefinitions;
 
 namespace json.Json
 {
@@ -43,21 +44,94 @@ namespace json.Json
 
         public void Write(object value)
         {
-            Delimit();
-
             if (value == null)
-            {
                 WriteNull();
-                return;
-            }
-
-            Type valueType = value.GetType();
-            if (valueType == typeof(bool))
-                WriteBoolean((bool)value);
-            else if (valueType == typeof(string))
-                WriteString((string)value);
             else
-                WriteNumber(Convert.ToDouble(value));
+                PrimitiveDefinition.GetWriterMethod(Type.GetTypeCode(value.GetType()))(value, this);
+        }
+
+        public void Write(bool value)
+        {
+            Delimit();
+            Json.Write(value ? True : False);
+        }
+
+        public void Write(char value)
+        {
+            Delimit();
+            Json.Write(value);
+        }
+
+        public void Write(decimal value)
+        {
+            Delimit();
+            Json.Write(value);
+        }
+
+        public void Write(double value)
+        {
+            Delimit();
+            Json.Write(value);
+        }
+
+        public void Write(float value)
+        {
+            Delimit();
+            Json.Write(value);
+        }
+
+        public void Write(int value)
+        {
+            Delimit();
+            Json.Write(value);
+        }
+
+        public void Write(long value)
+        {
+            Delimit();
+            Json.Write(value);
+        }
+
+        public void Write(string value)
+        {
+            Delimit();
+            Json.Write(QuoteChar);
+            Json.Write(EscapeForJson(value));
+            Json.Write(QuoteChar);
+        }
+
+        public void Write(uint value)
+        {
+            Delimit();
+            Json.Write(value);
+        }
+
+        public void Write(ulong value)
+        {
+            Delimit();
+            Json.Write(value);
+        }
+
+        public void WriteNull()
+        {
+            Delimit();
+            Json.Write(Null);
+        }
+
+        private void WriteRawString(string value)
+        {
+            Json.Write(QuoteChar);
+            Json.Write(value);
+            Json.Write(QuoteChar);
+        }
+
+        private static string EscapeForJson(string value)
+        {
+            return value
+                .Replace(Backslash, EscapedBackslash)
+                .Replace(QuoteString, EscapedQuote)
+                .Replace(Return, string.Empty)
+                .Replace(NewLine, EscapedNewLine);
         }
 
         public virtual void BeginStructure(Type readerType)
@@ -115,44 +189,6 @@ namespace json.Json
                 suppressDelimiter = false;
             else
                 Json.Write(Comma);
-        }
-
-        private void WriteString(string value)
-        {
-            Json.Write(QuoteChar);
-            Json.Write(EscapeForJson(value));
-            Json.Write(QuoteChar);
-        }
-
-        private void WriteRawString(string value)
-        {
-            Json.Write(QuoteChar);
-            Json.Write(value);
-            Json.Write(QuoteChar);
-        }
-
-        private void WriteNumber(double value)
-        {
-            Json.Write(value);
-        }
-
-        private void WriteBoolean(bool value)
-        {
-            Json.Write(value ? True : False);
-        }
-
-        private void WriteNull()
-        {
-            Json.Write(Null);
-        }
-
-        private static string EscapeForJson(string value)
-        {
-            return value
-                .Replace(Backslash, EscapedBackslash)
-                .Replace(QuoteString, EscapedQuote)
-                .Replace(Return, string.Empty)
-                .Replace(NewLine, EscapedNewLine);
         }
     }
 }

@@ -16,9 +16,10 @@ namespace json.Objects.TypeDefinitions
         public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {
             Guid? guid = input as Guid?;
-            writer.Write(guid == null
-                ? null
-                : guid.ToString());
+            if (guid == null)
+                writer.WriteNull();
+            else
+                writer.Write(guid.ToString());
         }
 
         public override ObjectValue CreateValue(object value)
