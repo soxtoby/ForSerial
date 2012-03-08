@@ -195,10 +195,10 @@ namespace json.Tests.Objects
         }
 
         [Test]
-        public void DateTimeParsedToNumber()
+        public void DateTimeParsedToString()
         {
             ConvertToJson(new DateTime(2001, 2, 3, 4, 5, 6, 7))
-                .ShouldBe("981137106007");
+                .ShouldBe(@"""2001-02-02T18:05:06.007Z""");
         }
 
         [Test]
