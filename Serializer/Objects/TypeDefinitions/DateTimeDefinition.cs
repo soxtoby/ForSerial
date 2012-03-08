@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Text;
 
 namespace json.Objects.TypeDefinitions
@@ -98,7 +97,7 @@ namespace json.Objects.TypeDefinitions
             DateTime dateTime;
             string dateString = value as string;
             if (dateString != null)
-                dateTime = DateTime.ParseExact(dateString.TrimEnd(TimeZoneDesignator) + "0000", "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+                dateTime = DateTime.Parse(dateString);
             else
             {
                 double? number = value as double?;

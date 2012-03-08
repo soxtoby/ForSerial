@@ -44,11 +44,7 @@ namespace json.PerformanceTests
             DatabaseCompat db = GetNorthwindObject();
             ObjectReader.Read(db, new JsonStringWriter(NullTextWriter.Instance));
 
-            Time(() =>
-                {
-                    for (int i = 0; i < Iterations; i++)
-                        ObjectReader.Read(db, new JsonStringWriter(TextWriter.Null));
-                });
+            Time(Iterations, () => ObjectReader.Read(db, new JsonStringWriter(TextWriter.Null)));
         }
 
         [Test]
@@ -59,11 +55,7 @@ namespace json.PerformanceTests
             XmlSerializer serializer = new XmlSerializer(typeof(DatabaseCompat));
             serializer.Serialize(Stream.Null, db);
 
-            Time(() =>
-                {
-                    for (int i = 0; i < Iterations; i++)
-                        serializer.Serialize(Stream.Null, db);
-                });
+            Time(Iterations, () => serializer.Serialize(Stream.Null, db));
         }
 
         [Test]
@@ -73,11 +65,7 @@ namespace json.PerformanceTests
             JsonSerializer<DatabaseCompat> serializer = new JsonSerializer<DatabaseCompat>();
             serializer.SerializeToWriter(db, TextWriter.Null);
 
-            Time(() =>
-                {
-                    for (int i = 0; i < Iterations; i++)
-                        serializer.SerializeToWriter(db, TextWriter.Null);
-                });
+            Time(Iterations, () => serializer.SerializeToWriter(db, TextWriter.Null));
         }
 
         [Test]
@@ -86,23 +74,16 @@ namespace json.PerformanceTests
             GetNorthwindObject();
             string json = GetNorthwindJson();
 
-            Time(() =>
-                {
-                    for (int i = 0; i < 10; i++)
-                        JsonParser.Parse(json, new ObjectWriter<DatabaseCompat>());
-                });
+            Time(10, () => JsonParser.Parse(json, new ObjectWriter<DatabaseCompat>()));
         }
 
-        private static void Time(Action action, string title = null)
+        private static void Time(int iterations, Action action)
         {
             Stopwatch watch = Stopwatch.StartNew();
-            action();
+            for (int i = 0; i < iterations; i++)
+                action();
             watch.Stop();
-
-            if (title != null)
-                Console.WriteLine(title + ": " + watch.ElapsedMilliseconds);
-            else
-                Console.WriteLine(watch.ElapsedMilliseconds);
+            Console.WriteLine(watch.ElapsedMilliseconds);
         }
 
         private DatabaseCompat GetNorthwindObject()
