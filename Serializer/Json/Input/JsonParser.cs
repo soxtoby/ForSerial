@@ -63,44 +63,10 @@ namespace json.Json
                     ParseAndWriteString(json, ref i);
                     break;
                 case OpenBrace:
-                    while (++i < jsonLength && braces > 0)
-                    {
-                        c = json[i];
-                        if (c == Quotes && json[i - 1] != Backslash)
-                        {
-                            inString = !inString;
-                            continue;
-                        }
-
-                        if (inString)
-                            continue;
-
-                        if (c == OpenBrace)
-                            braces++;
-                        else if (c == CloseBrace)
-                            braces--;
-                    }
-                    ParseMap(json.Substring(start, i - start));
+                    ParseMap(json, ref i);
                     break;
                 case OpenBracket:
-                    while (++i < jsonLength && braces > 0)
-                    {
-                        c = json[i];
-                        if (c == Quotes && json[i - 1] != Backslash)
-                        {
-                            inString = !inString;
-                            continue;
-                        }
-
-                        if (inString)
-                            continue;
-
-                        if (c == OpenBracket)
-                            braces++;
-                        else if (c == CloseBracket)
-                            braces--;
-                    }
-                    ParseArray(json.Substring(start, i - start));
+                    ParseArray(json, ref i);
                     break;
                 default:
                     {
@@ -120,16 +86,20 @@ namespace json.Json
             }
         }
 
-        private void ParseArray(string json)
+        private void ParseArray(string json, ref int i)
         {
             writer.BeginSequence();
             int jsonLength = json.Length;
-            int i = 1;
-            while (i < jsonLength)
-            {
-                Parse(json, ref i);
-                SkipComma(json, ref i);
-            }
+            i++;
+            for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
+            if (json[i] == CloseBracket)
+                i++;
+            else
+                while (i < jsonLength)
+                {
+                    Parse(json, ref i);
+                    if (SkipComma(json, ref i)) break;
+                }
             writer.EndSequence();
         }
 
@@ -150,20 +120,24 @@ namespace json.Json
             writer.Write(double.Parse(word));
         }
 
-        private void ParseMap(string json)
+        private void ParseMap(string json, ref int i)
         {
             writer.BeginStructure(typeof(JsonParser));
             int jsonLength = json.Length;
-            int i = 1;
-            while (i < jsonLength)
-            {
-                string propertyName = ParseString(json, ref i);
-                writer.AddProperty(propertyName);
-                for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
+            i++;
+            for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
+            if (json[i] == CloseBrace)
                 i++;
-                Parse(json, ref i);
-                SkipComma(json, ref i);
-            }
+            else
+                while (i < jsonLength)
+                {
+                    string propertyName = ParseString(json, ref i);
+                    writer.AddProperty(propertyName);
+                    for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
+                    i++;
+                    Parse(json, ref i);
+                    if (SkipComma(json, ref i)) break;
+                }
 
             writer.EndStructure();
         }
@@ -200,12 +174,14 @@ namespace json.Json
             for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
         }
 
-        private void SkipComma(string json, ref int i)
+        private bool SkipComma(string json, ref int i)
         {
             for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
-            if (i < json.Length && (json[i] == Comma || json[i] == CloseBrace || json[i] == CloseBracket))
+            bool close = false;
+            if (i < json.Length && (json[i] == Comma || (close = json[i] == CloseBrace) || (close = json[i] == CloseBracket)))
                 i++;
             for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
+            return close;
         }
 
         private static readonly bool[] WhitespaceChars = new bool[' ' + 1];
