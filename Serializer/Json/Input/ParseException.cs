@@ -30,8 +30,6 @@ namespace json.Json
             return "{0}\r\nInner Exception: {1}".FormatWith(innerException.PrettyPrint(json), innerException);
         }
 
-        public ParseException(string message, Token token) : this(message, token.ToString(), token.Line, token.Position) { }
-
         private ParseException(string message, string tokenString, int line, int position, Exception innerException)
             : base(message, innerException)
         {
