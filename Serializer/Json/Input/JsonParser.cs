@@ -41,245 +41,181 @@ namespace json.Json
         private static void DoParse(string json, Writer writer)
         {
             JsonParser parser = new JsonParser(writer);
-            parser.Parse(json);
-        }
-
-        private void Parse(string json)
-        {
             int i = 0;
-            SkipWhitespace(json, ref i);
-            if (i < json.Length)
-                Parse(json, ref i);
+            parser.Parse(json, ref i);
         }
 
         private void Parse(string json, ref int i)
         {
-            int start = i;
-
-            SkipWhitespace(json, ref i);
-
-            if (i == json.Length)
-                throw new ExpectedValue(json.Substring(start), 0, 0);
-
-            char c = json[i];
-
-            if (c == OpenBrace)
-            {
-                ParseMap(json, ref i);
-            }
-            else if (c == OpenBracket)
-            {
-                ParseArray(json, ref i);
-            }
-            else if (char.IsDigit(c))
-            {
-                writer.Write(GetNextNumber(json, ref i));
-            }
-            else if (c == Quotes)
-            {
-                writer.Write(GetNextString(json, ref i));
-            }
-            else
-            {
-                string word = GetNextToken(json, ref i);
-                switch (word)
-                {
-                    case True:
-                        writer.Write(true);
-                        break;
-                    case False:
-                        writer.Write(false);
-                        break;
-                    case Null:
-                        writer.WriteNull();
-                        break;
-                    default:
-                        throw new ExpectedValue(word, 0, 0);
-                }
-            }
-        }
-
-        private static string MatchBraces(char openBrace, char closeBrace, string json, ref int i)
-        {
-            int startIndex = i;
-            i++;
+            int jsonLength = json.Length;
+            char c;
             int braces = 1;
-            for (; i < json.Length && braces > 0; i++)
+            bool inString = false;
+
+            for (; i < json.Length; i++) { c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
+
+            int start = i;
+            c = json[i];
+
+            switch (c)
             {
-                char c = json[i];
+                case Quotes:
+                    ParseAndWriteString(json, ref i);
+                    break;
+                case OpenBrace:
+                    while (++i < jsonLength && braces > 0)
+                    {
+                        c = json[i];
+                        if (c == Quotes && json[i - 1] != Backslash)
+                        {
+                            inString = !inString;
+                            continue;
+                        }
 
-                if (c == Quotes)
-                    GetNextString(json, ref i);
-                else if (c == openBrace)
-                    braces++;
-                else if (c == closeBrace)
-                    braces--;
+                        if (inString)
+                            continue;
+
+                        if (c == OpenBrace)
+                            braces++;
+                        else if (c == CloseBrace)
+                            braces--;
+                    }
+                    ParseMap(json.Substring(start, i - start));
+                    break;
+                case OpenBracket:
+                    while (++i < jsonLength && braces > 0)
+                    {
+                        c = json[i];
+                        if (c == Quotes && json[i - 1] != Backslash)
+                        {
+                            inString = !inString;
+                            continue;
+                        }
+
+                        if (inString)
+                            continue;
+
+                        if (c == OpenBracket)
+                            braces++;
+                        else if (c == CloseBracket)
+                            braces--;
+                    }
+                    ParseArray(json.Substring(start, i - start));
+                    break;
+                default:
+                    {
+                        while (++i < jsonLength)
+                        {
+                            c = json[i];
+                            if (c == CloseBrace
+                                || c == CloseBracket
+                                    || c == Comma
+                                        || c < WhitespaceChars.Length && WhitespaceChars[c])
+                                break;
+                        }
+                        string word = json.Substring(start, i - start);
+                        ParseWord(word);
+                    }
+                    break;
             }
-
-            if (braces > 0)
-                throw new UnmatchedBrace(openBrace, 0, 0);
-
-            return json.Substring(startIndex, i - startIndex);
         }
 
-        private void ParseMap(string json, ref int i)
+        private void ParseArray(string json)
         {
-            Expect(OpenBrace, json, ref i);
-
-            bool isFirstProperty = true;
-
-            if (NextIs(CloseBrace, json, ref i))
-            {
-                writer.BeginStructure(typeof(JsonParser));
-                writer.EndStructure();
-            }
-            else
-            {
-                do
-                {
-                    string propertyName = GetNextString(json, ref i);
-                    Expect(Colon, json, ref i);
-
-                    if (isFirstProperty)
-                    {
-                        if (propertyName == ReferencePropertyName)
-                        {
-                            writer.WriteReference(Convert.ToInt32(GetNextNumber(json, ref i)));
-                            Expect(CloseBrace, json, ref i);
-                            return;
-                        }
-                        if (propertyName == TypePropertyName)
-                        {
-                            writer.BeginStructure(GetNextString(json, ref i), typeof(JsonParser));
-                        }
-                        else
-                        {
-                            writer.BeginStructure(typeof(JsonParser));
-                            writer.AddProperty(propertyName);
-                            Parse(json, ref i);
-                        }
-                        isFirstProperty = false;
-                    }
-                    else
-                    {
-                        writer.AddProperty(propertyName);
-                        Parse(json, ref i);
-                    }
-
-                } while (NextIs(Comma, json, ref i));
-
-                Expect(CloseBrace, json, ref i);
-
-                writer.EndStructure();
-            }
-        }
-
-        private void ParseArray(string json, ref int i)
-        {
-            Expect(OpenBracket, json, ref i);
-
             writer.BeginSequence();
-
-            if (NextIs(CloseBracket, json, ref i))
+            int jsonLength = json.Length;
+            int i = 1;
+            while (i < jsonLength)
             {
-                writer.EndSequence();
+                Parse(json, ref i);
+                SkipComma(json, ref i);
             }
-            else
-            {
-                do
-                {
-                    Parse(json, ref i);
-                } while (NextIs(Comma, json, ref i));
-
-                Expect(CloseBracket, json, ref i);
-
-                writer.EndSequence();
-            }
+            writer.EndSequence();
         }
 
-        private static string GetNextString(string json, ref int i)
+        private void ParseWord(string word)
         {
-            Expect(Quotes, json, ref i);
-
-            int stringStart = i;
-
-            bool escaped = false;
-            for (; i < json.Length; i++)
+            switch (word)
             {
-                if (escaped)
-                    escaped = false;
-                else if (json[i] == Quotes)
-                    break;
-                else if (json[i] == Backslash)
-                    escaped = true;
+                case True:
+                    writer.Write(true);
+                    return;
+                case False:
+                    writer.Write(false);
+                    return;
+                case Null:
+                    writer.WriteNull();
+                    return;
             }
-
-            string stringValue = json.Substring(stringStart, i - stringStart);//TODO unescape
-            i++;
-            return stringValue;
+            writer.Write(double.Parse(word));
         }
 
-        private static double GetNextNumber(string json, ref int i)
+        private void ParseMap(string json)
         {
-            string number = GetNextToken(json, ref i);
-            return double.Parse(number);
-        }
-
-        private static string GetNextToken(string json, ref int i)
-        {
-            SkipWhitespace(json, ref i);
-            int tokenStart = i;
-            i++;
-            for (; i < json.Length; i++)
+            writer.BeginStructure(typeof(JsonParser));
+            int jsonLength = json.Length;
+            int i = 1;
+            while (i < jsonLength)
             {
-                char c = json[i];
-                if (c == Comma
-                    || c == CloseBrace
-                    || c == CloseBracket
-                    || c < whitespaceChars.Length && whitespaceChars[c])
-                    break;
-            }
-            return json.Substring(tokenStart, i - tokenStart);
-        }
-
-        private static bool NextIs(char expected, string json, ref int i)
-        {
-            SkipWhitespace(json, ref i);
-            if (i < json.Length && json[i] == expected)
-            {
+                string propertyName = ParseString(json, ref i);
+                writer.AddProperty(propertyName);
+                for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
                 i++;
-                return true;
+                Parse(json, ref i);
+                SkipComma(json, ref i);
             }
-            return false;
+
+            writer.EndStructure();
         }
 
-        private static void Expect(char expected, string json, ref int i)
+        private void ParseAndWriteString(string json, ref int i)
         {
-            SkipWhitespace(json, ref i);
-            if (i == json.Length || json[i] != expected)
-                throw new ExpectedToken(expected, i == json.Length ? char.MinValue : json[i], 0, 0);
-            i++;
+            string str = ParseString(json, ref i);
+            writer.Write(str);
         }
 
-        private static readonly bool[] whitespaceChars;
+        private string ParseString(string json, ref int i)
+        {
+            char c;
+            for (; i < json.Length; i++) { c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
+            i++;
+            int start = i;
+            int jsonLength = json.Length;
+            while (++i < jsonLength)
+            {
+                c = json[i];
+                if (c == Quotes && json[i - 1] != Backslash)
+                    break;
+            }
+            string value = json.Substring(start, i - start);
+            i++;
+            return value;
+        }
+
+        private void SkipColon(string json, ref int i)
+        {
+            for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
+            if (i < json.Length && json[i] == Colon)
+                i++;
+            for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
+        }
+
+        private void SkipComma(string json, ref int i)
+        {
+            for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
+            if (i < json.Length && (json[i] == Comma || json[i] == CloseBrace || json[i] == CloseBracket))
+                i++;
+            for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
+        }
+
+        private static readonly bool[] WhitespaceChars = new bool[' ' + 1];
 
         static JsonParser()
         {
-            whitespaceChars = new bool[' ' + 1];
-            whitespaceChars[' '] = true;
-            whitespaceChars['\t'] = true;
-            whitespaceChars['\r'] = true;
-            whitespaceChars['\n'] = true;
-        }
-
-        private static void SkipWhitespace(string json, ref int i)
-        {
-            for (; i < json.Length; i++)
-            {
-                char c = json[i];
-                if (c > whitespaceChars.Length || !whitespaceChars[c])
-                    break;
-            }
+            WhitespaceChars[' '] = true;
+            WhitespaceChars['\n'] = true;
+            WhitespaceChars['\t'] = true;
+            WhitespaceChars['\r'] = true;
         }
 
 
