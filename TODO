@@ -12,6 +12,8 @@ Better object construction
  - Avoid passing in properties that can be set directly.
  - Once property has been passed in, don't set it again.
 Add tests for static func method generation.
+Add version attribute for classes and put version in type identifier.
+Test negative numbers.
 
 New Serialization Rules:
  - Defaults

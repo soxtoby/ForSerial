@@ -17,6 +17,12 @@ namespace json.Tests.Json
         }
 
         [Test]
+        public void WhitespaceOnly()
+        {
+            ParseJson(" ").ShouldBeNull();
+        }
+
+        [Test]
         public void Null()
         {
             ParseJson("null")
