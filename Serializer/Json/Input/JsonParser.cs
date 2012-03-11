@@ -18,11 +18,16 @@ namespace json.Json
         private const string ReferencePropertyName = "_ref";
         private const string TypePropertyName = "_type";
         private readonly Writer writer;
+        private readonly string json;
+        private readonly int jsonLength;
+        private int i;
 
-        private JsonParser(Writer writer)
+        private JsonParser(string json, Writer writer)
         {
             if (writer == null) throw new ArgumentNullException("writer");
 
+            this.json = json;
+            jsonLength = json.Length;
             this.writer = writer;
         }
 
@@ -40,14 +45,12 @@ namespace json.Json
 
         private static void DoParse(string json, Writer writer)
         {
-            JsonParser parser = new JsonParser(writer);
-            int i = 0;
-            parser.Parse(json, ref i);
+            JsonParser parser = new JsonParser(json, writer);
+            parser.Parse();
         }
 
-        private void Parse(string json, ref int i)
+        private void Parse()
         {
-            int jsonLength = json.Length;
             char c;
             int braces = 1;
             bool inString = false;
@@ -60,13 +63,13 @@ namespace json.Json
             switch (c)
             {
                 case Quotes:
-                    ParseAndWriteString(json, ref i);
+                    ParseAndWriteString();
                     break;
                 case OpenBrace:
-                    ParseMap(json, ref i);
+                    ParseMap();
                     break;
                 case OpenBracket:
-                    ParseArray(json, ref i);
+                    ParseArray();
                     break;
                 default:
                     {
@@ -86,10 +89,9 @@ namespace json.Json
             }
         }
 
-        private void ParseArray(string json, ref int i)
+        private void ParseArray()
         {
             writer.BeginSequence();
-            int jsonLength = json.Length;
             i++;
             for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
             if (json[i] == CloseBracket)
@@ -97,8 +99,8 @@ namespace json.Json
             else
                 while (i < jsonLength)
                 {
-                    Parse(json, ref i);
-                    if (SkipComma(json, ref i)) break;
+                    Parse();
+                    if (SkipComma()) break;
                 }
             writer.EndSequence();
         }
@@ -120,10 +122,9 @@ namespace json.Json
             writer.Write(double.Parse(word));
         }
 
-        private void ParseMap(string json, ref int i)
+        private void ParseMap()
         {
             writer.BeginStructure(typeof(JsonParser));
-            int jsonLength = json.Length;
             i++;
             for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
             if (json[i] == CloseBrace)
@@ -131,30 +132,29 @@ namespace json.Json
             else
                 while (i < jsonLength)
                 {
-                    string propertyName = ParseString(json, ref i);
+                    string propertyName = ParseString();
                     writer.AddProperty(propertyName);
                     for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
                     i++;
-                    Parse(json, ref i);
-                    if (SkipComma(json, ref i)) break;
+                    Parse();
+                    if (SkipComma()) break;
                 }
 
             writer.EndStructure();
         }
 
-        private void ParseAndWriteString(string json, ref int i)
+        private void ParseAndWriteString()
         {
-            string str = ParseString(json, ref i);
+            string str = ParseString();
             writer.Write(str);
         }
 
-        private string ParseString(string json, ref int i)
+        private string ParseString()
         {
             char c;
             for (; i < json.Length; i++) { c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
             i++;
             int start = i;
-            int jsonLength = json.Length;
             while (++i < jsonLength)
             {
                 c = json[i];
@@ -166,19 +166,11 @@ namespace json.Json
             return value;
         }
 
-        private void SkipColon(string json, ref int i)
-        {
-            for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
-            if (i < json.Length && json[i] == Colon)
-                i++;
-            for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
-        }
-
-        private bool SkipComma(string json, ref int i)
+        private bool SkipComma()
         {
             for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
             bool close = false;
-            if (i < json.Length && (json[i] == Comma || (close = json[i] == CloseBrace) || (close = json[i] == CloseBracket)))
+            if (i < jsonLength && (json[i] == Comma || (close = json[i] == CloseBrace) || (close = json[i] == CloseBracket)))
                 i++;
             for (; i < json.Length; i++) { char c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
             return close;
