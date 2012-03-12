@@ -46,38 +46,39 @@ namespace json.Objects
 
         public virtual ObjectContainer CreateStructureForProperty(string name)
         {
-            PropertyDefinition property = Properties.Get(name);
-            return property != null
+            PropertyDefinition property;
+            return Properties.TryGetValue(name, out property)
                 ? property.CreateStructure()
                 : NullObjectStructure.Instance;
         }
 
         public ObjectContainer CreateStructureForProperty(string name, string typeIdentifier)
         {
-            PropertyDefinition property = Properties.Get(name);
-            return property != null
+            PropertyDefinition property;
+            return Properties.TryGetValue(name, out property)
                 ? property.CreateStructure(typeIdentifier)
                 : NullObjectStructure.Instance;
         }
 
         public virtual ObjectContainer CreateSequenceForProperty(string name)
         {
-            PropertyDefinition property = Properties.Get(name);
-            return property != null
+            PropertyDefinition property;
+            return Properties.TryGetValue(name, out property)
                 ? property.CreateSequence()
-                : NullObjectSequence.Instance;
+                : NullObjectStructure.Instance;
         }
 
         public bool CanCreateValueForProperty(string name, object value)
         {
-            PropertyDefinition property = Properties.Get(name);
-            return property != null && property.CanCreateValue(value);
+            PropertyDefinition property;
+            return Properties.TryGetValue(name, out property)
+                && property.CanCreateValue(value);
         }
 
         public virtual ObjectValue CreateValueForProperty(string name, object value)
         {
-            PropertyDefinition property = Properties.Get(name);
-            return property != null
+            PropertyDefinition property;
+            return Properties.TryGetValue(name, out property)
                 ? property.CreateValue(value)
                 : NullObjectValue.Instance;
         }
@@ -94,6 +95,11 @@ namespace json.Objects
         protected override string GetKeyForItem(PropertyDefinition item)
         {
             return item.Name;
+        }
+
+        public bool TryGetValue(string key, out PropertyDefinition property)
+        {
+            return Dictionary.TryGetValue(key, out property);
         }
     }
 

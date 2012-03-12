@@ -36,8 +36,8 @@ namespace json.Objects
 
             foreach (KeyValuePair<string, ObjectOutput> property in Properties)
             {
-                PropertyDefinition propDef = StructureDef.Properties.Get(property.Key);
-                if (propDef != null)
+                PropertyDefinition propDef;
+                if (StructureDef.Properties.TryGetValue(property.Key, out propDef))
                     property.Value.AssignToProperty(typedValue, propDef);
             }
 

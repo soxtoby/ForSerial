@@ -155,14 +155,27 @@ namespace json.Json
             for (; i < json.Length; i++) { c = json[i]; if (c >= WhitespaceChars.Length || !WhitespaceChars[c])break; }
             i++;
             int start = i;
+            bool containsBackslash = false;
             while (++i < jsonLength)
             {
                 c = json[i];
-                if (c == Quotes && json[i - 1] != Backslash)
+                if (c == Backslash)
+                {
+                    containsBackslash = true;
+                    i++;
+                }
+                else if (c == Quotes)
                     break;
             }
             string value = json.Substring(start, i - start);
             i++;
+            return containsBackslash
+                ? UnescapeString(value)
+                : value;
+        }
+
+        private string UnescapeString(string value)
+        {
             return value;
         }
 
