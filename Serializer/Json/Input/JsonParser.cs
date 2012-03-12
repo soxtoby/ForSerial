@@ -99,43 +99,13 @@ namespace json.Json
             writer.EndSequence();
         }
 
-        private void ParseWord()
+        private bool IsEndOfArray()
         {
-            string word = GetWord();
-            switch (word)
-            {
-                case True:
-                    writer.Write(true);
-                    return;
-                case False:
-                    writer.Write(false);
-                    return;
-                case Null:
-                    writer.WriteNull();
-                    return;
-                default:
-                    if (char.IsDigit(word[0]))
-                        writer.Write(double.Parse(word));
-                    else
-                        throw new ExpectedValue(word, CurrentLine, CurrentLinePosition);
-                    break;
-            }
-        }
-
-        private string GetWord()
-        {
-            int start = i;
-            i++;
-            for (; i < json.Length; i++)
-            {
-                char c = json[i];
-                if (c == CloseBrace
-                    || c == CloseBracket
-                    || c == Comma
-                    || c < WhitespaceChars.Length && WhitespaceChars[c])
-                    break;
-            }
-            return json.Substring(start, i - start);
+            SkipWhitespace();
+            bool close = false;
+            if (i < jsonLength && (json[i] == Comma || (close = json[i] == CloseBracket)))
+                i++; // , or ]
+            return close;
         }
 
         private void ParseMap()
@@ -194,6 +164,15 @@ namespace json.Json
             writer.EndStructure();
         }
 
+        private bool IsEndOfMap()
+        {
+            SkipWhitespace();
+            bool close = false;
+            if (i < jsonLength && (json[i] == Comma || (close = json[i] == CloseBrace)))
+                i++; //, or }
+            return close;
+        }
+
         private void ParseAndWriteString()
         {
             string str = GetNextString();
@@ -237,22 +216,43 @@ namespace json.Json
             return value;
         }
 
-        private bool IsEndOfMap()
+        private void ParseWord()
         {
-            SkipWhitespace();
-            bool close = false;
-            if (json[i] == Comma || (close = json[i] == CloseBrace))
-                i++; //, or }
-            return close;
+            string word = GetWord();
+            switch (word)
+            {
+                case True:
+                    writer.Write(true);
+                    return;
+                case False:
+                    writer.Write(false);
+                    return;
+                case Null:
+                    writer.WriteNull();
+                    return;
+                default:
+                    if (char.IsDigit(word[0]))
+                        writer.Write(double.Parse(word));
+                    else
+                        throw new ExpectedValue(word, CurrentLine, CurrentLinePosition);
+                    break;
+            }
         }
 
-        private bool IsEndOfArray()
+        private string GetWord()
         {
-            SkipWhitespace();
-            bool close = false;
-            if (json[i] == Comma || (close = json[i] == CloseBracket))
-                i++; // , or ]
-            return close;
+            int start = i;
+            i++;
+            for (; i < json.Length; i++)
+            {
+                char c = json[i];
+                if (c == CloseBrace
+                    || c == CloseBracket
+                    || c == Comma
+                    || c < WhitespaceChars.Length && WhitespaceChars[c])
+                    break;
+            }
+            return json.Substring(start, i - start);
         }
 
         private void SkipWhitespace()
