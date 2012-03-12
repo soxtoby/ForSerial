@@ -95,7 +95,7 @@ namespace json.Json
             if (json[i] == CloseBracket)
                 i++; // ]
             else
-                for (; i < json.Length; )
+                while (i < jsonLength)
                 {
                     ParseNextValue();
                     if (IsEndOfArray()) break;
@@ -167,7 +167,7 @@ namespace json.Json
 
         private void ParseRestOfProperties()
         {
-            for (; i < json.Length; )
+            while (i < jsonLength)
             {
                 if (IsEndOfMap()) break;
 
@@ -201,11 +201,10 @@ namespace json.Json
             SkipWhitespace();
             if (json[i] != Quotes)
                 throw new ExpectedToken(Quotes, json[i], CurrentLine, CurrentLinePosition);
-            i++; // "
 
-            int start = i;
+            int start = i + 1;
             bool containsBackslash = false;
-            for (; i < json.Length; i++)
+            while (++i < jsonLength)
             {
                 char c = json[i];
 
@@ -259,8 +258,7 @@ namespace json.Json
         private string GetWord()
         {
             int start = i;
-            i++;
-            for (; i < json.Length; i++)
+            while (++i < jsonLength)
             {
                 char c = json[i];
                 if (c == CloseBrace
@@ -274,12 +272,12 @@ namespace json.Json
 
         private void SkipWhitespace()
         {
-            for (; i < json.Length; i++)
+            do
             {
                 char c = json[i];
                 if (c >= WhitespaceChars.Length || !WhitespaceChars[c])
                     break;
-            }
+            } while (++i < jsonLength);
         }
 
         private int CurrentLine
