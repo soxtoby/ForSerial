@@ -8,19 +8,21 @@ namespace json.Json
         private const char Quotes = '"';
         private const char OpenBrace = '{';
         private const char OpenBracket = '[';
+        private const char CloseBrace = '}';
+        private const char CloseBracket = ']';
         private const string True = "true";
         private const string False = "false";
         private const string Null = "null";
         private const char Backslash = '\\';
-        private const char CloseBrace = '}';
         private const char Comma = ',';
         private const char Colon = ':';
-        private const char CloseBracket = ']';
         private const string ReferencePropertyName = "_ref";
         private const string TypePropertyName = "_type";
+
         private readonly Writer writer;
         private readonly string json;
         private readonly int jsonLength;
+
         private int i;
 
         private JsonParser(string json, Writer writer)
@@ -34,6 +36,9 @@ namespace json.Json
 
         public static void Parse(string json, Writer writer)
         {
+            if (string.IsNullOrEmpty(json))
+                return;
+
             try
             {
                 DoParse(json, writer);
@@ -120,48 +125,60 @@ namespace json.Json
             }
             else
             {
-                string propertyName = GetNextString();
-                SkipWhitespace();
-                if (json[i] != Colon)
-                    throw new ExpectedToken(Colon, json[i], CurrentLine, CurrentLinePosition);
-                i++; // :
-
-                switch (propertyName)
-                {
-                    case ReferencePropertyName:
-                        SkipWhitespace();
-                        writer.WriteReference(int.Parse(GetWord()));
-                        if (!IsEndOfMap())
-                            throw new ExpectedToken(CloseBrace, json[i - 1] == Comma ? Comma : json[i], CurrentLine, CurrentLinePosition);
-                        return;
-
-                    case TypePropertyName:
-                        string typeIdentifier = GetNextString();
-                        writer.BeginStructure(typeIdentifier, typeof(JsonParser));
-                        break;
-
-                    default:
-                        writer.BeginStructure(typeof(JsonParser));
-                        writer.AddProperty(propertyName);
-                        ParseNextValue();
-                        break;
-                }
-
-                for (; i < json.Length; )
-                {
-                    if (IsEndOfMap()) break;
-
-                    propertyName = GetNextString();
-                    writer.AddProperty(propertyName);
-
-                    SkipWhitespace();
-                    i++; // :
-
-                    ParseNextValue();
-                }
+                if (ParseFirstProperty())
+                    return; // reference object
+                ParseRestOfProperties();
             }
 
             writer.EndStructure();
+        }
+
+        private bool ParseFirstProperty()
+        {
+            string propertyName = GetNextString();
+            SkipWhitespace();
+            if (json[i] != Colon)
+                throw new ExpectedToken(Colon, json[i], CurrentLine, CurrentLinePosition);
+            i++; // :
+
+            switch (propertyName)
+            {
+                case ReferencePropertyName:
+                    SkipWhitespace();
+                    writer.WriteReference(int.Parse(GetWord()));
+                    if (!IsEndOfMap())
+                        throw new ExpectedToken(CloseBrace, json[i - 1] == Comma
+                            ? Comma
+                            : json[i], CurrentLine, CurrentLinePosition);
+                    return true;
+
+                case TypePropertyName:
+                    string typeIdentifier = GetNextString();
+                    writer.BeginStructure(typeIdentifier, typeof(JsonParser));
+                    return false;
+
+                default:
+                    writer.BeginStructure(typeof(JsonParser));
+                    writer.AddProperty(propertyName);
+                    ParseNextValue();
+                    return false;
+            }
+        }
+
+        private void ParseRestOfProperties()
+        {
+            for (; i < json.Length; )
+            {
+                if (IsEndOfMap()) break;
+
+                string propertyName = GetNextString();
+                writer.AddProperty(propertyName);
+
+                SkipWhitespace();
+                i++; // :
+
+                ParseNextValue();
+            }
         }
 
         private bool IsEndOfMap()
