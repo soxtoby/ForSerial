@@ -74,7 +74,29 @@ namespace json.PerformanceTests
             GetNorthwindObject();
             string json = GetNorthwindJson();
 
-            Time(10, () => JsonParser.Parse(json, new ObjectWriter<DatabaseCompat>()));
+            Time(100, () => JsonParser.Parse(json, new ObjectWriter<DatabaseCompat>()));
+        }
+
+        [Test]
+        public void ServiceStackDeserialize()
+        {
+            string json = GetNorthwindJson();
+            json.FromJson<DatabaseCompat>();
+
+            Time(100, () => json.FromJson<DatabaseCompat>());
+        }
+
+        [Test]
+        public void XmlDeserialize()
+        {
+            DatabaseCompat db = GetNorthwindObject();
+            XmlSerializer serializer = new XmlSerializer(typeof(DatabaseCompat));
+            StringWriter stringWriter = new StringWriter();
+            serializer.Serialize(stringWriter, db);
+
+            string xml = stringWriter.ToString();
+
+            Time(100, () => new XmlSerializer(typeof(DatabaseCompat)).Deserialize(new StringReader(xml)));
         }
 
         private static void Time(int iterations, Action action)
@@ -120,5 +142,93 @@ namespace json.PerformanceTests
         public override void WriteLine() { }
 
         public override Encoding Encoding { get { return Encoding.Default; } }
+    }
+
+    public class NullWriter : Writer
+    {
+        public bool CanWrite(object value)
+        {
+            return true;
+        }
+
+        public void Write(object value)
+        {
+        }
+
+        public void BeginStructure(Type readerType)
+        {
+        }
+
+        public void BeginStructure(string typeIdentifier, Type readerType)
+        {
+        }
+
+        public void EndStructure()
+        {
+        }
+
+        public void AddProperty(string name)
+        {
+        }
+
+        public void BeginSequence()
+        {
+        }
+
+        public void EndSequence()
+        {
+        }
+
+        public void WriteReference(int referenceIndex)
+        {
+        }
+
+        public void Write(bool value)
+        {
+        }
+
+        public void Write(char value)
+        {
+        }
+
+        public void Write(decimal value)
+        {
+        }
+
+        public void Write(double value)
+        {
+        }
+
+        public void Write(float value)
+        {
+        }
+
+        public void Write(int value)
+        {
+        }
+
+        public void Write(long value)
+        {
+        }
+
+        public void Write(string value)
+        {
+        }
+
+        public void WriteString(string value)
+        {
+        }
+
+        public void Write(uint value)
+        {
+        }
+
+        public void Write(ulong value)
+        {
+        }
+
+        public void WriteNull()
+        {
+        }
     }
 }
