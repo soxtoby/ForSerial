@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using DAL;
 using json.Json;
@@ -97,6 +98,50 @@ namespace json.PerformanceTests
             string xml = stringWriter.ToString();
 
             Time(100, () => new XmlSerializer(typeof(DatabaseCompat)).Deserialize(new StringReader(xml)));
+        }
+
+        [Test]
+        public void Clone()
+        {
+            DatabaseCompat db = GetNorthwindObject();
+            ObjectReader.Read(db, new NullWriter());
+
+            Time(100, () => ObjectReader.Read(db, new ObjectWriter<DatabaseCompat>()));
+        }
+
+        [Test]
+        public void BinarySerializeClone()
+        {
+            DatabaseCompat db = GetNorthwindObject();
+
+            Action clone = () =>
+                {
+                    MemoryStream ms = new MemoryStream();
+                    BinaryFormatter bf = new BinaryFormatter();
+                    bf.Serialize(ms, db);
+                    ms.Position = 0;
+                    bf.Deserialize(ms);
+                };
+
+            clone();
+
+            Time(100, clone);
+        }
+
+        [Test]
+        public void XmlSerializeClone()
+        {
+            DatabaseCompat db = GetNorthwindObject();
+
+            Action clone = () =>
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(DatabaseCompat));
+                    StringWriter sw = new StringWriter();
+                    serializer.Serialize(sw, db);
+                    serializer.Deserialize(new StringReader(sw.ToString()));
+                };
+
+            Time(100, clone);
         }
 
         private static void Time(int iterations, Action action)
