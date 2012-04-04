@@ -107,6 +107,13 @@ namespace json.Tests.Json
         }
 
         [Test]
+        public void EmptyStringProperty()
+        {
+            ParseFooProperty(@"{ ""foo"": """" }")
+                .Value().ShouldBe("");
+        }
+
+        [Test]
         public void EmptyMapProperty()
         {
             ParseFooProperty(@"{ ""foo"": { } }")

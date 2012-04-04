@@ -1,331 +1,305 @@
 using System;
+using System.Linq;
 
 namespace json.Json
 {
     public class JsonParser
     {
-        private readonly Writer writer;
-        private TokenReader reader;
+        private const char Quotes = '"';
+        private const char OpenBrace = '{';
+        private const char OpenBracket = '[';
+        private const char CloseBrace = '}';
+        private const char CloseBracket = ']';
+        private const string True = "true";
+        private const string False = "false";
+        private const string Null = "null";
+        private const char Backslash = '\\';
+        private const char Comma = ',';
+        private const char Colon = ':';
+        private const string ReferencePropertyName = "_ref";
+        private const string TypePropertyName = "_type";
 
-        private JsonParser(Writer writer)
+        private readonly Writer writer;
+        private readonly string json;
+        private readonly int jsonLength;
+
+        private int i;
+
+        private JsonParser(string json, Writer writer)
         {
             if (writer == null) throw new ArgumentNullException("writer");
 
+            this.json = json;
+            jsonLength = json.Length;
             this.writer = writer;
         }
 
         public static void Parse(string json, Writer writer)
         {
+            if (string.IsNullOrEmpty(json))
+                return;
+
             try
             {
-                Parse(new TokenReader(json), writer);
+                DoParse(json, writer);
             }
             catch (ParseException e)
             {
                 throw new ParseException(e, json);
             }
-        }
-
-        private static void Parse(TokenReader tokenReader, Writer writer)
-        {
-            JsonParser parser = new JsonParser(writer);
-            parser.ParseTokens(tokenReader);
-        }
-
-        private void ParseTokens(TokenReader tokenReader)
-        {
-            reader = tokenReader;
-
-            NextToken();
-
-            if (!reader.EndOfFile)
-                ParseValue();
-        }
-
-        private void ParseValue()
-        {
-            if (char.IsNumber(reader.CurrentChar))
+            catch (IndexOutOfRangeException)
             {
-                ParseNumber();
+                throw new UnexpectedEndOfFile();
             }
-            else if (reader.CurrentChar == '"')
-            {
-                ParseString();
-            }
-            else if (char.IsLetter(reader.CurrentChar))
-            {
-                ParseWord();
-            }
-            else
-                switch (reader.CurrentChar)
-                {
-                    case '{':
-                        ParseObject();
-                        return;
-                    case '[':
-                        ParseArray();
-                        return;
-                    default:
-                        throw new ExpectedValue(reader.ExtractToken(), reader.CurrentLine, reader.CurrentPosition);
-                }
         }
 
-        private void ParseWord()
+        private static void DoParse(string json, Writer writer)
         {
-            do
+            JsonParser parser = new JsonParser(json, writer);
+            parser.ParseNextValue();
+        }
+
+        private void ParseNextValue()
+        {
+            SkipWhitespace();
+
+            if (i >= jsonLength)
+                return;
+
+            char c = json[i];
+
+            switch (c)
             {
-                AssertNotEndOfFile();
-                reader.KeepNextChar();
-
-            } while (char.IsLetterOrDigit(reader.CurrentChar));
-
-            string word = reader.ExtractToken();
-
-            switch (word)
-            {
-                case "true":
-                    writer.Write(true);
+                case Quotes:
+                    ParseAndWriteString();
                     break;
-
-                case "false":
-                    writer.Write(false);
+                case OpenBrace:
+                    ParseMap();
                     break;
-
-                case "null":
-                    writer.WriteNull();
+                case OpenBracket:
+                    ParseArray();
                     break;
-
                 default:
-                    throw new ExpectedValue(word, reader.CurrentLine, reader.CurrentPosition);
+                    ParseWord();
+                    break;
             }
-
-            NextToken();
-        }
-
-        private void ParseNumber()
-        {
-            writer.Write(GetNumber());
-        }
-
-        private void ParseString()
-        {
-            writer.Write(GetString());
-            NextToken();
-        }
-
-        private void ParseObject()
-        {
-            ExpectSymbol('{');
-
-            if (reader.CurrentChar == '}')
-            {
-                writer.BeginStructure(GetType());
-            }
-            else
-            {
-                PropertyParser propertyParser = new FirstPropertyParser(this);
-
-                do
-                {
-                    string name = GetString();
-
-                    ExpectSymbol(':');
-
-                    propertyParser.ParsePropertyValue(name);
-
-                    if (propertyParser.ReturnImmediately)
-                        return;
-
-                    propertyParser = propertyParser.NextPropertyParser;
-
-                } while (MoveNextIfSymbol(','));
-            }
-
-            ExpectSymbol('}');
-
-            writer.EndStructure();
-        }
-
-        private abstract class PropertyParser
-        {
-            protected readonly JsonParser parser;
-
-            /// <summary>
-            /// Set to True if OutputStructure should be returned immediately without parsing anymore properties.
-            /// </summary>
-            public bool ReturnImmediately { get; protected set; }
-
-            public PropertyParser NextPropertyParser { get; protected set; }
-
-            protected PropertyParser(JsonParser parser)
-            {
-                this.parser = parser;
-            }
-
-            /// <summary>
-            /// Parse the property value for the property with the given name
-            /// and return the next PropertyParser to use.
-            /// </summary>
-            public abstract void ParsePropertyValue(string name);
-        }
-
-        private class FirstPropertyParser : PropertyParser
-        {
-            public FirstPropertyParser(JsonParser parser)
-                : base(parser)
-            { }
-
-            public override void ParsePropertyValue(string name)
-            {
-                if (name == "_ref")
-                {
-                    parser.ReferenceObject();
-                    parser.ExpectSymbol('}');
-                    ReturnImmediately = true;
-                }
-                else if (name == "_type")
-                {
-                    parser.BeginTypedStructure();
-                    NextPropertyParser = new RegularPropertyParser(parser);
-                }
-                else
-                {
-                    parser.BeginStructure();
-                    NextPropertyParser = new RegularPropertyParser(parser);
-                    NextPropertyParser.ParsePropertyValue(name);
-                }
-            }
-        }
-
-        private class RegularPropertyParser : PropertyParser
-        {
-            public RegularPropertyParser(JsonParser parser)
-                : base(parser)
-            {
-                NextPropertyParser = this;
-            }
-
-            public override void ParsePropertyValue(string name)
-            {
-                parser.writer.AddProperty(name);
-                parser.ParseValue();
-            }
-        }
-
-        private void ReferenceObject()
-        {
-            int referenceId = Convert.ToInt32(GetNumber());
-            writer.WriteReference(referenceId);
-        }
-
-        private void BeginStructure()
-        {
-            writer.BeginStructure(GetType());
-        }
-
-        private void BeginTypedStructure()
-        {
-            string typeIdentifier = GetString();
-            writer.BeginStructure(typeIdentifier, GetType());
-        }
-
-        private string GetString()
-        {
-            // Don't keep opening char
-            reader.MoveNext();
-
-            while (reader.CurrentChar != '"')
-            {
-                AssertNotEndOfFile();
-
-                if (reader.CurrentChar == '\\')
-                {
-                    // Skip '\' and keep next char
-                    reader.MoveNext();
-                }
-
-                reader.KeepNextChar();
-            }
-
-            // Don't keep closing char
-            reader.MoveNext();
-
-            string value = reader.ExtractToken();
-
-            NextToken();
-
-            return value;
-        }
-
-        private double GetNumber()
-        {
-            bool decimalSeparator = false;
-            do
-            {
-                reader.KeepNextChar();
-            } while (!reader.EndOfFile && (char.IsNumber(reader.CurrentChar) || !decimalSeparator && (decimalSeparator = reader.CurrentChar == '.')));
-
-            string number = reader.ExtractToken();
-
-            double value = double.Parse(number);
-
-            NextToken();
-
-            return value;
         }
 
         private void ParseArray()
         {
-            ExpectSymbol('[');
-
             writer.BeginSequence();
 
-            if (!(reader.CurrentChar == ']'))
-            {
-                do
-                {
-                    ParseValue();
-                } while (MoveNextIfSymbol(','));
-            }
+            i++; // [
+            SkipWhitespace();
 
-            ExpectSymbol(']');
+            if (json[i] == CloseBracket)
+                i++; // ]
+            else
+                while (i < jsonLength)
+                {
+                    ParseNextValue();
+                    if (IsEndOfArray()) break;
+                }
 
             writer.EndSequence();
         }
 
-        private void ExpectSymbol(char value)
+        private bool IsEndOfArray()
         {
-            if (reader.CurrentChar != value)
-                throw new ExpectedToken(value, reader.CurrentChar, reader.CurrentLine, reader.CurrentPosition);
-
-            reader.MoveNext();
-            NextToken();
+            SkipWhitespace();
+            bool close = false;
+            if (i < jsonLength && (json[i] == Comma || (close = json[i] == CloseBracket)))
+                i++; // , or ]
+            return close;
         }
 
-        private bool MoveNextIfSymbol(char value)
+        private void ParseMap()
         {
-            bool match = reader.CurrentChar == value;
+            i++; // {
+            SkipWhitespace();
 
-            if (match)
+            if (json[i] == CloseBrace)
             {
-                reader.MoveNext();
-                NextToken();
+                i++; // }
+                writer.BeginStructure(typeof(JsonParser));
+            }
+            else
+            {
+                if (ParseFirstProperty())
+                    return; // reference object
+                ParseRestOfProperties();
             }
 
-            return match;
+            writer.EndStructure();
         }
 
-        private void NextToken()
+        private bool ParseFirstProperty()
         {
-            while (!reader.EndOfFile && Char.IsWhiteSpace(reader.CurrentChar))
-                reader.MoveNext();
+            string propertyName = GetNextString();
+            SkipWhitespace();
+            if (json[i] != Colon)
+                throw new ExpectedToken(Colon, json[i], CurrentLine, CurrentLinePosition);
+            i++; // :
+
+            switch (propertyName)
+            {
+                case ReferencePropertyName:
+                    SkipWhitespace();
+                    writer.WriteReference(int.Parse(GetWord()));
+                    if (!IsEndOfMap())
+                        throw new ExpectedToken(CloseBrace, json[i - 1] == Comma
+                            ? Comma
+                            : json[i], CurrentLine, CurrentLinePosition);
+                    return true;
+
+                case TypePropertyName:
+                    string typeIdentifier = GetNextString();
+                    writer.BeginStructure(typeIdentifier, typeof(JsonParser));
+                    return false;
+
+                default:
+                    writer.BeginStructure(typeof(JsonParser));
+                    writer.AddProperty(propertyName);
+                    ParseNextValue();
+                    return false;
+            }
         }
 
-        private void AssertNotEndOfFile()
+        private void ParseRestOfProperties()
         {
-            if (reader.EndOfFile)
-                throw new UnexpectedEndOfFile(reader.CurrentLine, reader.CurrentPosition);
+            while (i < jsonLength)
+            {
+                if (IsEndOfMap()) break;
+
+                string propertyName = GetNextString();
+                writer.AddProperty(propertyName);
+
+                SkipWhitespace();
+                i++; // :
+
+                ParseNextValue();
+            }
         }
+
+        private bool IsEndOfMap()
+        {
+            SkipWhitespace();
+            bool close = false;
+            if (i < jsonLength && (json[i] == Comma || (close = json[i] == CloseBrace)))
+                i++; //, or }
+            return close;
+        }
+
+        private void ParseAndWriteString()
+        {
+            string str = GetNextString();
+            writer.Write(str);
+        }
+
+        private string GetNextString()
+        {
+            SkipWhitespace();
+            if (json[i] != Quotes)
+                throw new ExpectedToken(Quotes, json[i], CurrentLine, CurrentLinePosition);
+
+            int start = i + 1;
+            bool containsBackslash = false;
+            while (++i < jsonLength)
+            {
+                char c = json[i];
+
+                if (c == Quotes)
+                    break;
+
+                if (c == Backslash)
+                {
+                    i++; // \
+                    containsBackslash = true;
+                }
+            }
+
+            string value = json.Substring(start, i - start);
+
+            i++; // "
+
+            return containsBackslash
+                ? UnescapeString(value)
+                : value;
+        }
+
+        private static string UnescapeString(string value)
+        {
+            return value;
+        }
+
+        private void ParseWord()
+        {
+            string word = GetWord();
+            switch (word)
+            {
+                case True:
+                    writer.Write(true);
+                    return;
+                case False:
+                    writer.Write(false);
+                    return;
+                case Null:
+                    writer.WriteNull();
+                    return;
+                default:
+                    if (char.IsDigit(word[0]))
+                        writer.Write(double.Parse(word));
+                    else
+                        throw new ExpectedValue(word, CurrentLine, CurrentLinePosition);
+                    break;
+            }
+        }
+
+        private string GetWord()
+        {
+            int start = i;
+            while (++i < jsonLength)
+            {
+                char c = json[i];
+                if (c == CloseBrace
+                    || c == CloseBracket
+                    || c == Comma
+                    || c < WhitespaceChars.Length && WhitespaceChars[c])
+                    break;
+            }
+            return json.Substring(start, i - start);
+        }
+
+        private void SkipWhitespace()
+        {
+            do
+            {
+                char c = json[i];
+                if (c >= WhitespaceChars.Length || !WhitespaceChars[c])
+                    break;
+            } while (++i < jsonLength);
+        }
+
+        private int CurrentLine
+        {
+            get { return Math.Max(0, json.Substring(0, i + 1).Count(c => c == '\n')); }
+        }
+
+        private int CurrentLinePosition
+        {
+            get { return Math.Max(0, json.Substring(0, i).LastIndexOf('\n')) - i; }
+        }
+
+        private static readonly bool[] WhitespaceChars = new bool[' ' + 1];
+
+        static JsonParser()
+        {
+            WhitespaceChars[' '] = true;
+            WhitespaceChars['\n'] = true;
+            WhitespaceChars['\t'] = true;
+            WhitespaceChars['\r'] = true;
+        }
+
 
         internal class ExpectedToken : ParseException
         {
@@ -335,9 +309,17 @@ namespace json.Json
             }
         }
 
+        internal class UnmatchedBrace : ParseException
+        {
+            public UnmatchedBrace(char brace, int line, int position)
+                : base("Brace is unmatched.", brace.ToString(), line, position)
+            {
+            }
+        }
+
         internal class UnexpectedEndOfFile : ParseException
         {
-            public UnexpectedEndOfFile(int line, int position) : base("Unexpected end of file.", string.Empty, line, position) { }
+            public UnexpectedEndOfFile() : base("Unexpected end of file.", string.Empty, 0, 0) { }
         }
 
         internal class ExpectedValue : ParseException

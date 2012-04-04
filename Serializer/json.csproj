@@ -65,6 +65,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -132,8 +133,6 @@
     <Compile Include="Objects\TypeDefinition.cs" />
     <Compile Include="Json\Input\JsonParser.cs" />
     <Compile Include="Json\Input\ParseException.cs" />
-    <Compile Include="Json\Input\Token.cs" />
-    <Compile Include="Json\Input\TokenReader.cs" />
     <Compile Include="StateStack.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

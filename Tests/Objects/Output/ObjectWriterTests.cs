@@ -581,7 +581,7 @@ namespace json.Tests.Objects
         public void BuildDateTimeFromString()
         {
             DeserializeJson<DateTime>(@"""2001-02-02T18:05:06.007Z""")
-                .ShouldBe(new DateTime(2001, 2, 3, 4, 5, 6, 7));
+                .ShouldBe(new DateTime(2001, 2, 3, 4, 5, 6, 7).ToUniversalTime());
         }
 
         [Test]

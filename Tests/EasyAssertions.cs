@@ -8,9 +8,10 @@ namespace json.Tests
 {
     public static class EasyAssertions
     {
-        public static void ShouldBe<T>(this T actual, T expected, string message = null)
+        public static ActualValue<T> ShouldBe<T>(this T actual, T expected, string message = null)
         {
             AssertEqual(actual, expected, message);
+            return new ActualValue<T>(actual);
         }
 
         public static void ShouldBe(this object actual, string expected, string message = null)

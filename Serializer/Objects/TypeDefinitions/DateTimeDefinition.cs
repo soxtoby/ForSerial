@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Xml;
 
 namespace json.Objects.TypeDefinitions
 {
@@ -97,7 +98,9 @@ namespace json.Objects.TypeDefinitions
             DateTime dateTime;
             string dateString = value as string;
             if (dateString != null)
-                dateTime = DateTime.Parse(dateString);
+            {
+                dateTime = XmlConvert.ToDateTime(dateString, XmlDateTimeSerializationMode.RoundtripKind);
+            }
             else
             {
                 double? number = value as double?;
