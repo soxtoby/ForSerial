@@ -115,6 +115,8 @@ namespace json.Json
 
         private void ParseMap()
         {
+            int mapStartIndex = i;
+
             i++; // {
             SkipWhitespace();
 
@@ -127,7 +129,7 @@ namespace json.Json
             {
                 if (ParseFirstProperty())
                     return; // reference object
-                ParseRestOfProperties();
+                ParseRestOfProperties(mapStartIndex);
             }
 
             writer.EndStructure();
@@ -165,11 +167,11 @@ namespace json.Json
             }
         }
 
-        private void ParseRestOfProperties()
+        private void ParseRestOfProperties(int mapStartIndex)
         {
             while (i < jsonLength)
             {
-                if (IsEndOfMap()) break;
+                if (IsEndOfMap()) return;
 
                 string propertyName = GetNextString();
                 writer.AddProperty(propertyName);
@@ -179,6 +181,10 @@ namespace json.Json
 
                 ParseNextValue();
             }
+
+            // End of file without finding end of map
+            i = mapStartIndex;
+            throw new UnmatchedBrace('{', CurrentLine, CurrentLinePosition);
         }
 
         private bool IsEndOfMap()
@@ -282,12 +288,12 @@ namespace json.Json
 
         private int CurrentLine
         {
-            get { return Math.Max(0, json.Substring(0, i + 1).Count(c => c == '\n')); }
+            get { return Math.Max(0, json.Substring(0, i).Count(c => c == '\n')); }
         }
 
         private int CurrentLinePosition
         {
-            get { return Math.Max(0, json.Substring(0, i).LastIndexOf('\n')) - i; }
+            get { return Math.Max(0, json.Substring(0, i).LastIndexOf('\n') - i); }
         }
 
         private static readonly bool[] WhitespaceChars = new bool[' ' + 1];
