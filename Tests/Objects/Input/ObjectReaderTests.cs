@@ -398,6 +398,36 @@ namespace json.Tests.Objects
             public Dictionary<ConcreteClass, ConcreteClass> Property { get; set; }
         }
 
+        [Test]
+        public void ExceptionWrappedWithPropertyStack()
+        {
+            Function.Call(() => ConvertToJson(new ObjectPropertyClass { Object = new PropertyGetterThrowsException("foo") }, TypeInformationLevel.None))
+                .ShouldThrow<ObjectReader.ObjectReadException>()
+                .And.Message.ShouldContain("foo")
+                        .And.ShouldContain(GetType() + "+ObjectPropertyClass.Object")
+                        .And.ShouldContain(GetType() + "+PropertyGetterThrowsException.ThrowsException");
+        }
+
+        private class ObjectPropertyClass
+        {
+            public object Object { get; set; }
+        }
+
+        private class PropertyGetterThrowsException
+        {
+            private readonly string exceptionMessage;
+
+            public PropertyGetterThrowsException(string exceptionMessage)
+            {
+                this.exceptionMessage = exceptionMessage;
+            }
+
+            public int ThrowsException
+            {
+                get { throw new Exception(exceptionMessage); }
+            }
+        }
+
         private interface Interface
         {
             int Value { get; set; }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using json.Objects;
 
 namespace json.Tests
@@ -17,6 +18,13 @@ namespace json.Tests
         public static void ShouldBe(this object actual, string expected, string message = null)
         {
             AssertEqual(Convert.ToString(actual), expected, message);
+        }
+
+        public static ActualValue<string> ShouldContain(this string actual, string expectedSubstring, string message = null)
+        {
+            if (!actual.Contains(expectedSubstring))
+                throw new EasyAssertionException("\r\nExpected to contain: {0}\r\nActual:   {1}\r\n{2}".FormatWith(expectedSubstring, actual, message));
+            return new ActualValue<string>(actual);
         }
 
         public static void ShouldBe<TExpected>(this IEnumerable actual, IEnumerable<TExpected> expected, string message = null)
@@ -186,6 +194,14 @@ namespace json.Tests
         }
     }
 
+    public static class Function
+    {
+        public static AssertionFunction Call(Expression<Action> functionCall)
+        {
+            return new AssertionFunction(functionCall);
+        }
+    }
+
     public class ActualValue<T>
     {
         public T And { get; private set; }
@@ -193,6 +209,34 @@ namespace json.Tests
         public ActualValue(T actual)
         {
             And = actual;
+        }
+    }
+
+    public class AssertionFunction
+    {
+        private readonly Expression<Action> functionCall;
+
+        public AssertionFunction(Expression<Action> functionCall)
+        {
+            this.functionCall = functionCall;
+        }
+
+        public ActualValue<T> ShouldThrow<T>() where T : Exception
+        {
+            try
+            {
+                functionCall.Compile()();
+            }
+            catch (T e)
+            {
+                return new ActualValue<T>(e);
+            }
+            catch (Exception e)
+            {
+                throw new EasyAssertionException(functionCall.Body + " should have thrown " + typeof(T).Name + ", but instead threw " + e.GetType().Name);
+            }
+
+            throw new EasyAssertionException(functionCall.Body + " should have thrown " + typeof(T).Name + ", but didn't throw at all.");
         }
     }
 

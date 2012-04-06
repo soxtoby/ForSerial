@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace json.Objects
 {
@@ -21,7 +22,15 @@ namespace json.Objects
         public static void Read(object obj, Writer writer, ObjectParsingOptions options = null)
         {
             ObjectReader reader = new ObjectReader(writer, options ?? new ObjectParsingOptions());
-            reader.Read(obj);
+
+            try
+            {
+                reader.Read(obj);
+            }
+            catch (Exception e)
+            {
+                throw new ObjectReadException(reader, e);
+            }
         }
 
         private void Read(object input)
@@ -29,7 +38,7 @@ namespace json.Objects
             Read(input, options.SerializeTypeInformation != TypeInformationLevel.None);
         }
 
-        public void Read(object input, bool requestTypeIdentification)
+        private void Read(object input, bool requestTypeIdentification)
         {
             TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(input);
             typeDef.Read(input, this, writer, requestTypeIdentification);
@@ -51,6 +60,24 @@ namespace json.Objects
 
             stuctureReferences[obj] = stuctureReferences.Count;
             return false;
+        }
+
+        public readonly Stack<PropertyDefinition> PropertyStack = new Stack<PropertyDefinition>();
+
+        internal class ObjectReadException : Exception
+        {
+            public ObjectReadException(ObjectReader reader, Exception innerException)
+                : base(BuildMessage(reader, innerException), innerException)
+            {
+            }
+
+            private static string BuildMessage(ObjectReader reader, Exception innerException)
+            {
+                string propertyStack = reader.PropertyStack
+                    .Select(p => p.FullName)
+                    .Join(Environment.NewLine);
+                return "{1}{0}At: {2}".FormatWith(Environment.NewLine, innerException.Message, propertyStack);
+            }
         }
     }
 }

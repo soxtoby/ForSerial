@@ -3,9 +3,10 @@ namespace json.Objects
 {
     public class PropertyDefinition
     {
-        public PropertyDefinition(TypeDefinition typeDef, string name, GetMethod getter, SetMethod setter, bool forceTypeIdentifierSerialization)
+        public PropertyDefinition(TypeDefinition declaringTypeDef, TypeDefinition typeDef, string name, GetMethod getter, SetMethod setter, bool forceTypeIdentifierSerialization)
         {
             Name = name;
+            FullName = declaringTypeDef.Type.FullName + "." + Name;
             this.getter = getter;
             this.setter = setter;
             this.typeDef = typeDef;
@@ -16,6 +17,7 @@ namespace json.Objects
         private readonly TypeDefinition typeDef;
         private readonly bool forceTypeIdentifierSerialization;
 
+        internal readonly string FullName;
         private readonly GetMethod getter;
         private readonly SetMethod setter;
 

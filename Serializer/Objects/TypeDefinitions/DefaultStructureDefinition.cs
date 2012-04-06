@@ -25,8 +25,13 @@ namespace json.Objects.TypeDefinitions
             {
                 PropertyDefinition property = SerializableProperties[i];
                 writer.AddProperty(property.Name);
+
+                reader.PropertyStack.Push(property);
+
                 object value = property.GetFrom(input);
                 property.Read(value, reader, writer);
+
+                reader.PropertyStack.Pop();
             }
 
             writer.EndStructure();

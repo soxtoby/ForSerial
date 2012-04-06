@@ -17,6 +17,7 @@ namespace json.Objects
         public PropertyDefinition Build(PropertyInfo property)
         {
             return new PropertyDefinition(
+                CurrentTypeHandler.GetTypeDefinition(property.DeclaringType),
                 GetTypeDefinition(property),
                 GetName(property),
                 GetGetter(property),
