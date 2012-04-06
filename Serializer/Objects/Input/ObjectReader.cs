@@ -64,6 +64,11 @@ namespace json.Objects
 
         public readonly Stack<PropertyDefinition> PropertyStack = new Stack<PropertyDefinition>();
 
+        public PropertyFilter PropertyFilter
+        {
+            get { return options.PropertyFilter; }
+        }
+
         internal class ObjectReadException : Exception
         {
             public ObjectReadException(ObjectReader reader, Exception innerException)

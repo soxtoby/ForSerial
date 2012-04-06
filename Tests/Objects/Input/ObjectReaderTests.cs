@@ -219,7 +219,7 @@ namespace json.Tests.Objects
         {
             using (CurrentTypeHandler.Override(new CustomTypeHandler()))
             {
-                ConvertToJson(new { foo = 5 }, TypeInformationLevel.All)
+                ConvertToJson(new { foo = 5 }, new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.All })
                     .ShouldBe(@"{""_type"":""foobar"",""foo"":5}");
             }
         }
@@ -327,7 +327,7 @@ namespace json.Tests.Objects
         {
             using (CurrentTypeHandler.Override(new SimpleTypeNameTypeHandler()))
             {
-                return ConvertToJson(obj, TypeInformationLevel.Minimal);
+                return ConvertToJson(obj, new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.Minimal });
             }
         }
 
@@ -401,7 +401,7 @@ namespace json.Tests.Objects
         [Test]
         public void ExceptionWrappedWithPropertyStack()
         {
-            Function.Call(() => ConvertToJson(new ObjectPropertyClass { Object = new PropertyGetterThrowsException("foo") }, TypeInformationLevel.None))
+            Function.Call(() => ConvertToJson(new ObjectPropertyClass { Object = new PropertyGetterThrowsException("foo") }))
                 .ShouldThrow<ObjectReader.ObjectReadException>()
                 .And.Message.ShouldContain("foo")
                         .And.ShouldContain(GetType() + "+ObjectPropertyClass.Object")
@@ -428,6 +428,45 @@ namespace json.Tests.Objects
             }
         }
 
+        [Test]
+        public void PublicGetPropertyFilter_GetOnlyPropertyNotRead()
+        {
+            ConvertToJson(new GetOnlyPropertyClass(), new ObjectParsingOptions { PropertyFilter = PropertyFilter.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
+                .ShouldBe("{}");
+        }
+
+        private class GetOnlyPropertyClass
+        {
+            public int Property
+            {
+                get { throw new AssertionException("Property should not have been read."); }
+            }
+        }
+
+        [Test]
+        public void PublicGetPropertyFilter_PrivateGetPropertyNotRead()
+        {
+            ConvertToJson(new PrivateGetPropertyClass(1), new ObjectParsingOptions { PropertyFilter = PropertyFilter.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
+                .ShouldBe("{}");
+        }
+
+        private class PrivateGetPropertyClass
+        {
+            public PrivateGetPropertyClass(int property)
+            {
+                Property = property;
+            }
+
+            public int Property { get; private set; }
+        }
+
+        [Test]
+        public void PublicGetPropertyFilter_PublicGetSetPropertyIsRead()
+        {
+            ConvertToJson(new ConcreteClass { Value = 1 }, new ObjectParsingOptions { PropertyFilter = PropertyFilter.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
+                .ShouldBe(@"{""Value"":1}");
+        }
+
         private interface Interface
         {
             int Value { get; set; }
@@ -443,10 +482,13 @@ namespace json.Tests.Objects
             public override int Value { get; set; }
         }
 
-
-        private static string ConvertToJson(object obj, TypeInformationLevel serializeTypeInformation = TypeInformationLevel.None)
+        private static string ConvertToJson(object obj)
         {
-            var options = new ObjectParsingOptions { SerializeTypeInformation = serializeTypeInformation };
+            return ConvertToJson(obj, new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.None });
+        }
+
+        private static string ConvertToJson(object obj, ObjectParsingOptions options)
+        {
             StringWriter stringWriter = new StringWriter();
             JsonStringWriter jsonWriter = new JsonStringWriter(stringWriter);
             ObjectReader.Read(obj, jsonWriter, options);

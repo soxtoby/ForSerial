@@ -9,7 +9,8 @@ namespace json.Objects
     public abstract class StructureDefinition : TypeDefinition
     {
         public PropertyCollection Properties { get; private set; }// TODO use a KeyedCollection when moving out of TypeDefinition
-        protected PropertyDefinition[] SerializableProperties;
+        protected PropertyDefinition[] AllSerializableProperties;
+        protected PropertyDefinition[] PublicGetSetProperties;
 
         protected StructureDefinition(Type type)
             : base(type)
@@ -30,9 +31,8 @@ namespace json.Objects
             foreach (PropertyDefinition property in properties)
                 Properties.Add(property);
 
-            SerializableProperties = new PropertyDefinition[Properties.Count];
-            for (int i = 0; i < SerializableProperties.Length; i++)
-                SerializableProperties[i] = Properties[i];
+            AllSerializableProperties = Properties.ToArray();
+            PublicGetSetProperties = Properties.Where(p => p.MatchesFilter(PropertyFilter.PublicGetSet)).ToArray();
         }
 
         private static bool NotMarkedWithIgnoreAttribute(PropertyInfo property)

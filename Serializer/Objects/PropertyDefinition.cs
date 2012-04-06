@@ -1,21 +1,38 @@
 
+using System;
+
 namespace json.Objects
 {
     public class PropertyDefinition
     {
-        public PropertyDefinition(TypeDefinition declaringTypeDef, TypeDefinition typeDef, string name, GetMethod getter, SetMethod setter, bool forceTypeIdentifierSerialization)
+        public PropertyDefinition(TypeDefinition typeDef,
+                                    string name,
+                                    GetMethod getter,
+                                    SetMethod setter,
+                                    bool forceTypeIdentifierSerialization,
+                                    string declaringTypeName,
+                                    bool hasPublicGetter,
+                                    bool hasPublicSetter)
         {
+            if (typeDef == null) throw new ArgumentNullException("typeDef");
+            if (name == null) throw new ArgumentNullException("name");
+            if (declaringTypeName == null) throw new ArgumentNullException("declaringTypeName");
+
             Name = name;
-            FullName = declaringTypeDef.Type.FullName + "." + Name;
+            FullName = declaringTypeName + "." + name;
             this.getter = getter;
             this.setter = setter;
             this.typeDef = typeDef;
             this.forceTypeIdentifierSerialization = forceTypeIdentifierSerialization;
+            this.hasPublicGetter = hasPublicGetter;
+            this.hasPublicSetter = hasPublicSetter;
         }
 
         public string Name { get; private set; }
         private readonly TypeDefinition typeDef;
         private readonly bool forceTypeIdentifierSerialization;
+        private readonly bool hasPublicGetter;
+        private readonly bool hasPublicSetter;
 
         internal readonly string FullName;
         private readonly GetMethod getter;
@@ -63,6 +80,19 @@ namespace json.Objects
         public void Read(object value, ObjectReader reader, Writer writer)
         {
             typeDef.ReadObject(value, reader, writer, forceTypeIdentifierSerialization);
+        }
+
+        public bool MatchesFilter(PropertyFilter propertyFilter)
+        {
+            switch (propertyFilter)
+            {
+                case PropertyFilter.PublicGet:
+                    return hasPublicGetter;
+                case PropertyFilter.PublicGetSet:
+                    return hasPublicGetter && hasPublicSetter;
+                default:
+                    throw new ArgumentOutOfRangeException("propertyFilter");
+            }
         }
     }
 }

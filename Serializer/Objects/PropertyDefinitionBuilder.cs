@@ -17,12 +17,14 @@ namespace json.Objects
         public PropertyDefinition Build(PropertyInfo property)
         {
             return new PropertyDefinition(
-                CurrentTypeHandler.GetTypeDefinition(property.DeclaringType),
                 GetTypeDefinition(property),
                 GetName(property),
                 GetGetter(property),
                 GetSetter(property),
-                GetShouldForceTypeIdentifierSerialization(property));
+                GetShouldForceTypeIdentifierSerialization(property),
+                GetDeclaringTypeName(property),
+                HasPublicGetter(property),
+                HasPublicSetter(property));
         }
 
         private static TypeDefinition GetTypeDefinition(PropertyInfo property)
@@ -51,6 +53,21 @@ namespace json.Objects
         {
             bool forceTypeIdentifierSerialization = property.HasAttribute<SerializeTypeAttribute>();
             return forceTypeIdentifierSerialization;
+        }
+
+        private static string GetDeclaringTypeName(PropertyInfo property)
+        {
+            return property.DeclaringType.FullName;
+        }
+
+        private static bool HasPublicGetter(PropertyInfo property)
+        {
+            return property.GetGetMethod() != null;
+        }
+
+        private static bool HasPublicSetter(PropertyInfo property)
+        {
+            return property.GetSetMethod() != null;
         }
     }
 }

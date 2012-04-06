@@ -21,9 +21,13 @@ namespace json.Objects.TypeDefinitions
             else
                 writer.BeginStructure(Type);
 
-            for (int i = 0; i < SerializableProperties.Length; i++)
+            var filteredProperties = reader.PropertyFilter == PropertyFilter.PublicGetSet
+                ? PublicGetSetProperties
+                : AllSerializableProperties;
+
+            for (int i = 0; i < filteredProperties.Length; i++)
             {
-                PropertyDefinition property = SerializableProperties[i];
+                PropertyDefinition property = filteredProperties[i];
                 writer.AddProperty(property.Name);
 
                 reader.PropertyStack.Push(property);
