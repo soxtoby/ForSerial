@@ -167,14 +167,15 @@ namespace json.Tests
             if (actual == null || expected == null)
                 return false;
 
-            TypeCodeType actualTypeCodeType = actual.GetType().GetTypeCodeType();
+            TypeCode actualTypeCode = Type.GetTypeCode(actual.GetType());
+            TypeCodeType actualTypeCodeType = actualTypeCode.GetTypeCodeType();
             TypeCode expectedTypeCode = Type.GetTypeCode(expected.GetType());
             TypeCodeType expectedTypeCodeType = expectedTypeCode.GetTypeCodeType();
 
             if (actualTypeCodeType != expectedTypeCodeType)
                 return false;
 
-            if (actualTypeCodeType == TypeCodeType.Number)
+            if (actualTypeCode != expectedTypeCode && actualTypeCodeType == TypeCodeType.Number)
                 actual = Convert.ChangeType(actual, expectedTypeCode);
 
             return Equals(actual, expected);

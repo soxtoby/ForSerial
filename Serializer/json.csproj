@@ -112,6 +112,7 @@
     <Compile Include="Objects\ReflectionInterfaceProvider.cs" />
     <Compile Include="Objects\SerializeTypeAttribute.cs" />
     <Compile Include="Objects\StructureDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\EnumDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\DateTimeDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\EnumerableDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\JsonDictionaryDefinition.cs" />

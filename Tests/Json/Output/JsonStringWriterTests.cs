@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using json.Json;
+using json.Objects;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -115,6 +116,12 @@ namespace json.Tests.Json
         public void Write_ULong()
         {
             WriteCallsTextWriter(writer => writer.Write(1UL), writer => writer.Write(1UL));
+        }
+
+        [Test]
+        public void Write_Enum()
+        {
+            WriteCallsTextWriter(writer => writer.Write(TypeCodeType.Boolean), writer => writer.Write((int)TypeCodeType.Boolean));
         }
 
         private static void WriteCallsTextWriter(Action<JsonStringWriter> jsonWriterCall, Action<TextWriter> expectedTextWriterCall)

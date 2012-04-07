@@ -30,6 +30,7 @@ namespace json.Objects
                 JsonDictionaryDefinition.CreateDictionaryDefinition,
                 ValueTypeDefinition.CreateValueTypeDefinition,
                 PrimitiveDefinition.CreatePrimitiveTypeDefinition,
+                EnumDefinition.CreateEnumDefinition,
                 NullableTypeDefinition.CreateNullableTypeDefinition,
                 GuidDefinition.CreateGuidDefinition,
                 DateTimeDefinition.CreateDateTimeDefinition,    // TODO why not just put these in the dictionary directly?

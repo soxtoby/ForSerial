@@ -38,6 +38,13 @@ namespace json.Tests.Objects
         }
 
         [Test]
+        public void Enum()
+        {
+            CopyTo<TestEnum>(1)
+                .ShouldBe(TestEnum.One);
+        }
+
+        [Test]
         public void Array()
         {
             CollectionAssert.AreEqual(new[] { 1, 2, 3 }, Clone(new List<int> { 1, 2, 3 }));
@@ -75,6 +82,24 @@ namespace json.Tests.Objects
         private class IntPropertyClass
         {
             public int Integer { get; set; }
+        }
+
+        [Test]
+        public void EnumProperty()
+        {
+            Clone(new EnumPropertyClass { Enum = TestEnum.One })
+                .Enum.ShouldBe(TestEnum.One);
+        }
+
+        private class EnumPropertyClass
+        {
+            public TestEnum Enum { get; set; }
+        }
+
+        private enum TestEnum
+        {
+            Zero,
+            One
         }
 
         [Test]

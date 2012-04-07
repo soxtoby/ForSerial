@@ -48,6 +48,19 @@ namespace json.Tests.Objects
         }
 
         [Test]
+        public void Enum()
+        {
+            ConvertToJson(new { foo = TestEnum.One })
+                .ShouldBe(@"{""foo"":1}");
+        }
+
+        private enum TestEnum
+        {
+            Zero,
+            One
+        }
+
+        [Test]
         public void MultipleProperties()
         {
             Assert.AreEqual("{\"foo\":1,\"bar\":2}", ConvertToJson(new { foo = 1, bar = 2 }));
