@@ -18,6 +18,18 @@ namespace json.Objects
 
         public override object GetTypedValue()
         {
+            try
+            {
+                return TryGetTypedValue();
+            }
+            catch (Exception e)
+            {
+                throw new WriteException(TypeDef.Type.FullName, CurrentProperty, e);
+            }
+        }
+
+        private object TryGetTypedValue()
+        {
             if (typedValue != null)
                 return typedValue;
 
@@ -36,6 +48,7 @@ namespace json.Objects
 
             foreach (KeyValuePair<string, ObjectOutput> property in Properties)
             {
+                CurrentProperty = property.Key;
                 PropertyDefinition propDef;
                 if (StructureDef.Properties.TryGetValue(property.Key, out propDef))
                     property.Value.AssignToProperty(typedValue, propDef);
@@ -96,16 +109,17 @@ namespace json.Objects
         private class NoMatchingConstructor : Exception
         {
             public NoMatchingConstructor(Type type, Dictionary<string, ObjectOutput> properties)
-                : base("Could not find a matching constructor for type {0} with properties {1}"
+                : base("Could not find a matching constructor for type {0} with {1}"
                     .FormatWith(type.FullName, BuildParameterList(properties)))
             {
             }
 
             private static string BuildParameterList(Dictionary<string, ObjectOutput> properties)
             {
-                return properties
-                    .Select(kv => "{0} [{1}]".FormatWith(kv.Key, GetTypeName(kv.Value.GetTypedValue())))
-                    .Join(", ");
+                return properties.None() ? "no properties "
+                    : properties
+                        .Select(kv => "{0} [{1}]".FormatWith(kv.Key, GetTypeName(kv.Value.GetTypedValue())))
+                        .Join(", ");
             }
 
             private static string GetTypeName(object value)

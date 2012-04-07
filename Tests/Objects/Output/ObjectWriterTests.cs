@@ -650,6 +650,32 @@ namespace json.Tests.Objects
             sut.Result.ShouldBe(new Guid("d0a227da-c42a-4a5d-ad3d-adf7d0b352a2"));
         }
 
+        [Test]
+        public void ExceptionWrappedInPropertyStack()
+        {
+            Function.Call(() => DeserializeJson<PropertySetterThrowsExceptionContainer>(@"{ ""Property"": { ""ThrowsException"": 1, ""RegularProperty"": 2 } }"))
+                .ShouldThrow<WriteException>()
+                .And.Message.ShouldContain("foo")
+                        .And.ShouldContain(typeof(PropertySetterThrowsExceptionContainer).FullName + ".Property")
+                        .And.ShouldContain(typeof(PropertySetterThrowsExceptionClass).FullName + ".ThrowsException");
+        }
+
+        private class PropertySetterThrowsExceptionContainer
+        {
+            public PropertySetterThrowsExceptionClass Property { get; set; }
+        }
+
+        private class PropertySetterThrowsExceptionClass
+        {
+            public int ThrowsException
+            {
+                get { return 0; }
+                set { throw new Exception("foo"); }
+            }
+
+            public int RegularProperty { get; set; }
+        }
+
         private static T DeserializeJson<T>(string json)
         {
             ObjectWriter<T> writer = new ObjectWriter<T>();

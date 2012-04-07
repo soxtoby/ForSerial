@@ -6,7 +6,7 @@ namespace json.Objects
     public abstract class BaseObjectStructure : ObjectContainer
     {
         protected readonly StructureDefinition StructureDef;
-        private string currentProperty;
+        protected string CurrentProperty;
         protected readonly Dictionary<string, ObjectOutput> Properties = new Dictionary<string, ObjectOutput>(StringComparer.OrdinalIgnoreCase);
 
         public TypeDefinition TypeDef { get { return StructureDef; } }
@@ -20,37 +20,37 @@ namespace json.Objects
 
         public void SetCurrentProperty(string name)
         {
-            currentProperty = name;
+            CurrentProperty = name;
         }
 
         public ObjectContainer CreateStructure()
         {
-            return StructureDef.CreateStructureForProperty(currentProperty);
+            return StructureDef.CreateStructureForProperty(CurrentProperty);
         }
 
         public ObjectContainer CreateStructure(string typeIdentifier)
         {
-            return StructureDef.CreateStructureForProperty(currentProperty, typeIdentifier);
+            return StructureDef.CreateStructureForProperty(CurrentProperty, typeIdentifier);
         }
 
         public ObjectContainer CreateSequence()
         {
-            return StructureDef.CreateSequenceForProperty(currentProperty);
+            return StructureDef.CreateSequenceForProperty(CurrentProperty);
         }
 
         public bool CanCreateValue(object value)
         {
-            return StructureDef.CanCreateValueForProperty(currentProperty, value);
+            return StructureDef.CanCreateValueForProperty(CurrentProperty, value);
         }
 
         public void WriteValue(object value)
         {
-            Add(StructureDef.CreateValueForProperty(currentProperty, value));
+            Add(StructureDef.CreateValueForProperty(CurrentProperty, value));
         }
 
         public void Add(ObjectOutput value)
         {
-            Properties[currentProperty] = value;
+            Properties[CurrentProperty] = value;
         }
 
         public PreBuildInfo GetPreBuildInfo(Type readerType)
