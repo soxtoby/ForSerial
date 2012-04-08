@@ -20,7 +20,7 @@ namespace json.Objects.TypeDefinitions
 
         public override ObjectValue CreateValue(object value)
         {
-            return new DefaultObjectValue(ConvertToCorrectType(Enum.ToObject(Type, value)));
+            return new DefaultObjectValue(Enum.ToObject(Type, ConvertToCorrectType(value)));
         }
     }
 }

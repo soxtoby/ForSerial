@@ -40,14 +40,15 @@ namespace json.Tests.Objects
         [Test]
         public void Enum()
         {
-            CopyTo<TestEnum>(1)
+            CopyTo<TestEnum>(1d)   // Numbers coming from JsonParser will be doubles
                 .ShouldBe(TestEnum.One);
         }
 
         [Test]
         public void Array()
         {
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, Clone(new List<int> { 1, 2, 3 }));
+            Clone(new List<int> { 1, 2, 3 })
+                .ShouldBe(new[] { 1, 2, 3 });
         }
 
         [Test]
