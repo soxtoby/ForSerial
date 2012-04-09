@@ -27,6 +27,7 @@ namespace json.Objects
                 DefaultStructureDefinition.CreateDefaultStructureDefinition,
                 ObjectDefinition.CreateObjectDefinition,
                 EnumerableDefinition.CreateEnumerableDefinition,
+                ArrayDefinition.CreateArrayDefinition,
                 CollectionDefinition.CreateCollectionDefinition,
                 JsonDictionaryDefinition.CreateDictionaryDefinition,
                 ValueTypeDefinition.CreateValueTypeDefinition,

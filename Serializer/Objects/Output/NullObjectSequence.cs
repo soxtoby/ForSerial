@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace json.Objects
 {
@@ -13,7 +12,7 @@ namespace json.Objects
 
         public object GetTypedValue()
         {
-            return Enumerable.Empty<object>();
+            return null;
         }
 
         public TypeDefinition TypeDef { get { return NullTypeDefinition.Instance; } }

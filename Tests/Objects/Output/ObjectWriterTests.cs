@@ -46,7 +46,7 @@ namespace json.Tests.Objects
         }
 
         [Test]
-        public void Array()
+        public void List()
         {
             Clone(new List<int> { 1, 2, 3 })
                 .ShouldBe(new[] { 1, 2, 3 });
@@ -129,11 +129,11 @@ namespace json.Tests.Objects
         }
 
         [Test]
-        public void SetArrayProperty()
+        public void SetListProperty()
         {
-            SettableListPropertyClass foo = Clone(new SettableListPropertyClass { Array = new List<int> { 1, 2, 3 } });
+            SettableListPropertyClass foo = Clone(new SettableListPropertyClass { List = new List<int> { 1, 2, 3 } });
             Assert.IsFalse(foo.GetterHasBeenAccessed);
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, foo.Array);
+            foo.List.ShouldBe(new[] { 1, 2, 3 });
         }
 
         private class SettableListPropertyClass
@@ -141,7 +141,7 @@ namespace json.Tests.Objects
             public bool GetterHasBeenAccessed { get; private set; }
 
             private List<int> list;
-            public List<int> Array
+            public List<int> List
             {
                 get
                 {
@@ -156,29 +156,29 @@ namespace json.Tests.Objects
         }
 
         [Test]
-        public void PopulateArrayProperty()
+        public void PopulateListProperty()
         {
             GettableListPropertyClass obj = new GettableListPropertyClass();
-            obj.Array.AddRange(new[] { 1, 2, 3 });
+            obj.List.AddRange(new[] { 1, 2, 3 });
 
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, Clone(obj).Array);
+            Clone(obj).List.ShouldBe(new[] { 1, 2, 3 });
         }
 
         private class GettableListPropertyClass
         {
             private readonly List<int> list = new List<int>();
-            public List<int> Array
+            public List<int> List
             {
                 get { return list; }
             }
         }
 
         [Test]
-        public void ObjectArrayProperty()
+        public void ObjectListProperty()
         {
-            ObjectArrayPropertyClass obj = new ObjectArrayPropertyClass
+            ObjectListPropertyClass obj = new ObjectListPropertyClass
             {
-                Array = new List<IntPropertyClass>
+                List = new List<IntPropertyClass>
                 {
                     new IntPropertyClass { Integer = 1 },
                     new IntPropertyClass { Integer = 2 },
@@ -187,43 +187,50 @@ namespace json.Tests.Objects
             };
 
             Clone(obj)
-                .Array.Select(i => i.Integer).ShouldBe(new[] { 1, 2, 3 });
+                .List.Select(i => i.Integer).ShouldBe(new[] { 1, 2, 3 });
         }
 
-        private class ObjectArrayPropertyClass
+        private class ObjectListPropertyClass
         {
-            public List<IntPropertyClass> Array { get; set; }
+            public List<IntPropertyClass> List { get; set; }
         }
 
         [Test]
-        public void NestedArrayProperty()
+        public void NestedListProperty()
         {
-            NestedArrayPropertyClass obj = new NestedArrayPropertyClass
+            NestedListPropertyClass obj = new NestedListPropertyClass
             {
-                NestedArray = new List<List<int>> {
+                NestedList = new List<List<int>> {
                     new List<int> { 1, 2, 3 },
                     new List<int> { 4, 5, 6 }
                 }
             };
 
-            NestedArrayPropertyClass clone = Clone(obj);
+            NestedListPropertyClass clone = Clone(obj);
 
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, clone.NestedArray[0]);
-            CollectionAssert.AreEqual(new[] { 4, 5, 6 }, clone.NestedArray[1]);
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, clone.NestedList[0]);
+            CollectionAssert.AreEqual(new[] { 4, 5, 6 }, clone.NestedList[1]);
         }
 
-        private class NestedArrayPropertyClass
+        private class NestedListPropertyClass
         {
-            public List<List<int>> NestedArray { get; set; }
+            public List<List<int>> NestedList { get; set; }
         }
 
         [Test]
-        public void ArrayOfSubTypes()
+        public void ListOfSubTypes()
         {
             Clone(new List<AbstractSuperClass> { new SubClass { SuperProperty = 1, SubProperty = 2 } })
                 .Single().ShouldBe<SubClass>()
                 .And(sub => sub.SuperProperty.ShouldBe(1))
                 .And(sub => sub.SubProperty.ShouldBe(2));
+        }
+
+        [Test]
+        public void Array()
+        {
+            Clone(new[] { 1, 2, 3 })
+                .ShouldBe<int>(new[] { 1, 2, 3 });
         }
 
         [Test]
@@ -450,19 +457,19 @@ namespace json.Tests.Objects
         [Test]
         public void BuildTypedArrayProperty()
         {
-            ObjectArrayPropertyClass obj = DeserializeJson<ObjectArrayPropertyClass>(@"{""Array"":[{""Integer"":1},{""Integer"":2},{""Integer"":3}]}");
+            ObjectListPropertyClass obj = DeserializeJson<ObjectListPropertyClass>(@"{""List"":[{""Integer"":1},{""Integer"":2},{""Integer"":3}]}");
 
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.Array.Select(i => i.Integer));
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.List.Select(i => i.Integer));
         }
 
         [Test]
         public void BuildTypedNestedArrayProperty()
         {
-            NestedArrayPropertyClass obj = DeserializeJson<NestedArrayPropertyClass>(@"{""NestedArray"":[[1,2,3],[4,5,6]]}");
+            NestedListPropertyClass obj = DeserializeJson<NestedListPropertyClass>(@"{""NestedList"":[[1,2,3],[4,5,6]]}");
 
-            Assert.NotNull(obj.NestedArray);
-            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.NestedArray[0]);
-            CollectionAssert.AreEqual(new[] { 4, 5, 6 }, obj.NestedArray[1]);
+            Assert.NotNull(obj.NestedList);
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.NestedList[0]);
+            CollectionAssert.AreEqual(new[] { 4, 5, 6 }, obj.NestedList[1]);
         }
 
         [Test]

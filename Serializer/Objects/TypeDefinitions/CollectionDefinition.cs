@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace json.Objects.TypeDefinitions
@@ -55,9 +54,7 @@ namespace json.Objects.TypeDefinitions
 
         public object ConstructNew()
         {
-            var defaultConstructor = Constructors.FirstOrDefault(c => c.Parameters.None());
-            return defaultConstructor == null ? null
-                : defaultConstructor.Construct(new object[] { });
+            return ConstructDefault();
         }
     }
 }

@@ -87,6 +87,7 @@
     <Compile Include="Objects\ObjectInterfaceProvider.cs" />
     <Compile Include="Objects\NullTypeDefinition.cs" />
     <Compile Include="Objects\ObjectParsingOptions.cs" />
+    <Compile Include="Objects\Output\ArraySequence.cs" />
     <Compile Include="Objects\Output\BaseObjectSequence.cs" />
     <Compile Include="Objects\Output\BaseObjectStructure.cs" />
     <Compile Include="Objects\Output\BaseObjectWriter.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Objects\ReflectionInterfaceProvider.cs" />
     <Compile Include="Objects\SerializeTypeAttribute.cs" />
     <Compile Include="Objects\StructureDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\ArrayDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\ObjectDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\EnumDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\DateTimeDefinition.cs" />

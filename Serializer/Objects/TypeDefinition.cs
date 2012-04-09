@@ -132,6 +132,13 @@ namespace json.Objects
             throw new NotAValue(Type);
         }
 
+        protected object ConstructDefault()
+        {
+            ConstructorDefinition defaultConstructor = Constructors.FirstOrDefault(c => c.Parameters.None());
+            return defaultConstructor == null ? null
+                : defaultConstructor.Construct(new object[] { });
+        }
+
         private class NotAValue : Exception
         {
             public NotAValue(Type type) : base("Cannot create value for type {0}.".FormatWith(type.FullName)) { }
