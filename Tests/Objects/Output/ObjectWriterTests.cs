@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -49,6 +50,13 @@ namespace json.Tests.Objects
         {
             Clone(new List<int> { 1, 2, 3 })
                 .ShouldBe(new[] { 1, 2, 3 });
+        }
+
+        [Test]
+        public void NumberAsObject()
+        {
+            CopyTo<object>(1)
+                .ShouldBe(1);
         }
 
         [Test]
@@ -700,6 +708,55 @@ namespace json.Tests.Objects
             }
 
             public int RegularProperty { get; set; }
+        }
+
+        [Test]
+        public void IEnumerableWithAddObjectMethod_CanBeDeserialized()
+        {
+            CopyTo<CollectionLikeClass>(new[] { 1, 2, 3 })
+                .ShouldBe<int>(new[] { 1, 2, 3 });
+        }
+
+        private class CollectionLikeClass : IEnumerable
+        {
+            private readonly List<int> innerList = new List<int>();
+
+            public IEnumerator GetEnumerator()
+            {
+                return innerList.GetEnumerator();
+            }
+
+            public void Add(object val)
+            {
+                innerList.Add((int)val);
+            }
+        }
+
+        [Test]
+        public void IEnumerableTWithAddTMethod_CanBeDeserialized()
+        {
+            CopyTo<GenericCollectionLikeCLass>(new[] { 1, 2, 3 })
+                .ShouldBe(new[] { 1, 2, 3 });
+        }
+
+        private class GenericCollectionLikeCLass : IEnumerable<int>
+        {
+            private readonly List<int> innerList = new List<int>();
+
+            public IEnumerator<int> GetEnumerator()
+            {
+                return innerList.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public void Add(int val)
+            {
+                innerList.Add(val);
+            }
         }
 
         private static T DeserializeJson<T>(string json)

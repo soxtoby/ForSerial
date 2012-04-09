@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using json.Objects.TypeDefinitions;
 
 namespace json.Objects
@@ -21,7 +20,7 @@ namespace json.Objects
 
         public override object GetTypedValue()
         {
-            Type listType = typeof(List<>).MakeGenericType(enumerableDef.ItemType);
+            Type listType = enumerableDef.GetGenericListType();
             return GetTypedValue((CollectionDefinition)CurrentTypeHandler.GetTypeDefinition(listType));
         }
     }

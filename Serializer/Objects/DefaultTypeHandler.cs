@@ -25,6 +25,7 @@ namespace json.Objects
         private readonly List<Func<Type, TypeDefinition>> typeDefinitionFactories = new List<Func<Type, TypeDefinition>>
             {
                 DefaultStructureDefinition.CreateDefaultStructureDefinition,
+                ObjectDefinition.CreateObjectDefinition,
                 EnumerableDefinition.CreateEnumerableDefinition,
                 CollectionDefinition.CreateCollectionDefinition,
                 JsonDictionaryDefinition.CreateDictionaryDefinition,

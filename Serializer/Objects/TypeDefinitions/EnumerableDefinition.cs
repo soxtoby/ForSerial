@@ -6,7 +6,20 @@ namespace json.Objects.TypeDefinitions
 {
     public class EnumerableDefinition : SequenceDefinition
     {
-        private EnumerableDefinition(Type type, Type itemType) : base(type, itemType) { }
+        private readonly Func<ObjectContainer> sequenceCreate;
+
+        private EnumerableDefinition(Type type, Type itemType)
+            : base(type, itemType)
+        {
+            sequenceCreate = GetGenericListType().CanBeCastTo(type)
+                ? (Func<ObjectContainer>)CreateEnumerableSequence
+                : CreateNullSequence;
+        }
+
+        public Type GetGenericListType()
+        {
+            return typeof(List<>).MakeGenericType(ItemType);
+        }
 
         internal static SequenceDefinition CreateEnumerableDefinition(Type type)
         {
@@ -22,7 +35,17 @@ namespace json.Objects.TypeDefinitions
 
         public override ObjectContainer CreateSequence()
         {
+            return sequenceCreate();
+        }
+
+        private ObjectContainer CreateEnumerableSequence()
+        {
             return new EnumerableSequence(this);
+        }
+
+        private static ObjectContainer CreateNullSequence()
+        {
+            return NullObjectSequence.Instance;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -17,7 +18,8 @@ namespace json.Objects.TypeDefinitions
 
         internal static SequenceDefinition CreateCollectionDefinition(Type type)
         {
-            Type itemType = type.GetGenericInterfaceType(typeof(ICollection<>));
+            // IEnumerable<T> with Add(T) method
+            Type itemType = type.GetGenericInterfaceType(typeof(IEnumerable<>));
             if (itemType != null)
             {
                 MethodInfo addMethod = type.GetMethod("Add", new[] { itemType });
@@ -26,6 +28,17 @@ namespace json.Objects.TypeDefinitions
                     return new CollectionDefinition(type, itemType, ObjectInterfaceProvider.GetAction(addMethod));
                 }
             }
+
+            // IEumerable with Add(object) method
+            if (type.CanBeCastTo(typeof(IEnumerable)))
+            {
+                MethodInfo addMethod = type.GetMethod("Add", new[] { typeof(object) });
+                if (addMethod != null)
+                {
+                    return new CollectionDefinition(type, typeof(object), ObjectInterfaceProvider.GetAction(addMethod));
+                }
+            }
+
             return null;
         }
 
