@@ -291,6 +291,13 @@ namespace json.Tests.Objects
         }
 
         [Test]
+        public void AbstractTypeEnumerablePropertyTypeIsSerialized()
+        {
+            ConvertToSimpleTypeJson(new AbstractTypeEnumerablePropertyClass { Property = new List<AbstractClass> { new ConcreteClass { Value = 5 } } })
+                .ShouldBe(@"{""_type"":""AbstractTypeEnumerablePropertyClass"",""Property"":[{""_type"":""ConcreteClass"",""Value"":5}]}");
+        }
+
+        [Test]
         public void MarkedKnownTypeEnumerablePropertyTypeSerialized()
         {
             ConvertToSimpleTypeJson(new MarkedConcreteTypeEnumerablePropertyClass { Property = new List<ConcreteClass> { new ConcreteClass { Value = 6 } } })
@@ -386,6 +393,11 @@ namespace json.Tests.Objects
         private class ConcreteTypeEnumerablePropertyClass
         {
             public List<ConcreteClass> Property { get; set; }
+        }
+
+        private class AbstractTypeEnumerablePropertyClass
+        {
+            public List<AbstractClass> Property { get; set; }
         }
 
         private class MarkedConcreteTypeEnumerablePropertyClass

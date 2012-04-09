@@ -218,6 +218,15 @@ namespace json.Tests.Objects
         }
 
         [Test]
+        public void ArrayOfSubTypes()
+        {
+            Clone(new List<AbstractSuperClass> { new SubClass { SuperProperty = 1, SubProperty = 2 } })
+                .Single().ShouldBe<SubClass>()
+                .And(sub => sub.SuperProperty.ShouldBe(1))
+                .And(sub => sub.SubProperty.ShouldBe(2));
+        }
+
+        [Test]
         public void SetDictionaryProperty()
         {
             SettableDictionaryPropertyClass foo = Clone(new SettableDictionaryPropertyClass
@@ -758,6 +767,7 @@ namespace json.Tests.Objects
                 innerList.Add(val);
             }
         }
+
 
         private static T DeserializeJson<T>(string json)
         {

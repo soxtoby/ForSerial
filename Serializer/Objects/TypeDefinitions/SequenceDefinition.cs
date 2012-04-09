@@ -33,6 +33,11 @@ namespace json.Objects.TypeDefinitions
             return ItemTypeDef.CreateStructure();
         }
 
+        public ObjectContainer CreateStructureForItem(string typeIdentifier)
+        {
+            return ItemTypeDef.CreateStructure(typeIdentifier);
+        }
+
         public ObjectContainer CreateSequenceForItem()
         {
             return ItemTypeDef.CreateSequence();

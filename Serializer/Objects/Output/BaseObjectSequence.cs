@@ -33,7 +33,7 @@ namespace json.Objects
 
         public ObjectContainer CreateStructure(string typeIdentifier)
         {
-            return CreateStructure();
+            return collectionDef.CreateStructureForItem(typeIdentifier);
         }
 
         public ObjectContainer CreateSequence()
