@@ -17,6 +17,10 @@ namespace json.Tests.Objects
         private readonly PropertyInfo privateClassProperty = typeof(Class).GetProperty("PrivateClassProperty", BindingFlags.Instance | BindingFlags.NonPublic);
         private readonly FieldInfo privateValueField = typeof(Class).GetField("privateValueField", BindingFlags.Instance | BindingFlags.NonPublic);
         private readonly FieldInfo privateClassField = typeof(Class).GetField("privateClassField", BindingFlags.Instance | BindingFlags.NonPublic);
+        private readonly MethodInfo publicValueMethod = typeof(Class).GetMethod("PublicValueMethod", new[] { typeof(int) });
+        private readonly MethodInfo privateValueMethod = typeof(Class).GetMethod("PrivateValueMethod", BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(int) }, new ParameterModifier[] { });
+        private readonly MethodInfo publicClassMethod = typeof(Class).GetMethod("PublicClassMethod", new[] { typeof(object) });
+        private readonly MethodInfo privateClassMethod = typeof(Class).GetMethod("PrivateClassMethod", BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(object) }, new ParameterModifier[] { });
 
         [Test]
         public void GetPublicValueProperty()
@@ -194,6 +198,52 @@ namespace json.Tests.Objects
             Assert.AreSame(expected, instance.GetPrivateClassField());
         }
 
+        [Test]
+        public void CallPublicValueMethod()
+        {
+            Class instance = new Class();
+
+            ActionMethod result = sut.GetAction(publicValueMethod);
+
+            result(instance, new object[] { 1 });
+            Assert.AreEqual(1, instance.GetPrivateValueField());
+        }
+
+        [Test]
+        public void CallPrivateValueMethod()
+        {
+            Class instance = new Class();
+
+            ActionMethod result = sut.GetAction(privateValueMethod);
+
+            result(instance, new object[] { 1 });
+            Assert.AreEqual(1, instance.GetPrivateValueField());
+        }
+
+        [Test]
+        public void CallPublicClassMethod()
+        {
+            Class instance = new Class();
+            object expected = new object();
+
+            ActionMethod result = sut.GetAction(publicClassMethod);
+
+            result(instance, new[] { expected });
+            Assert.AreSame(expected, instance.GetPrivateClassField());
+        }
+
+        [Test]
+        public void CallPrivateClassMethod()
+        {
+            Class instance = new Class();
+            object expected = new object();
+
+            ActionMethod result = sut.GetAction(privateClassMethod);
+
+            result(instance, new[] { expected });
+            Assert.AreSame(expected, instance.GetPrivateClassField());
+        }
+
         private class Class
         {
             public Class(int privateValueField = 0, object privateClassField = null, int privateValueProperty = 0, object privateClassProperty = null)
@@ -213,6 +263,26 @@ namespace json.Tests.Objects
             public object GetPrivateClassField() { return privateClassField; }
             public int GetPrivateValueProperty() { return PrivateValueProperty; }
             public object GetPrivateClassProperty() { return PrivateClassProperty; }
+
+            public void PublicValueMethod(int value)
+            {
+                privateValueField = value;
+            }
+
+            private void PrivateValueMethod(int value)
+            {
+                privateValueField = value;
+            }
+
+            public void PublicClassMethod(object obj)
+            {
+                privateClassField = obj;
+            }
+
+            private void PrivateClassMethod(object obj)
+            {
+                privateClassField = obj;
+            }
 
             public int PublicValueField;
             public object PublicClassField;

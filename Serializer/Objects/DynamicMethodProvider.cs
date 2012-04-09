@@ -121,7 +121,8 @@ namespace json.Objects
             dynamicMethod.GetILGenerator()
                 .LoadObjectInstance(method.DeclaringType)
                 .LoadParamsFromObjectArrayArg(1, method)
-                .CallMethod(method);
+                .CallMethod(method)
+                .Return();
 
             return (ActionMethod)dynamicMethod.CreateDelegate(typeof(ActionMethod));
         }
