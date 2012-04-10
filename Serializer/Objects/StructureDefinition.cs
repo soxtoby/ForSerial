@@ -8,7 +8,7 @@ namespace json.Objects
 {
     public abstract class StructureDefinition : TypeDefinition
     {
-        public PropertyCollection Properties { get; private set; }// TODO use a KeyedCollection when moving out of TypeDefinition
+        public PropertyCollection Properties { get; private set; }
         protected PropertyDefinition[] AllSerializableProperties;
         protected PropertyDefinition[] PublicGetSetProperties;
 

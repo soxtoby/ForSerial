@@ -2,8 +2,13 @@
 
 namespace json.Objects
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class SerializeTypeAttribute : Attribute { }
+    public class SerializeTypeAttribute : PropertyDefinitionAttribute
+    {
+        public override void Read(object value, ObjectReader reader, Writer writer)
+        {
+            TypeDef.ReadObject(value, reader, writer, true);
+        }
+    }
 
     [AttributeUsage(AttributeTargets.Property)]
     public class SerializeKeyTypeAttribute : Attribute { }

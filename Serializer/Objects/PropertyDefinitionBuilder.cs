@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace json.Objects
@@ -16,15 +18,23 @@ namespace json.Objects
 
         public PropertyDefinition Build(PropertyInfo property)
         {
-            return new PropertyDefinition(
+            PropertyDefinition propDef = new DefaultPropertyDefinition(
                 GetTypeDefinition(property),
                 GetName(property),
                 GetGetter(property),
                 GetSetter(property),
-                GetShouldForceTypeIdentifierSerialization(property),
                 GetDeclaringTypeName(property),
                 HasPublicGetter(property),
                 HasPublicSetter(property));
+
+            IEnumerable<PropertyDefinitionAttribute> propertyDefinitionAttributes = property.GetCustomAttributes(false).OfType<PropertyDefinitionAttribute>();
+            foreach (PropertyDefinitionAttribute attribute in propertyDefinitionAttributes)
+            {
+                attribute.InnerDefinition = propDef;
+                propDef = attribute;
+            }
+
+            return propDef;
         }
 
         private static TypeDefinition GetTypeDefinition(PropertyInfo property)
@@ -47,12 +57,6 @@ namespace json.Objects
         {
             return property.GetSetMethod(true) == null ? null
                 : interfaceProvider.GetPropertySetter(property);
-        }
-
-        private static bool GetShouldForceTypeIdentifierSerialization(PropertyInfo property)
-        {
-            bool forceTypeIdentifierSerialization = property.HasAttribute<SerializeTypeAttribute>();
-            return forceTypeIdentifierSerialization;
         }
 
         private static string GetDeclaringTypeName(PropertyInfo property)

@@ -110,6 +110,8 @@
     <Compile Include="Objects\Output\StructurerReference.cs" />
     <Compile Include="Objects\Output\WriteException.cs" />
     <Compile Include="Objects\ParameterDefinition.cs" />
+    <Compile Include="Objects\Attributes\PropertyDefinitionAttribute.cs" />
+    <Compile Include="Objects\DefaultPropertyDefinition.cs" />
     <Compile Include="Objects\PropertyDefinitionBuilder.cs" />
     <Compile Include="Objects\ReflectionInterfaceProvider.cs" />
     <Compile Include="Objects\SerializeTypeAttribute.cs" />

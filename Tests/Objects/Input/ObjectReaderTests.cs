@@ -338,6 +338,32 @@ namespace json.Tests.Objects
                 .ShouldBe(@"{""_type"":""MarkedConcreteValueTypeDictionaryPropertyClass"",""Property"":[{""Key"":{""Value"":11},""Value"":{""_type"":""ConcreteClass"",""Value"":12}}]}");
         }
 
+        [Test]
+        public void PropertyDefinitionAttribute()
+        {
+            ConvertToJson(new RenamedPropertyClass { Foo = 1 })
+                .ShouldBe(@"{""bar"":1}");
+        }
+
+        private class RenamedPropertyClass
+        {
+            [RenamePropertyDefinition("bar")]
+            public int Foo { get; set; }
+        }
+
+        private class RenamePropertyDefinitionAttribute : PropertyDefinitionAttribute
+        {
+            private readonly string name;
+
+            public RenamePropertyDefinitionAttribute(string name)
+            {
+                if (name == null) throw new ArgumentNullException("name");
+                this.name = name;
+            }
+
+            public override string Name { get { return name; } }
+        }
+
         private static string ConvertToSimpleTypeJson(object obj)
         {
             using (CurrentTypeResolver.Override(new SimpleTypeNameTypeResolver()))
