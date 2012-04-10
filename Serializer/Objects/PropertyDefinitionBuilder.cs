@@ -29,7 +29,7 @@ namespace json.Objects
 
         private static TypeDefinition GetTypeDefinition(PropertyInfo property)
         {
-            return CurrentTypeHandler.GetTypeDefinition(property.PropertyType);
+            return TypeCache.GetTypeDefinition(property.PropertyType);
         }
 
         private static string GetName(PropertyInfo property)

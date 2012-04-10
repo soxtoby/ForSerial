@@ -40,7 +40,7 @@ namespace json.Objects
 
         private void Read(object input, bool requestTypeIdentification)
         {
-            TypeDefinition typeDef = CurrentTypeHandler.GetTypeDefinition(input);
+            TypeDefinition typeDef = TypeCache.GetTypeDefinition(input);
             typeDef.Read(input, this, writer, requestTypeIdentification);
         }
 

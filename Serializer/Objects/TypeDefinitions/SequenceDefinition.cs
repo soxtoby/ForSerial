@@ -10,7 +10,7 @@ namespace json.Objects.TypeDefinitions
         protected SequenceDefinition(Type type, Type itemType)
             : base(type)
         {
-            ItemTypeDef = CurrentTypeHandler.GetTypeDefinition(itemType);
+            ItemTypeDef = TypeCache.GetTypeDefinition(itemType);
         }
 
         public Type ItemType { get { return ItemTypeDef.Type; } }

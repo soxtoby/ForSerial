@@ -11,8 +11,8 @@ namespace json.Objects.TypeDefinitions
         private JsonDictionaryDefinition(Type dictionaryType)
             : base(dictionaryType)
         {
-            KeyTypeDef = CurrentTypeHandler.GetTypeDefinition(dictionaryType.GetGenericInterfaceType(typeof(IDictionary<,>), 0));
-            ValueTypeDef = CurrentTypeHandler.GetTypeDefinition(dictionaryType.GetGenericInterfaceType(typeof(IDictionary<,>), 1));
+            KeyTypeDef = TypeCache.GetTypeDefinition(dictionaryType.GetGenericInterfaceType(typeof(IDictionary<,>), 0));
+            ValueTypeDef = TypeCache.GetTypeDefinition(dictionaryType.GetGenericInterfaceType(typeof(IDictionary<,>), 1));
         }
 
         public TypeDefinition ValueTypeDef { get; set; }
@@ -42,7 +42,7 @@ namespace json.Objects.TypeDefinitions
                 return;
 
             if (reader.ShouldWriteTypeIdentification(requestTypeIdentification))
-                writer.BeginStructure(CurrentTypeHandler.GetTypeIdentifier(Type), reader.GetType());
+                writer.BeginStructure(CurrentTypeResolver.GetTypeIdentifier(Type), reader.GetType());
             else
                 writer.BeginStructure(Type);
 

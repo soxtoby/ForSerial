@@ -14,14 +14,9 @@ namespace json.Objects.TypeDefinitions
         private const char TimeZoneDesignator = 'Z';
         private static readonly DateTime BaseDate = new DateTime(1970, 1, 1);
 
-        private DateTimeDefinition(Type type) : base(type) { }
+        private DateTimeDefinition() : base(typeof(DateTime)) { }
 
-        internal static DateTimeDefinition CreateDateTimeDefinition(Type type)
-        {
-            return type == typeof(DateTime)
-                ? new DateTimeDefinition(type)
-                : null;
-        }
+        public static readonly DateTimeDefinition Instance = new DateTimeDefinition();
 
         public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {

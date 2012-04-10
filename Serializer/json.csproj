@@ -80,8 +80,9 @@
     <Compile Include="JsonObjects\PreDeserializeAttribute.cs" />
     <Compile Include="Json\Output\JsonStringWriter.cs" />
     <Compile Include="Json\Output\PrettyPrintingJsonStringWriter.cs" />
+    <Compile Include="Objects\AssemblyQualifiedNameResolver.cs" />
     <Compile Include="Objects\ConstructorDefinition.cs" />
-    <Compile Include="Objects\DefaultTypeHandler.cs" />
+    <Compile Include="Objects\TypeCache.cs" />
     <Compile Include="Objects\DynamicMethodProvider.cs" />
     <Compile Include="Objects\NullableTypeDefinition.cs" />
     <Compile Include="Objects\ObjectInterfaceProvider.cs" />
@@ -127,7 +128,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Objects\TypeDefinitions\ValueTypeDefinition.cs" />
-    <Compile Include="Objects\TypeHandler.cs" />
+    <Compile Include="Objects\TypeResolver.cs" />
     <Compile Include="Output\Writer.cs" />
     <Compile Include="Objects\Input\ObjectReader.cs" />
     <Compile Include="Objects\ReferenceEqualityComparer.cs" />

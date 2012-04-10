@@ -21,7 +21,7 @@ namespace json.Objects
         public override object GetTypedValue()
         {
             Type listType = enumerableDef.GetGenericListType();
-            return GetTypedValue((CollectionDefinition)CurrentTypeHandler.GetTypeDefinition(listType));
+            return GetTypedValue((CollectionDefinition)TypeCache.GetTypeDefinition(listType));
         }
     }
 }

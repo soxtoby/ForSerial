@@ -6,7 +6,7 @@ namespace json.Objects
     {
         private T result;
 
-        public TypeDefinition TypeDef { get { return CurrentTypeHandler.GetTypeDefinition(typeof(T)); } }
+        public TypeDefinition TypeDef { get { return TypeCache.GetTypeDefinition(typeof(T)); } }
 
         public void AssignToProperty(object obj, PropertyDefinition property) { }
         public void SetCurrentProperty(string name) { }

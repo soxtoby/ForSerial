@@ -17,7 +17,7 @@ namespace json.Objects.TypeDefinitions
                 return;
 
             if (reader.ShouldWriteTypeIdentification(requestTypeIdentification))
-                writer.BeginStructure(CurrentTypeHandler.GetTypeIdentifier(Type), reader.GetType());
+                writer.BeginStructure(CurrentTypeResolver.GetTypeIdentifier(Type), reader.GetType());
             else
                 writer.BeginStructure(Type);
 

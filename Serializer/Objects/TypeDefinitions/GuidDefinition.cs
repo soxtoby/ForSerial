@@ -6,12 +6,7 @@ namespace json.Objects.TypeDefinitions
     {
         private GuidDefinition() : base(typeof(Guid)) { }
 
-        internal static GuidDefinition CreateGuidDefinition(Type type)
-        {
-            return type == typeof(Guid)
-                ? new GuidDefinition()
-                : null;
-        }
+        public static readonly GuidDefinition Instance = new GuidDefinition();
 
         public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {

@@ -11,7 +11,7 @@ namespace json.Objects
         {
             if (underlyingType == null) throw new ArgumentNullException("underlyingType");
 
-            underlyingTypeDef = CurrentTypeHandler.GetTypeDefinition(underlyingType);
+            underlyingTypeDef = TypeCache.GetTypeDefinition(underlyingType);
         }
 
         internal static NullableTypeDefinition CreateNullableTypeDefinition(Type type)

@@ -24,7 +24,7 @@
             get
             {
                 return value == null ? null
-                    : CurrentTypeHandler.GetTypeDefinition(value.GetType());
+                    : TypeCache.GetTypeDefinition(value.GetType());
             }
         }
     }

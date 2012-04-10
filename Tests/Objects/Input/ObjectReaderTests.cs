@@ -230,28 +230,23 @@ namespace json.Tests.Objects
         [Test]
         public void OverrideTypeHandler()
         {
-            using (CurrentTypeHandler.Override(new CustomTypeHandler()))
+            using (CurrentTypeResolver.Override(new CustomTypeResolver()))
             {
                 ConvertToJson(new { foo = 5 }, new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.All })
                     .ShouldBe(@"{""_type"":""foobar"",""foo"":5}");
             }
         }
 
-        private class CustomTypeHandler : TypeHandler
+        private class CustomTypeResolver : TypeResolver
         {
             public string GetTypeIdentifier(Type type)
             {
                 return "foobar";
             }
 
-            public TypeDefinition GetTypeDefinition(string typeIdentifier)
+            public Type GetType(string identifier)
             {
-                return DefaultTypeHandler.Instance.GetTypeDefinition(typeIdentifier);
-            }
-
-            public TypeDefinition GetTypeDefinition(Type type)
-            {
-                return DefaultTypeHandler.Instance.GetTypeDefinition(type);
+                return null;
             }
         }
 
@@ -345,27 +340,22 @@ namespace json.Tests.Objects
 
         private static string ConvertToSimpleTypeJson(object obj)
         {
-            using (CurrentTypeHandler.Override(new SimpleTypeNameTypeHandler()))
+            using (CurrentTypeResolver.Override(new SimpleTypeNameTypeResolver()))
             {
                 return ConvertToJson(obj, new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.Minimal });
             }
         }
 
-        private class SimpleTypeNameTypeHandler : TypeHandler
+        private class SimpleTypeNameTypeResolver : TypeResolver
         {
             public string GetTypeIdentifier(Type type)
             {
                 return type.Name;
             }
 
-            public TypeDefinition GetTypeDefinition(string typeIdentifier)
+            public Type GetType(string identifier)
             {
-                return DefaultTypeHandler.Instance.GetTypeDefinition(typeIdentifier);
-            }
-
-            public TypeDefinition GetTypeDefinition(Type type)
-            {
-                return DefaultTypeHandler.Instance.GetTypeDefinition(type);
+                return null;
             }
         }
 

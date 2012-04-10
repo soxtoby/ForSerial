@@ -92,7 +92,7 @@ namespace json.Objects
                 Read(input, reader, writer, requestTypeIdentification);
             else
             {
-                TypeDefinition inputTypeDef = CurrentTypeHandler.GetTypeDefinition(input);
+                TypeDefinition inputTypeDef = TypeCache.GetTypeDefinition(input);
                 inputTypeDef.Read(input, reader, writer, true);
             }
         }
@@ -106,7 +106,7 @@ namespace json.Objects
 
         public ObjectContainer CreateStructure(string requestedTypeIdentifier)
         {
-            TypeDefinition requestedTypeDef = CurrentTypeHandler.GetTypeDefinition(requestedTypeIdentifier);
+            TypeDefinition requestedTypeDef = TypeCache.GetTypeDefinition(requestedTypeIdentifier);
             return Type.IsAssignableFrom(requestedTypeDef.Type)
                 ? requestedTypeDef.CreateStructure()
                 : CreateStructure();

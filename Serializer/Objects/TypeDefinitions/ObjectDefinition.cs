@@ -1,17 +1,10 @@
-﻿using System;
-
-namespace json.Objects.TypeDefinitions
+﻿namespace json.Objects.TypeDefinitions
 {
     internal class ObjectDefinition : TypeDefinition
     {
         private ObjectDefinition() : base(typeof(object)) { }
 
-        internal static ObjectDefinition CreateObjectDefinition(Type type)
-        {
-            return type == typeof(object)
-                ? new ObjectDefinition()
-                : null;
-        }
+        public static readonly ObjectDefinition Instance = new ObjectDefinition();
 
         public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {
