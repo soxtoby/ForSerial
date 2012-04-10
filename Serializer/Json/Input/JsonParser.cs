@@ -253,8 +253,9 @@ namespace json.Json
                     writer.WriteNull();
                     return;
                 default:
-                    if (char.IsDigit(word[0]))
-                        writer.Write(double.Parse(word));
+                    double number;
+                    if (double.TryParse(word, out number))
+                        writer.Write(number);
                     else
                         throw new ExpectedValue(word, CurrentLine, CurrentLinePosition);
                     break;

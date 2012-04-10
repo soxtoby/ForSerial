@@ -1,19 +1,14 @@
-Specific write functions for different number types.
-Optimise string escaping.
-
+Implement/optimise string escaping.
 
 Allow override of type resolution.
 Test duplicate value types - will probably incorrectly create references at the moment.
-Test nullable value type properties.
 Turn all singleton properties into public readonly fields.
 Simple struct serialization with ToString & Parse.
 Support IDictionary - detect map or KeyValuePair list.
 Better object construction
  - Avoid passing in properties that can be set directly.
  - Once property has been passed in, don't set it again.
-Add tests for static func method generation.
 Add version attribute for classes and put version in type identifier.
-Test negative numbers.
 
 New Serialization Rules:
  - Defaults

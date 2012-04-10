@@ -55,6 +55,14 @@ namespace json.Tests.Json
         }
 
         [Test]
+        public void NegativeNumber()
+        {
+            ParseJson("-1")
+                .ShouldBe<JsonValue>()
+                .And.Value.ShouldBe(-1);
+        }
+
+        [Test]
         public void String()
         {
             ParseJson(@"""foo""")
@@ -97,6 +105,13 @@ namespace json.Tests.Json
         {
             ParseFooProperty(@"{ ""foo"": 5 }")
                 .Value().ShouldBe(5);
+        }
+
+        [Test]
+        public void NegativeNumberProperty()
+        {
+            ParseFooProperty(@"{ ""foo"": -5 }")
+                .Value().ShouldBe(-5);
         }
 
         [Test]
