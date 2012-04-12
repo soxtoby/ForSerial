@@ -32,7 +32,7 @@ namespace json.Objects.TypeDefinitions
                 base.Read(input, reader, writer, requestTypeIdentification);
         }
 
-        public override ObjectValue CreateValue(object value)
+        public override ObjectOutput CreateValue(object value)
         {
             return new DefaultObjectValue(ConvertToCorrectType(value));
         }

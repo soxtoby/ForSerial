@@ -2,7 +2,7 @@ using System;
 
 namespace json.Objects
 {
-    public class DefaultPropertyDefinition : PropertyDefinition
+    internal class DefaultPropertyDefinition : PropertyDefinition
     {
         public DefaultPropertyDefinition(TypeDefinition typeDef,
                                     string name,
@@ -68,7 +68,7 @@ namespace json.Objects
             return TypeDef.CanCreateValue(value);
         }
 
-        public ObjectValue CreateValue(object value)
+        public ObjectOutput CreateValue(object value)
         {
             return TypeDef.CreateValue(value);
         }

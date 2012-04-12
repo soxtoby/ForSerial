@@ -18,7 +18,7 @@ namespace json.Objects.TypeDefinitions
             writer.Write((int)input);
         }
 
-        public override ObjectValue CreateValue(object value)
+        public override ObjectOutput CreateValue(object value)
         {
             return new DefaultObjectValue(Enum.ToObject(Type, ConvertToCorrectType(value)));
         }

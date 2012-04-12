@@ -8,20 +8,20 @@ namespace json.Objects
     public abstract class TypeDefinition
     {
         private bool isSealed;
-        protected readonly TypeCode typeCode;
+        protected readonly TypeCode TypeCode;
         protected static readonly HashSet<Type> IgnoreAttributes = new HashSet<Type>();
         private readonly List<PreBuildInfo> preBuildMethods = new List<PreBuildInfo>();
 
         public Type Type { get; private set; }
         public List<ConstructorDefinition> Constructors { get; private set; }
 
-        protected static readonly ObjectInterfaceProvider ObjectInterfaceProvider = new DynamicMethodProvider();
+        public static ObjectInterfaceProvider ObjectInterfaceProvider = new DynamicMethodProvider();
 
         protected TypeDefinition(Type type)
         {
             Type = type;
             Constructors = new List<ConstructorDefinition>();
-            typeCode = Type.GetTypeCode(type);
+            TypeCode = Type.GetTypeCode(type);
         }
 
         internal virtual void Populate()
@@ -63,8 +63,8 @@ namespace json.Objects
         /// </summary>
         public object ConvertToCorrectType(object obj)
         {
-            return typeCode.GetTypeCodeType() == TypeCodeType.Number
-                ? Convert.ChangeType(obj, typeCode)
+            return TypeCode.GetTypeCodeType() == TypeCodeType.Number
+                ? Convert.ChangeType(obj, TypeCode)
                 : obj;
         }
 
@@ -126,7 +126,7 @@ namespace json.Objects
                 || type == typeof(string);
         }
 
-        public virtual ObjectValue CreateValue(object value)
+        public virtual ObjectOutput CreateValue(object value)
         {
             if (value == null) return new DefaultObjectValue(null);
             throw new NotAValue(Type);

@@ -41,7 +41,7 @@ namespace json.Tests.Objects
         [Test]
         public void Enum()
         {
-            CopyTo<TestEnum>(1d)   // Numbers coming from JsonParser will be doubles
+            CopyTo<TestEnum>(1d)   // Numbers coming from JsonReader will be doubles
                 .ShouldBe(TestEnum.One);
         }
 
@@ -779,7 +779,7 @@ namespace json.Tests.Objects
         private static T DeserializeJson<T>(string json)
         {
             ObjectWriter<T> writer = new ObjectWriter<T>();
-            JsonParser.Parse(json, writer);
+            JsonReader.Read(json, writer);
             return writer.Result;
         }
 

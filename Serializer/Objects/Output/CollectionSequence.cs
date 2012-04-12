@@ -3,7 +3,7 @@ using json.Objects.TypeDefinitions;
 
 namespace json.Objects
 {
-    internal class CollectionSequence : BaseObjectSequence
+    public class CollectionSequence : BaseObjectSequence
     {
         private readonly CollectionDefinition collectionDef;
 

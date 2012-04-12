@@ -43,7 +43,7 @@ namespace json.Objects.TypeDefinitions
             return ItemTypeDef.CreateSequence();
         }
 
-        public ObjectValue CreateValueForItem(object value)
+        public ObjectOutput CreateValueForItem(object value)
         {
             return ItemTypeDef.CreateValue(value);
         }

@@ -84,9 +84,9 @@
     <Compile Include="Objects\ConstructorDefinition.cs" />
     <Compile Include="Objects\TypeCache.cs" />
     <Compile Include="Objects\DynamicMethodProvider.cs" />
-    <Compile Include="Objects\NullableTypeDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\NullableTypeDefinition.cs" />
     <Compile Include="Objects\ObjectInterfaceProvider.cs" />
-    <Compile Include="Objects\NullTypeDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\NullTypeDefinition.cs" />
     <Compile Include="Objects\ObjectParsingOptions.cs" />
     <Compile Include="Objects\Output\ArraySequence.cs" />
     <Compile Include="Objects\Output\BaseObjectSequence.cs" />
@@ -103,7 +103,6 @@
     <Compile Include="Objects\Output\NullObjectValue.cs" />
     <Compile Include="Objects\Output\ObjectContainer.cs" />
     <Compile Include="Objects\Output\ObjectOutput.cs" />
-    <Compile Include="Objects\Output\ObjectValue.cs" />
     <Compile Include="Objects\Output\ObjectWriter.cs" />
     <Compile Include="Objects\Output\ObjectWriterWithPreBuilding.cs" />
     <Compile Include="Objects\Output\PreBuildingWriter.cs" />
@@ -115,7 +114,7 @@
     <Compile Include="Objects\PropertyDefinitionBuilder.cs" />
     <Compile Include="Objects\ReflectionInterfaceProvider.cs" />
     <Compile Include="Objects\SerializeTypeAttribute.cs" />
-    <Compile Include="Objects\StructureDefinition.cs" />
+    <Compile Include="Objects\TypeDefinitions\StructureDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\ArrayDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\ObjectDefinition.cs" />
     <Compile Include="Objects\TypeDefinitions\EnumDefinition.cs" />
@@ -134,13 +133,12 @@
     <Compile Include="Output\NullWriter.cs" />
     <Compile Include="Output\Writer.cs" />
     <Compile Include="Objects\Input\ObjectReader.cs" />
-    <Compile Include="Objects\ReferenceEqualityComparer.cs" />
     <Compile Include="Objects\ReflectionHelper.cs" />
     <Compile Include="Objects\TypeDefinitions\CollectionDefinition.cs" />
     <Compile Include="Objects\PreBuildAttribute.cs" />
     <Compile Include="Objects\PropertyDefinition.cs" />
     <Compile Include="Objects\TypeDefinition.cs" />
-    <Compile Include="Json\Input\JsonParser.cs" />
+    <Compile Include="Json\Input\JsonReader.cs" />
     <Compile Include="Json\Input\ParseException.cs" />
     <Compile Include="StateStack.cs" />
   </ItemGroup>

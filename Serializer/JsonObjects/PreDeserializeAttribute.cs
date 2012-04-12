@@ -5,7 +5,7 @@ namespace json.JsonObjects
 {
     public class PreDeserializeAttribute : PreBuildAttribute
     {
-        public PreDeserializeAttribute() : base(typeof(JsonParser), typeof(JsonMap)) { }
+        public PreDeserializeAttribute() : base(typeof(JsonReader), typeof(JsonMap)) { }
 
         public override Writer GetWriter()
         {

@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace json.Objects.TypeDefinitions
 {
-    public class DateTimeDefinition : TypeDefinition
+    internal class DateTimeDefinition : TypeDefinition
     {
         private const char Zero = '0';
         private const char Dash = '-';
@@ -88,7 +88,7 @@ namespace json.Objects.TypeDefinitions
             return sb.ToString();
         }
 
-        public override ObjectValue CreateValue(object value)
+        public override ObjectOutput CreateValue(object value)
         {
             DateTime dateTime;
             string dateString = value as string;

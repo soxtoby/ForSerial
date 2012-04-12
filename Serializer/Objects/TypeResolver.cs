@@ -11,10 +11,15 @@ namespace json.Objects
     public static class CurrentTypeResolver
     {
         [ThreadStatic]
-        private static TypeResolver current;
+        private static StateStack<TypeResolver> threadResolvers;
+        private static StateStack<TypeResolver> Resolvers
+        {
+            get { return threadResolvers ?? (threadResolvers = new StateStack<TypeResolver>(AssemblyQualifiedNameResolver.Instance)); }
+        }
+
         private static TypeResolver Current
         {
-            get { return current ?? AssemblyQualifiedNameResolver.Instance; }
+            get { return Resolvers.Current; }
         }
 
         public static string GetTypeIdentifier(Type type)
@@ -29,20 +34,7 @@ namespace json.Objects
 
         public static IDisposable Override(TypeResolver resolver)
         {
-            return new TypeHandlerOverride(resolver);
-        }
-
-        private class TypeHandlerOverride : IDisposable
-        {
-            public TypeHandlerOverride(TypeResolver resolver)
-            {
-                current = resolver;
-            }
-
-            public void Dispose()
-            {
-                current = null;
-            }
+            return Resolvers.OverrideState(resolver);
         }
     }
 }

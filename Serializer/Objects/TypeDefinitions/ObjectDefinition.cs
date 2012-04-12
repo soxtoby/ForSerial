@@ -13,7 +13,7 @@
             writer.Write(input);
         }
 
-        public override ObjectValue CreateValue(object value)
+        public override ObjectOutput CreateValue(object value)
         {
             return new DefaultObjectValue(value);
         }

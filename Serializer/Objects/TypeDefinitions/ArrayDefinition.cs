@@ -9,7 +9,7 @@ namespace json.Objects.TypeDefinitions
     {
         private readonly Func<IEnumerable<object>, Array> buildArray;
 
-        private ArrayDefinition(Type type, Type itemType)
+        protected ArrayDefinition(Type type, Type itemType)
             : base(type, itemType)
         {
             buildArray = GetTypedArrayBuilderFunction(itemType);

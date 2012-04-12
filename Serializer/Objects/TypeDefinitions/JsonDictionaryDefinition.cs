@@ -2,13 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 
 namespace json.Objects.TypeDefinitions
 {
     public class JsonDictionaryDefinition : StructureDefinition
     {
-        private JsonDictionaryDefinition(Type dictionaryType)
+        protected JsonDictionaryDefinition(Type dictionaryType)
             : base(dictionaryType)
         {
             KeyTypeDef = TypeCache.GetTypeDefinition(dictionaryType.GetGenericInterfaceType(typeof(IDictionary<,>), 0));
@@ -75,16 +74,14 @@ namespace json.Objects.TypeDefinitions
             return ValueTypeDef.CreateSequence();
         }
 
-        public override ObjectValue CreateValueForProperty(string name, object value)
+        public override ObjectOutput CreateValueForProperty(string name, object value)
         {
             return ValueTypeDef.CreateValue(value);
         }
 
         public object ConstructNew()
         {
-            ConstructorDefinition constructor = Constructors.FirstOrDefault(c => c.Parameters.None());
-            return constructor == null ? null
-                : constructor.Construct(new object[] { });
+            return ConstructDefault();
         }
     }
 }

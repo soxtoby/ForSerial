@@ -1,6 +1,6 @@
-namespace json.Objects
+namespace json.Objects.TypeDefinitions
 {
-    public class NullTypeDefinition : TypeDefinition
+    internal class NullTypeDefinition : TypeDefinition
     {
         private NullTypeDefinition() : base(null) { }
 

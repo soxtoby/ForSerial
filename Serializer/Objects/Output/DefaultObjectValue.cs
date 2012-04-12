@@ -1,6 +1,6 @@
 ﻿namespace json.Objects
 {
-    public class DefaultObjectValue : ObjectValue
+    public class DefaultObjectValue : ObjectOutput
     {
         private readonly object value;
 

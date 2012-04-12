@@ -1,18 +1,10 @@
 using System;
-using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 namespace json.Json
 {
-    /// <summary>
-    /// CVSBAD Document me :)
-    /// </summary>
     [Serializable]
     public class ParseException : Exception
     {
-
-        #region Constructors and Serialization
-
         protected ParseException(string message, string tokenString, int line, int position)
             : base(message)
         {
@@ -38,35 +30,9 @@ namespace json.Json
             Position = position;
         }
 
-        protected ParseException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            // extract all our custom properties here
-            TokenString = info.GetString("TokenString");
-            Line = info.GetInt16("Line");
-            Position = info.GetInt16("Position");
-        }
-
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            // add all our custom properties here
-            info.AddValue("TokenString", TokenString);
-            info.AddValue("Line", Line);
-            info.AddValue("Position", Position);
-        }
-
-        #endregion
-
-        #region Public Properties
-
-        public string TokenString { get; set; }
-        public int Line { get; set; }
-        public int Position { get; set; }
-
-        #endregion
+        public string TokenString { get; private set; }
+        public int Line { get; private set; }
+        public int Position { get; private set; }
 
         private string PrettyPrint(string json)
         {

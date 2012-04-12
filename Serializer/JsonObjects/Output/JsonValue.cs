@@ -9,7 +9,7 @@ namespace json.JsonObjects
             Value = value;
         }
 
-        public void Accept(JObjectVisitor visitor)
+        void JsonObject.Accept(JsonObjectVisitor visitor)
         {
             visitor.Visit(this);
         }

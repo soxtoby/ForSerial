@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using json.Json;
 using json.Objects;
+using json.Objects.TypeDefinitions;
 using NSubstitute;
 using NUnit.Framework;
 

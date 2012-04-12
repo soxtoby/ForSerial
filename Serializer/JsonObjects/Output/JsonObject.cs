@@ -5,7 +5,7 @@ namespace json.JsonObjects
 {
     public interface JsonObject
     {
-        void Accept(JObjectVisitor visitor);
+        void Accept(JsonObjectVisitor visitor);
     }
 
     public static class JsonObjectExtensions

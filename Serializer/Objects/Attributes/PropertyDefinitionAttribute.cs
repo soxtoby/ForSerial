@@ -56,7 +56,7 @@ namespace json.Objects
             return InnerDefinition.CanCreateValue(value);
         }
 
-        public virtual ObjectValue CreateValue(object value)
+        public virtual ObjectOutput CreateValue(object value)
         {
             return InnerDefinition.CreateValue(value);
         }

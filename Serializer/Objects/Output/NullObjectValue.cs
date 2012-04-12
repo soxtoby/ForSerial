@@ -1,7 +1,8 @@
+using json.Objects.TypeDefinitions;
 
 namespace json.Objects
 {
-    internal class NullObjectValue : ObjectValue
+    public class NullObjectValue : ObjectOutput
     {
         public static readonly NullObjectValue Instance = new NullObjectValue();
 

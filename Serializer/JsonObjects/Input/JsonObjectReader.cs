@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace json.JsonObjects
 {
-    public class JsonObjectReader : JObjectVisitor
+    public class JsonObjectReader : JsonObjectVisitor
     {
         private readonly Writer writer;
         private const string TypeKey = "_type";
@@ -30,7 +30,7 @@ namespace json.JsonObjects
                 input.Accept(this);
         }
 
-        public void Visit(JsonMap map)
+        void JsonObjectVisitor.Visit(JsonMap map)
         {
             if (objectReferences.ContainsKey(map))
                 ReferenceObject(objectReferences[map]);
@@ -67,7 +67,7 @@ namespace json.JsonObjects
             writer.WriteReference(referenceIndex);
         }
 
-        public void Visit(JsonArray array)
+        void JsonObjectVisitor.Visit(JsonArray array)
         {
             writer.BeginSequence();
 
@@ -77,7 +77,7 @@ namespace json.JsonObjects
             writer.EndSequence();
         }
 
-        public void Visit(JsonValue value)
+        void JsonObjectVisitor.Visit(JsonValue value)
         {
             writer.Write(value.Value);
         }

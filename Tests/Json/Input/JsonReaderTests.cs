@@ -190,7 +190,7 @@ namespace json.Tests.Json
         {
             Writer writer = Substitute.For<Writer>();
 
-            JsonParser.Parse(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}", writer);
+            JsonReader.Read(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}", writer);
 
             writer.Received().WriteReference(1);
         }
@@ -200,7 +200,7 @@ namespace json.Tests.Json
         {
             Writer writer = Substitute.For<Writer>();
 
-            JsonParser.Parse(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}", writer);
+            JsonReader.Read(@"{""One"":{""foo"":5},""Two"":{""_ref"":1}}", writer);
 
             writer.Received(2).BeginStructure(Arg.Any<Type>());
             writer.Received(2).EndStructure();
@@ -272,7 +272,7 @@ namespace json.Tests.Json
         private static JsonObject ParseJson(string json)
         {
             JsonObjectWriter writer = new JsonObjectWriter();
-            JsonParser.Parse(json, writer);
+            JsonReader.Read(json, writer);
             return writer.Result;
         }
     }

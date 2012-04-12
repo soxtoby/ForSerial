@@ -1,8 +1,9 @@
 using System;
+using json.Objects.TypeDefinitions;
 
 namespace json.Objects
 {
-    internal class NullObjectStructure : ObjectContainer
+    public class NullObjectStructure : ObjectContainer
     {
         public static readonly NullObjectStructure Instance = new NullObjectStructure();
 

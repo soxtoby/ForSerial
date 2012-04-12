@@ -1,6 +1,6 @@
 namespace json.JsonObjects
 {
-    public interface JObjectVisitor
+    public interface JsonObjectVisitor
     {
         void Visit(JsonMap map);
         void Visit(JsonArray array);

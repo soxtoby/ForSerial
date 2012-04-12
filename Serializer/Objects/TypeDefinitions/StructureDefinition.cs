@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
-namespace json.Objects
+namespace json.Objects.TypeDefinitions
 {
     public abstract class StructureDefinition : TypeDefinition
     {
@@ -75,7 +75,7 @@ namespace json.Objects
                 && property.CanCreateValue(value);
         }
 
-        public virtual ObjectValue CreateValueForProperty(string name, object value)
+        public virtual ObjectOutput CreateValueForProperty(string name, object value)
         {
             PropertyDefinition property;
             return Properties.TryGetValue(name, out property)

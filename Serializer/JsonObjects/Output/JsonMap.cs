@@ -47,7 +47,7 @@ namespace json.JsonObjects
             return innerMap.GetHashCode();
         }
 
-        public void Accept(JObjectVisitor visitor)
+        void JsonObject.Accept(JsonObjectVisitor visitor)
         {
             visitor.Visit(this);
         }

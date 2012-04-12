@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace json.Objects
+namespace json.Objects.TypeDefinitions
 {
-    public class NullableTypeDefinition : TypeDefinition
+    internal class NullableTypeDefinition : TypeDefinition
     {
         private readonly TypeDefinition underlyingTypeDef;
 
-        public NullableTypeDefinition(Type type, Type underlyingType)
+        private NullableTypeDefinition(Type type, Type underlyingType)
             : base(type)
         {
             if (underlyingType == null) throw new ArgumentNullException("underlyingType");
@@ -26,7 +26,7 @@ namespace json.Objects
             underlyingTypeDef.Read(input, reader, writer, requestTypeIdentification);
         }
 
-        public override ObjectValue CreateValue(object value)
+        public override ObjectOutput CreateValue(object value)
         {
             return value == null
                 ? new DefaultObjectValue(null)

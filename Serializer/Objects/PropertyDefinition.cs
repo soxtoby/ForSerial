@@ -13,7 +13,7 @@ namespace json.Objects
         ObjectContainer CreateStructure(string typeIdentifier);
         ObjectContainer CreateSequence();
         bool CanCreateValue(object value);
-        ObjectValue CreateValue(object value);
+        ObjectOutput CreateValue(object value);
         void Read(object value, ObjectReader reader, Writer writer);
         bool MatchesPropertyFilter(PropertyFilter filter);
     }

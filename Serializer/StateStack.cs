@@ -3,14 +3,12 @@ using System.Collections.Generic;
 
 namespace json
 {
-    public class StateStack<TState>
+    internal class StateStack<TState>
     {
         private readonly Stack<TState> stack = new Stack<TState>();
-        public TState Base { get; private set; }
 
         public StateStack(TState baseState)
         {
-            Base = baseState;
             stack.Push(baseState);
         }
 

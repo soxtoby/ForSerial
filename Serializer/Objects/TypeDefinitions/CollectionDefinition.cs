@@ -9,7 +9,7 @@ namespace json.Objects.TypeDefinitions
     {
         private readonly ActionMethod adder;
 
-        private CollectionDefinition(Type collectionType, Type itemType, ActionMethod addMethod)
+        protected CollectionDefinition(Type collectionType, Type itemType, ActionMethod addMethod)
             : base(collectionType, itemType)
         {
             adder = addMethod;

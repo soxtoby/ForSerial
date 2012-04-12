@@ -17,7 +17,7 @@ namespace json.Objects.TypeDefinitions
                 writer.Write(guid.ToString());
         }
 
-        public override ObjectValue CreateValue(object value)
+        public override ObjectOutput CreateValue(object value)
         {
             return new DefaultObjectValue(new Guid(value.ToString()));
         }

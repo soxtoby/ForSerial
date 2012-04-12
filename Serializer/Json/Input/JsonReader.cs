@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace json.Json
 {
-    public class JsonParser
+    public class JsonReader
     {
         private const char Quotes = '"';
         private const char OpenBrace = '{';
@@ -25,7 +25,7 @@ namespace json.Json
 
         private int i;
 
-        private JsonParser(string json, Writer writer)
+        private JsonReader(string json, Writer writer)
         {
             if (writer == null) throw new ArgumentNullException("writer");
 
@@ -34,7 +34,7 @@ namespace json.Json
             this.writer = writer;
         }
 
-        public static void Parse(string json, Writer writer)
+        public static void Read(string json, Writer writer)
         {
             if (string.IsNullOrEmpty(json))
                 return;
@@ -55,8 +55,8 @@ namespace json.Json
 
         private static void DoParse(string json, Writer writer)
         {
-            JsonParser parser = new JsonParser(json, writer);
-            parser.ParseNextValue();
+            JsonReader reader = new JsonReader(json, writer);
+            reader.ParseNextValue();
         }
 
         private void ParseNextValue()
@@ -123,7 +123,7 @@ namespace json.Json
             if (json[i] == CloseBrace)
             {
                 i++; // }
-                writer.BeginStructure(typeof(JsonParser));
+                writer.BeginStructure(typeof(JsonReader));
             }
             else
             {
@@ -156,11 +156,11 @@ namespace json.Json
 
                 case TypePropertyName:
                     string typeIdentifier = GetNextString();
-                    writer.BeginStructure(typeIdentifier, typeof(JsonParser));
+                    writer.BeginStructure(typeIdentifier, typeof(JsonReader));
                     return false;
 
                 default:
-                    writer.BeginStructure(typeof(JsonParser));
+                    writer.BeginStructure(typeof(JsonReader));
                     writer.AddProperty(propertyName);
                     ParseNextValue();
                     return false;
@@ -299,7 +299,7 @@ namespace json.Json
 
         private static readonly bool[] WhitespaceChars = new bool[' ' + 1];
 
-        static JsonParser()
+        static JsonReader()
         {
             WhitespaceChars[' '] = true;
             WhitespaceChars['\n'] = true;

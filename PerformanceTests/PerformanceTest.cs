@@ -24,7 +24,7 @@ namespace json.PerformanceTests
         {
             string originalJson = GetNorthwindJson();
             ObjectWriter<Database> writer = new ObjectWriter<Database>();
-            JsonParser.Parse(originalJson, writer);
+            JsonReader.Read(originalJson, writer);
 
             Database db = writer.Result;
 
@@ -75,7 +75,7 @@ namespace json.PerformanceTests
             GetNorthwindObject();
             string json = GetNorthwindJson();
 
-            Time(100, () => JsonParser.Parse(json, new ObjectWriter<DatabaseCompat>()));
+            Time(100, () => JsonReader.Read(json, new ObjectWriter<DatabaseCompat>()));
         }
 
         [Test]
@@ -157,7 +157,7 @@ namespace json.PerformanceTests
         {
             string json = GetNorthwindJson();
             ObjectWriter<DatabaseCompat> objectWriter = new ObjectWriter<DatabaseCompat>();
-            JsonParser.Parse(json, objectWriter);
+            JsonReader.Read(json, objectWriter);
             return objectWriter.Result;
         }
 

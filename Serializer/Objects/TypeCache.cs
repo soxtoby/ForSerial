@@ -58,7 +58,7 @@ namespace json.Objects
             return typeDef;
         }
 
-        private static void RegisterTypeDefinition(TypeDefinition typeDef)
+        public static void RegisterTypeDefinition(TypeDefinition typeDef)
         {
             KnownTypesByIdentifier[CurrentTypeResolver.GetTypeIdentifier(typeDef.Type)] = typeDef;
             KnownTypesByType[typeDef.Type] = typeDef;

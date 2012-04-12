@@ -9,7 +9,7 @@ namespace json.Objects.TypeDefinitions
         private PrimitiveDefinition(Type type)
             : base(type)
         {
-            typedRead = GetWriterMethod(typeCode);
+            typedRead = GetWriterMethod(TypeCode);
         }
 
         internal static Action<object, Writer> GetWriterMethod(TypeCode typeCode)
@@ -66,7 +66,7 @@ namespace json.Objects.TypeDefinitions
             typedRead(input, writer);
         }
 
-        public override ObjectValue CreateValue(object value)
+        public override ObjectOutput CreateValue(object value)
         {
             return new DefaultObjectValue(ConvertToCorrectType(value));
         }

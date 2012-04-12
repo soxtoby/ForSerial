@@ -6,7 +6,7 @@ using System.Text;
 
 namespace json
 {
-    public static class GeneralExtensions
+    internal static class GeneralExtensions
     {
         public static string FormatWith(this string formatString, params object[] parameters)
         {
