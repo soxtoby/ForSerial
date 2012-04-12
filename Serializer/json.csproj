@@ -131,6 +131,7 @@
     </Compile>
     <Compile Include="Objects\TypeDefinitions\ValueTypeDefinition.cs" />
     <Compile Include="Objects\TypeResolver.cs" />
+    <Compile Include="Output\NullWriter.cs" />
     <Compile Include="Output\Writer.cs" />
     <Compile Include="Objects\Input\ObjectReader.cs" />
     <Compile Include="Objects\ReferenceEqualityComparer.cs" />

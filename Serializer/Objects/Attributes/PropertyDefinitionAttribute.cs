@@ -66,9 +66,9 @@ namespace json.Objects
             InnerDefinition.Read(value, reader, writer);
         }
 
-        public bool MatchesFilter(PropertyFilter filter)
+        public virtual bool MatchesPropertyFilter(PropertyFilter filter)
         {
-            return InnerDefinition.MatchesFilter(filter);
+            return InnerDefinition.MatchesPropertyFilter(filter);
         }
     }
 }

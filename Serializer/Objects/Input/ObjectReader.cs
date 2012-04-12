@@ -23,13 +23,16 @@ namespace json.Objects
         {
             ObjectReader reader = new ObjectReader(writer, options ?? new ObjectParsingOptions());
 
-            try
+            using (ScenarioStack.OverrideState(reader.options.Scenario))
             {
-                reader.Read(obj);
-            }
-            catch (Exception e)
-            {
-                throw new ObjectReadException(reader, e);
+                try
+                {
+                    reader.Read(obj);
+                }
+                catch (Exception e)
+                {
+                    throw new ObjectReadException(reader, e);
+                }
             }
         }
 
@@ -67,6 +70,18 @@ namespace json.Objects
         public PropertyFilter PropertyFilter
         {
             get { return options.PropertyFilter; }
+        }
+
+        [ThreadStatic]
+        private static StateStack<string> threadScenarioStack;
+        private static StateStack<string> ScenarioStack
+        {
+            get { return threadScenarioStack ?? (threadScenarioStack = new StateStack<string>(null)); }
+        }
+
+        public static string CurrentScenario
+        {
+            get { return ScenarioStack.Current; }
         }
 
         internal class ObjectReadException : Exception

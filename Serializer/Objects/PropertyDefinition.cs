@@ -15,6 +15,6 @@ namespace json.Objects
         bool CanCreateValue(object value);
         ObjectValue CreateValue(object value);
         void Read(object value, ObjectReader reader, Writer writer);
-        bool MatchesFilter(PropertyFilter filter);
+        bool MatchesPropertyFilter(PropertyFilter filter);
     }
 }

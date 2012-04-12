@@ -357,12 +357,36 @@ namespace json.Tests.Objects
 
             public RenamePropertyDefinitionAttribute(string name)
             {
-                if (name == null) throw new ArgumentNullException("name");
                 this.name = name;
             }
 
             public override string Name { get { return name; } }
         }
+
+        [Test]
+        public void ReaderOverridesCurrentScenario()
+        {
+            ObjectReader.CurrentScenario.ShouldBeNull();
+            CaptureScenarioClass captureScenarioClass = new CaptureScenarioClass();
+            ObjectReader.Read(captureScenarioClass, NullWriter.Instance, new ObjectParsingOptions { Scenario = "foo" });
+            captureScenarioClass.Scenario.ShouldBe("foo");
+            ObjectReader.CurrentScenario.ShouldBeNull();
+        }
+
+        private class CaptureScenarioClass
+        {
+            public string Scenario;
+
+            public int Property
+            {
+                get
+                {
+                    Scenario = ObjectReader.CurrentScenario;
+                    return 0;
+                }
+            }
+        }
+
 
         private static string ConvertToSimpleTypeJson(object obj)
         {

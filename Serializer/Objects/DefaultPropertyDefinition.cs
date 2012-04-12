@@ -78,7 +78,7 @@ namespace json.Objects
             TypeDef.ReadObject(value, reader, writer, false);
         }
 
-        public bool MatchesFilter(PropertyFilter filter)
+        public bool MatchesPropertyFilter(PropertyFilter filter)
         {
             switch (filter)
             {

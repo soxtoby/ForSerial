@@ -32,7 +32,7 @@ namespace json.Objects
                 Properties.Add(property);
 
             AllSerializableProperties = Properties.ToArray();
-            PublicGetSetProperties = Properties.Where(p => p.MatchesFilter(PropertyFilter.PublicGetSet)).ToArray();
+            PublicGetSetProperties = Properties.Where(p => p.MatchesPropertyFilter(PropertyFilter.PublicGetSet)).ToArray();
         }
 
         private static bool NotMarkedWithIgnoreAttribute(PropertyInfo property)
