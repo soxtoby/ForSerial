@@ -6,6 +6,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EFC3E3DC-8E34-4110-B276-B2881B93AA10}"
 	ProjectSection(SolutionItems) = preProject
 		key.snk = key.snk
+		License.txt = License.txt
 		TODO = TODO
 	EndProjectSection
 EndProject
