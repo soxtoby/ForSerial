@@ -127,7 +127,7 @@ namespace json.Tests.JsonObjects
             sut.EndSequence();
 
             sut.Result.ShouldBe<JsonArray>()
-                .And.Values().ShouldBe(new object[] { 1 });
+                .And.Values().ShouldMatch(new object[] { 1 });
         }
 
         [Test]
@@ -139,7 +139,7 @@ namespace json.Tests.JsonObjects
             sut.EndSequence();
 
             sut.Result.ShouldBe<JsonArray>()
-                .And.Values().ShouldBe(new object[] { 1, 2 });
+                .And.Values().ShouldMatch(new object[] { 1, 2 });
         }
 
         [Test]

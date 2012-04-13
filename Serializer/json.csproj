@@ -141,6 +141,7 @@
     <Compile Include="Json\Input\JsonReader.cs" />
     <Compile Include="Json\Input\ParseException.cs" />
     <Compile Include="StateStack.cs" />
+    <Compile Include="Transform.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

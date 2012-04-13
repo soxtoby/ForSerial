@@ -49,7 +49,7 @@ namespace json.Tests.Objects
         public void List()
         {
             Clone(new List<int> { 1, 2, 3 })
-                .ShouldBe(new[] { 1, 2, 3 });
+                .ShouldMatch(new[] { 1, 2, 3 });
         }
 
         [Test]
@@ -133,7 +133,7 @@ namespace json.Tests.Objects
         {
             SettableListPropertyClass foo = Clone(new SettableListPropertyClass { List = new List<int> { 1, 2, 3 } });
             Assert.IsFalse(foo.GetterHasBeenAccessed);
-            foo.List.ShouldBe(new[] { 1, 2, 3 });
+            foo.List.ShouldMatch(new[] { 1, 2, 3 });
         }
 
         private class SettableListPropertyClass
@@ -161,7 +161,7 @@ namespace json.Tests.Objects
             GettableListPropertyClass obj = new GettableListPropertyClass();
             obj.List.AddRange(new[] { 1, 2, 3 });
 
-            Clone(obj).List.ShouldBe(new[] { 1, 2, 3 });
+            Clone(obj).List.ShouldMatch(new[] { 1, 2, 3 });
         }
 
         private class GettableListPropertyClass
@@ -187,7 +187,7 @@ namespace json.Tests.Objects
             };
 
             Clone(obj)
-                .List.Select(i => i.Integer).ShouldBe(new[] { 1, 2, 3 });
+                .List.Select(i => i.Integer).ShouldMatch(new[] { 1, 2, 3 });
         }
 
         private class ObjectListPropertyClass
@@ -230,7 +230,7 @@ namespace json.Tests.Objects
         public void Array()
         {
             Clone(new[] { 1, 2, 3 })
-                .ShouldBe<int>(new[] { 1, 2, 3 });
+                .ShouldMatch<int>(new[] { 1, 2, 3 });
         }
 
         [Test]
@@ -295,7 +295,7 @@ namespace json.Tests.Objects
                         }
                 });
 
-            foo.Dictionary["foo"].ShouldBe(new[] { 1, 2, 3 });
+            foo.Dictionary["foo"].ShouldMatch(new[] { 1, 2, 3 });
         }
 
         private class ListDictionaryPropertyClass
@@ -653,7 +653,7 @@ namespace json.Tests.Objects
         public void BuildIEnumerable()
         {
             DeserializeJson<EnumerablePropertyClass>(@"{""Property"":[0,1,2]}")
-                .Property.ShouldBe(new[] { 0, 1, 2 });
+                .Property.ShouldMatch(new[] { 0, 1, 2 });
         }
 
         private class EnumerablePropertyClass
@@ -730,7 +730,7 @@ namespace json.Tests.Objects
         public void IEnumerableWithAddObjectMethod_CanBeDeserialized()
         {
             CopyTo<CollectionLikeClass>(new[] { 1, 2, 3 })
-                .ShouldBe<int>(new[] { 1, 2, 3 });
+                .ShouldMatch<int>(new[] { 1, 2, 3 });
         }
 
         private class CollectionLikeClass : IEnumerable
@@ -752,7 +752,7 @@ namespace json.Tests.Objects
         public void IEnumerableTWithAddTMethod_CanBeDeserialized()
         {
             CopyTo<GenericCollectionLikeCLass>(new[] { 1, 2, 3 })
-                .ShouldBe(new[] { 1, 2, 3 });
+                .ShouldMatch(new[] { 1, 2, 3 });
         }
 
         private class GenericCollectionLikeCLass : IEnumerable<int>

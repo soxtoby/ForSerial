@@ -23,11 +23,18 @@ namespace json.Tests
         public static ActualValue<string> ShouldContain(this string actual, string expectedSubstring, string message = null)
         {
             if (!actual.Contains(expectedSubstring))
-                throw new EasyAssertionException("\r\nExpected to contain: {0}\r\nActual:   {1}\r\n{2}".FormatWith(expectedSubstring, actual, message));
+                throw new EasyAssertionException("\r\nExpected to contain: {0}\r\nActual: {1}\r\n{2}".FormatWith(expectedSubstring, actual, message ?? string.Empty));
             return new ActualValue<string>(actual);
         }
 
-        public static void ShouldBe<TExpected>(this IEnumerable actual, IEnumerable<TExpected> expected, string message = null)
+        public static ActualValue<string> ShouldEndWith(this string actual, string expectedEnd, string message = null)
+        {
+            if (!actual.EndsWith(expectedEnd))
+                throw new EasyAssertionException("\r\nExpected to end with: {0}\r\nActual: {1}\r\n{2}".FormatWith(expectedEnd, actual, message ?? string.Empty));
+            return new ActualValue<string>(actual);
+        }
+
+        public static void ShouldMatch<TExpected>(this IEnumerable actual, IEnumerable<TExpected> expected, string message = null)
         {
             List<object> actuals = actual.Cast<object>().ToList();
             List<TExpected> castActuals = new List<TExpected>();
@@ -44,7 +51,7 @@ namespace json.Tests
                 castActuals.Add(castItem);
             }
 
-            castActuals.ShouldBe(expected);
+            castActuals.ShouldMatch(expected);
         }
 
         private static bool TryConvert<T>(object item, out T convertedItem)
@@ -67,13 +74,14 @@ namespace json.Tests
                 throw new EasyAssertionException("\r\nExpected this: {0}\r\nActual:        {1}\r\n{2}".FormatWith(ConvertToString(expected), ConvertToString(actual), message));
         }
 
-        public static void ShouldNotBeSameAs<T>(this T actual, T expected, string message = null)
+        public static ActualValue<T> ShouldNotBeSameAs<T>(this T actual, T expected, string message = null)
         {
             if (ReferenceEquals(actual, expected))
                 throw new EasyAssertionException("Expected anything but {0}.\r\n{1}".FormatWith(expected, message));
+            return new ActualValue<T>(actual);
         }
 
-        public static void ShouldBe<TActual, TItem>(this TActual actual, IEnumerable<TItem> expected, string message = null) where TActual : IEnumerable<TItem>
+        public static void ShouldMatch<TActual, TItem>(this TActual actual, IEnumerable<TItem> expected, string message = null) where TActual : IEnumerable<TItem>
         {
             List<object> actuals = actual.Cast<object>().ToList();
             List<object> expecteds = expected.Cast<object>().ToList();
@@ -110,7 +118,7 @@ namespace json.Tests
         public static ActualValue<T> ShouldNotBeNull<T>(this T actual, string message = null) where T : class
         {
             if (actual == null)
-                throw new EasyAssertionException("Shouldn't have been null.");
+                throw new EasyAssertionException("Shouldn't have been null.\r\n{0}".FormatWith(message ?? string.Empty));
 
             return new ActualValue<T>(actual);
         }

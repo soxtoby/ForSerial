@@ -174,7 +174,7 @@ namespace json.Tests.Json
         {
             ParseFooProperty(@"{ ""foo"": [ 1, 2, 3 ] }")
                 .ShouldBe<JsonArray>()
-                .And.Values().ShouldBe<int>(new[] { 1, 2, 3 });
+                .And.Values().ShouldMatch<int>(new[] { 1, 2, 3 });
         }
 
         [Test]
@@ -182,7 +182,7 @@ namespace json.Tests.Json
         {
             ParseFooProperty(@"{ ""foo"": [ 1, ""two"", null ] }")
                 .ShouldBe<JsonArray>()
-                .And.Values().ShouldBe(new object[] { 1, "two", null });
+                .And.Values().ShouldMatch(new object[] { 1, "two", null });
         }
 
         [Test]
