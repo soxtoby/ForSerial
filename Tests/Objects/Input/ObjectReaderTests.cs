@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using json.Json;
-using json.Objects;
-using json.Objects.TypeDefinitions;
+using ForSerial.Json;
+using ForSerial.Objects;
+using ForSerial.Objects.TypeDefinitions;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace json.Tests.Objects
+namespace ForSerial.Tests.Objects
 {
     [TestFixture]
     public class ObjectReaderTests

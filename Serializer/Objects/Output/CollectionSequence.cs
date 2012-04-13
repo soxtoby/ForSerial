@@ -1,7 +1,7 @@
 using System;
-using json.Objects.TypeDefinitions;
+using ForSerial.Objects.TypeDefinitions;
 
-namespace json.Objects
+namespace ForSerial.Objects
 {
     public class CollectionSequence : BaseObjectSequence
     {

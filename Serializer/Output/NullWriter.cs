@@ -1,6 +1,6 @@
 using System;
 
-namespace json
+namespace ForSerial
 {
     public class NullWriter : Writer
     {

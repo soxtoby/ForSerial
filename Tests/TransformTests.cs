@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using json.Objects;
+using ForSerial.Objects;
 using NUnit.Framework;
 
-namespace json.Tests
+namespace ForSerial.Tests
 {
     [TestFixture]
     public class TransformTests

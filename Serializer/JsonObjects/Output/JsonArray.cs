@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace json.JsonObjects
+namespace ForSerial.JsonObjects
 {
     public class JsonArray : JsonObject, IEnumerable<JsonObject>
     {

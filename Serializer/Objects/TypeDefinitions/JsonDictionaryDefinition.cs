@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace json.Objects.TypeDefinitions
+namespace ForSerial.Objects.TypeDefinitions
 {
     public class JsonDictionaryDefinition : StructureDefinition
     {

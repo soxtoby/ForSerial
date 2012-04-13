@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "json", "Serializer\json.csproj", "{11E6558C-B8CF-495E-811C-0BD656FEB3C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForSerial", "Serializer\ForSerial.csproj", "{11E6558C-B8CF-495E-811C-0BD656FEB3C4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EFC3E3DC-8E34-4110-B276-B2881B93AA10}"
 	ProjectSection(SolutionItems) = preProject

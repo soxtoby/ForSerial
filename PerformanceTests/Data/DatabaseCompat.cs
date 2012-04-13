@@ -5,7 +5,7 @@ using System.Data.Linq.Mapping;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
-namespace json.PerformanceTests.Data
+namespace ForSerial.PerformanceTests.Data
 {
     [DataContract, Serializable]
     public class DatabaseCompat

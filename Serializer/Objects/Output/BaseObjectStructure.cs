@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using json.Objects.TypeDefinitions;
+using ForSerial.Objects.TypeDefinitions;
 
-namespace json.Objects
+namespace ForSerial.Objects
 {
     public abstract class BaseObjectStructure : ObjectContainer
     {

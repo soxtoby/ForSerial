@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using json.JsonObjects;
+using ForSerial.JsonObjects;
 using NUnit.Framework;
 
-namespace json.Tests.JsonObjects
+namespace ForSerial.Tests.JsonObjects
 {
     [TestFixture]
     public class JsonObjectWriterTests

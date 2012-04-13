@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace json.Tests.Objects.Attributes
+namespace ForSerial.Tests.Objects
 {
     [TestFixture]
     public class AttributeTests

@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace json.Tests
+namespace ForSerial.Tests
 {
     internal class ReflectionTesting
     {

@@ -1,10 +1,11 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 // Information about this assembly is defined by the following attributes. 
 // Change them to the values specific to your project.
 
-[assembly: AssemblyTitle("json")]
+[assembly: AssemblyTitle("ForSerial")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
@@ -31,3 +32,4 @@ using System.Runtime.CompilerServices;
                                             + "31c9ab6504d862dd0756aca3709b22e50448d87bd102cede4f2ddb61b99160ea593eb15afca892"
                                             + "89c9e790")]
 
+[assembly: ComVisibleAttribute(false)]

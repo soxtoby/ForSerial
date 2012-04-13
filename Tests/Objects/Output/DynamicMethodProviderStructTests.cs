@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
-using json.Objects;
+using ForSerial.Objects;
 using NUnit.Framework;
 
-namespace json.Tests.Objects
+namespace ForSerial.Tests.Objects
 {
     [TestFixture]
     public class DynamicMethodProviderStructTests

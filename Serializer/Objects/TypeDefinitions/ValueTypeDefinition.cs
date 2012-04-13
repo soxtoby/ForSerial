@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace json.Objects.TypeDefinitions
+namespace ForSerial.Objects.TypeDefinitions
 {
     public class ValueTypeDefinition : DefaultStructureDefinition
     {

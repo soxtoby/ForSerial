@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using json.Objects;
-using json.Objects.TypeDefinitions;
+using ForSerial.Objects;
+using ForSerial.Objects.TypeDefinitions;
 
-namespace json.Json
+namespace ForSerial.Json
 {
     public class JsonStringWriter : Writer
     {

@@ -8,7 +8,7 @@
     <ProjectGuid>{88A35D84-0BFB-4144-AA77-3C5086D8214A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>json.Tests</RootNamespace>
+    <RootNamespace>ForSerial.Tests</RootNamespace>
     <AssemblyName>Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -72,9 +72,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Serializer\json.csproj">
+    <ProjectReference Include="..\Serializer\ForSerial.csproj">
       <Project>{11E6558C-B8CF-495E-811C-0BD656FEB3C4}</Project>
-      <Name>json</Name>
+      <Name>ForSerial</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace json.Json
+namespace ForSerial.Json
 {
     public class PrettyPrintingJsonStringWriter : JsonStringWriter
     {

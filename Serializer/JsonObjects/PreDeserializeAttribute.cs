@@ -1,7 +1,7 @@
-using json.Json;
-using json.Objects;
+using ForSerial.Json;
+using ForSerial.Objects;
 
-namespace json.JsonObjects
+namespace ForSerial.JsonObjects
 {
     public class PreDeserializeAttribute : PreBuildAttribute
     {

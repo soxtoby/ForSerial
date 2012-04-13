@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace json.Objects
+namespace ForSerial.Objects
 {
     [AttributeUsage(AttributeTargets.Property)]
     public abstract class PropertyDefinitionAttribute : Attribute, PropertyDefinition

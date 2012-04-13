@@ -1,4 +1,4 @@
-namespace json.Tests
+namespace ForSerial.Tests
 {
     internal class SameReferenceTwice
     {

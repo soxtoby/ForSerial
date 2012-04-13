@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
-namespace json.Objects.TypeDefinitions
+namespace ForSerial.Objects.TypeDefinitions
 {
     public abstract class StructureDefinition : TypeDefinition
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace json
+namespace ForSerial
 {
     internal static class GeneralExtensions
     {

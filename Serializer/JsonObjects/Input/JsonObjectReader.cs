@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace json.JsonObjects
+namespace ForSerial.JsonObjects
 {
     public class JsonObjectReader : JsonObjectVisitor
     {

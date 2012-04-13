@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace json
+namespace ForSerial
 {
     internal class StateStack<TState>
     {

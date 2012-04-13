@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
-using json.Json;
-using json.Objects;
+using ForSerial.Json;
+using ForSerial.Objects;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace json.Tests.Json
+namespace ForSerial.Tests.Json
 {
     [TestFixture]
     public class JsonStringWriterTests

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using json.Objects;
+using ForSerial.Objects;
 
-namespace json.JsonObjects
+namespace ForSerial.JsonObjects
 {
     public class JsonObjectWriter : Writer
     {

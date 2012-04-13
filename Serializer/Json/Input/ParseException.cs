@@ -1,6 +1,6 @@
 using System;
 
-namespace json.Json
+namespace ForSerial.Json
 {
     [Serializable]
     public class ParseException : Exception

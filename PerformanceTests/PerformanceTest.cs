@@ -4,15 +4,15 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using DAL;
-using json.Json;
-using json.Objects;
-using json.PerformanceTests.Data;
-using json.Tests;
+using ForSerial.Json;
+using ForSerial.Objects;
+using ForSerial.PerformanceTests.Data;
+using ForSerial.Tests;
 using NUnit.Framework;
 using ServiceStack.Text;
 using XmlSerializer = System.Xml.Serialization.XmlSerializer;
 
-namespace json.PerformanceTests
+namespace ForSerial.PerformanceTests
 {
     [TestFixture]
     public class PerformanceTest
@@ -163,7 +163,7 @@ namespace json.PerformanceTests
 
         private string GetNorthwindJson()
         {
-            Stream jsonStream = GetType().Assembly.GetManifestResourceStream("json.PerformanceTests.Data.northwind.json");
+            Stream jsonStream = GetType().Assembly.GetManifestResourceStream("ForSerial.PerformanceTests.Data.northwind.json");
             byte[] buffer = new byte[jsonStream.Length];
             jsonStream.Read(buffer, 0, (int)jsonStream.Length);
             return Encoding.UTF8.GetString(buffer);

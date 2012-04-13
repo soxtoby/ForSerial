@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace json.Objects
+namespace ForSerial.Objects
 {
     [AttributeUsage(AttributeTargets.Method)]
     public abstract class PreBuildAttribute : Attribute

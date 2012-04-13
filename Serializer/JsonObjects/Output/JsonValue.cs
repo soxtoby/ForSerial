@@ -1,4 +1,4 @@
-namespace json.JsonObjects
+namespace ForSerial.JsonObjects
 {
     public class JsonValue : JsonObject
     {

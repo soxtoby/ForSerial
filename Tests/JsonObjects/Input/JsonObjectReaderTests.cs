@@ -1,10 +1,10 @@
 using System.IO;
-using json.Json;
-using json.JsonObjects;
+using ForSerial.Json;
+using ForSerial.JsonObjects;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace json.Tests.JsonObjects
+namespace ForSerial.Tests.JsonObjects
 {
     [TestFixture]
     public class JsonObjectReaderTests

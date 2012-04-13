@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using json.Json;
+using ForSerial.Json;
 using NUnit.Framework;
 
-namespace json.Tests.Json
+namespace ForSerial.Tests.Json
 {
     [TestFixture]
     public class PrettyPrintingJsonStringWriterTests

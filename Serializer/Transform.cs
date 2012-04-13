@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using json.Json;
-using json.Objects;
+using ForSerial.Json;
+using ForSerial.Objects;
 
-namespace json
+namespace ForSerial
 {
     public static class Transform
     {

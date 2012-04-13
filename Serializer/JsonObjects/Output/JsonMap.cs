@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace json.JsonObjects
+namespace ForSerial.JsonObjects
 {
     public class JsonMap : JsonObject, IEnumerable<KeyValuePair<string, JsonObject>>
     {

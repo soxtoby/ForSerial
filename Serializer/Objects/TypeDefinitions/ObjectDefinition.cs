@@ -1,4 +1,4 @@
-﻿namespace json.Objects.TypeDefinitions
+﻿namespace ForSerial.Objects.TypeDefinitions
 {
     internal class ObjectDefinition : TypeDefinition
     {

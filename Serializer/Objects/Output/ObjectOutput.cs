@@ -1,4 +1,4 @@
-namespace json.Objects
+namespace ForSerial.Objects
 {
     public interface ObjectOutput
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace json.Json
+namespace ForSerial.Json
 {
     public class JsonReader
     {

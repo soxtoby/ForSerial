@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using json.Json;
-using json.JsonObjects;
-using json.Objects;
+using ForSerial.Json;
+using ForSerial.JsonObjects;
+using ForSerial.Objects;
 using NUnit.Framework;
 
-namespace json.Tests.Objects
+namespace ForSerial.Tests.Objects
 {
     [TestFixture]
     public class ObjectWriterTests

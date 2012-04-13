@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace json.Objects
+namespace ForSerial.Objects
 {
     public class ObjectReader
     {

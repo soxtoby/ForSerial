@@ -2,7 +2,7 @@
 using System.Text;
 using System.Xml;
 
-namespace json.Objects.TypeDefinitions
+namespace ForSerial.Objects.TypeDefinitions
 {
     internal class DateTimeDefinition : TypeDefinition
     {

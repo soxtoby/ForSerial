@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace json.Objects
+namespace ForSerial.Objects
 {
     public class DynamicMethodProvider : ObjectInterfaceProvider
     {

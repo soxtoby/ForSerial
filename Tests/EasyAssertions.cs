@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using json.Objects;
+using ForSerial.Objects;
 
-namespace json.Tests
+namespace ForSerial.Tests
 {
     public static class EasyAssertions
     {

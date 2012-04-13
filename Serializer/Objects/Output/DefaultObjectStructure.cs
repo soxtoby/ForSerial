@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using json.Objects.TypeDefinitions;
+using ForSerial.Objects.TypeDefinitions;
 
-namespace json.Objects
+namespace ForSerial.Objects
 {
     public class DefaultObjectStructure : BaseObjectStructure
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace json.Objects
+namespace ForSerial.Objects
 {
     internal class DefaultPropertyDefinition : PropertyDefinition
     {

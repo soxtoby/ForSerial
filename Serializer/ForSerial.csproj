@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{11E6558C-B8CF-495E-811C-0BD656FEB3C4}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>json</RootNamespace>
-    <AssemblyName>json</AssemblyName>
+    <RootNamespace>ForSerial</RootNamespace>
+    <AssemblyName>ForSerial</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

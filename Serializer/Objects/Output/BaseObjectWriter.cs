@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace json.Objects
+namespace ForSerial.Objects
 {
     internal class BaseObjectWriter<T> : Writer
     {

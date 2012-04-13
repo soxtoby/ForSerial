@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace json.Objects
+namespace ForSerial.Objects
 {
     public interface ObjectInterfaceProvider
     {

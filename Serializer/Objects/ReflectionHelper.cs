@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace json.Objects
+namespace ForSerial.Objects
 {
     internal static class ReflectionHelper
     {
