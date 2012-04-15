@@ -74,7 +74,8 @@ namespace ForSerial.Tests.Objects
     [TestFixture]
     public class IgnoreAttributeSpecificScenarioTests : AttributeTests<IgnoreAttribute>
     {
-        private const string IgnoreScenario = "TestScenario";
+        private const string IgnoreScenario1 = "TestScenario1";
+        private const string IgnoreScenario2 = "TestScenario2";
 
         [Test]
         public void CanGet_WrongScenario_PassesThrough()
@@ -83,9 +84,15 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void CanGet_IgnoreScenario_CannotGet()
+        public void CanGet_IgnoreScenario1_CannotGet()
         {
-            TestCanGetOverride(IgnoreScenario, true, false);
+            TestCanGetOverride(IgnoreScenario1, true, false);
+        }
+
+        [Test]
+        public void CanGet_IgnoreScenario2_CannotGet()
+        {
+            TestCanGetOverride(IgnoreScenario2, true, false);
         }
 
         [Test]
@@ -95,9 +102,15 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void CanSet_IgnoreScenario_CannotSet()
+        public void CanSet_IgnoreScenario1_CannotSet()
         {
-            TestCanSetOverride(IgnoreScenario, true, false);
+            TestCanSetOverride(IgnoreScenario1, true, false);
+        }
+
+        [Test]
+        public void CanSet_IgnoreScenario2_CannotSet()
+        {
+            TestCanSetOverride(IgnoreScenario2, true, false);
         }
 
         [Test]
@@ -108,9 +121,16 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void Read_IgnoreScenario_InnerPropertyIsNotRead()
+        public void Read_IgnoreScenario1_InnerPropertyIsNotRead()
         {
-            TestReadOverride(IgnoreScenario,
+            TestReadOverride(IgnoreScenario1,
+                sut => sut.InnerDefinition.DidNotReceive().Read(Arg.Any<object>(), Arg.Any<ObjectReader>(), Arg.Any<Writer>()));
+        }
+
+        [Test]
+        public void Read_IgnoreScenario2_InnerPropertyIsNotRead()
+        {
+            TestReadOverride(IgnoreScenario2,
                 sut => sut.InnerDefinition.DidNotReceive().Read(Arg.Any<object>(), Arg.Any<ObjectReader>(), Arg.Any<Writer>()));
         }
 
@@ -121,9 +141,15 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void CanCreateValue_IgnoreScenario_CannotCreateValue()
+        public void CanCreateValue_IgnoreScenario1_CannotCreateValue()
         {
-            TestCanCreateValueOverride(IgnoreScenario, true, false);
+            TestCanCreateValueOverride(IgnoreScenario1, true, false);
+        }
+
+        [Test]
+        public void CanCreateValue_IgnoreScenario2_CannotCreateValue()
+        {
+            TestCanCreateValueOverride(IgnoreScenario2, true, false);
         }
 
         [Test]
@@ -134,9 +160,15 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void CreateSequence_IgnoreScenario_ReturnsNullSequence()
+        public void CreateSequence_IgnoreScenario1_ReturnsNullSequence()
         {
-            TestCreateSequenceOverride(IgnoreScenario, null, NullObjectSequence.Instance);
+            TestCreateSequenceOverride(IgnoreScenario1, null, NullObjectSequence.Instance);
+        }
+
+        [Test]
+        public void CreateSequence_IgnoreScenario2_ReturnsNullSequence()
+        {
+            TestCreateSequenceOverride(IgnoreScenario2, null, NullObjectSequence.Instance);
         }
 
         [Test]
@@ -147,9 +179,15 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void CreateDefaultStructure_IgnoreScenario_ReturnsNullStructure()
+        public void CreateDefaultStructure_IgnoreScenario1_ReturnsNullStructure()
         {
-            TestCreateDefaultStructureOverride(IgnoreScenario, null, NullObjectStructure.Instance);
+            TestCreateDefaultStructureOverride(IgnoreScenario1, null, NullObjectStructure.Instance);
+        }
+
+        [Test]
+        public void CreateDefaultStructure_IgnoreScenario2_ReturnsNullStructure()
+        {
+            TestCreateDefaultStructureOverride(IgnoreScenario2, null, NullObjectStructure.Instance);
         }
 
         [Test]
@@ -160,9 +198,15 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void CreateTypedStructure_IgnoreScenario_ReturnsNullStructure()
+        public void CreateTypedStructure_IgnoreScenario1_ReturnsNullStructure()
         {
-            TestCreateTypedStructureOverride(IgnoreScenario, null, NullObjectStructure.Instance);
+            TestCreateTypedStructureOverride(IgnoreScenario1, null, NullObjectStructure.Instance);
+        }
+
+        [Test]
+        public void CreateTypedStructure_IgnoreScenario2_ReturnsNullStructure()
+        {
+            TestCreateTypedStructureOverride(IgnoreScenario2, null, NullObjectStructure.Instance);
         }
 
         [Test]
@@ -173,9 +217,15 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void CreateValue_IgnoreScenario_ReturnsNullValue()
+        public void CreateValue_IgnoreScenario1_ReturnsNullValue()
         {
-            TestCreateValueOverride(IgnoreScenario, null, NullObjectValue.Instance);
+            TestCreateValueOverride(IgnoreScenario1, null, NullObjectValue.Instance);
+        }
+
+        [Test]
+        public void CreateValue_IgnoreScenario2_ReturnsNullValue()
+        {
+            TestCreateValueOverride(IgnoreScenario2, null, NullObjectValue.Instance);
         }
 
         [Test]
@@ -185,14 +235,20 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void MatchesPropertyFilter_IgnoreScenario_DoesNotMatch()
+        public void MatchesPropertyFilter_IgnoreScenario1_DoesNotMatch()
         {
-            TestMatchesPropertyFilterOverride(IgnoreScenario, PropertyFilter.PublicGet, true, false);
+            TestMatchesPropertyFilterOverride(IgnoreScenario1, PropertyFilter.PublicGet, true, false);
+        }
+
+        [Test]
+        public void MatchesPropertyFilter_IgnoreScenario2_DoesNotMatch()
+        {
+            TestMatchesPropertyFilterOverride(IgnoreScenario2, PropertyFilter.PublicGet, true, false);
         }
 
         protected override IgnoreAttribute CreateAttribute()
         {
-            return new IgnoreAttribute(IgnoreScenario);
+            return new IgnoreAttribute(IgnoreScenario1, IgnoreScenario2);
         }
     }
 
@@ -230,6 +286,12 @@ namespace ForSerial.Tests.Objects
         public void CanGet_SerializeToJson_CannotGet()
         {
             TestCanGetOverride(SerializationScenario.SerializeToJson, true, false);
+        }
+
+        [Test]
+        public void CanGet_DeserializeJson_CannotGet()
+        {
+            TestCanGetOverride(SerializationScenario.DeserializeJson, true, false);
         }
 
         protected override JsonIgnoreAttribute CreateAttribute()

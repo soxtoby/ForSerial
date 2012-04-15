@@ -1,24 +1,30 @@
-﻿
-namespace ForSerial.Objects
+﻿namespace ForSerial.Objects
 {
     public class IgnoreAttribute : PropertyDefinitionAttribute
     {
-        private readonly string ignoreScenario;
+        private readonly string[] ignoreScenarios;
         private readonly bool ignoreAll;
 
-        public IgnoreAttribute(string ignoreScenario = null)
+        public IgnoreAttribute(params string[] ignoreScenarios)
         {
-            this.ignoreScenario = ignoreScenario;
-            ignoreAll = ignoreScenario == null;
+            this.ignoreScenarios = ignoreScenarios;
+            ignoreAll = ignoreScenarios.None();
         }
 
         public override bool CanGet
         {
             get
             {
-                return !ignoreAll
-                    && SerializationScenario.Current != ignoreScenario
-                    && base.CanGet;
+                if (!ignoreAll)
+                {
+                    string currentScenario = SerializationScenario.Current;
+                    for (int i = 0; i < ignoreScenarios.Length; i++)
+                        if (ignoreScenarios[i] == currentScenario)
+                            return false;
+
+                    return base.CanGet;
+                }
+                return false;
             }
         }
 
@@ -26,58 +32,110 @@ namespace ForSerial.Objects
         {
             get
             {
-                return !ignoreAll
-                    && SerializationScenario.Current != ignoreScenario
-                    && base.CanSet;
+                if (!ignoreAll)
+                {
+                    string currentScenario = SerializationScenario.Current;
+                    for (int i = 0; i < ignoreScenarios.Length; i++)
+                        if (ignoreScenarios[i] == currentScenario)
+                            return false;
+
+                    return base.CanSet;
+                }
+                return false;
             }
         }
 
         public override ObjectContainer CreateStructure()
         {
-            return ignoreAll || SerializationScenario.Current == ignoreScenario
-                ? NullObjectStructure.Instance
-                : base.CreateStructure();
+            if (ignoreAll)
+                return NullObjectStructure.Instance;
+
+            string currentScenario = SerializationScenario.Current;
+            for (int i = 0; i < ignoreScenarios.Length; i++)
+                if (currentScenario == ignoreScenarios[i])
+                    return NullObjectStructure.Instance;
+
+            return base.CreateStructure();
         }
 
         public override ObjectContainer CreateStructure(string typeIdentifier)
         {
-            return ignoreAll || SerializationScenario.Current == ignoreScenario
-                ? NullObjectStructure.Instance
-                : base.CreateStructure(typeIdentifier);
+            if (ignoreAll)
+                return NullObjectStructure.Instance;
+
+            string currentScenario = SerializationScenario.Current;
+            for (int i = 0; i < ignoreScenarios.Length; i++)
+                if (currentScenario == ignoreScenarios[i])
+                    return NullObjectStructure.Instance;
+
+            return base.CreateStructure(typeIdentifier);
         }
 
         public override ObjectContainer CreateSequence()
         {
-            return ignoreAll || SerializationScenario.Current == ignoreScenario
-                ? NullObjectSequence.Instance
-                : base.CreateSequence();
+            if (ignoreAll)
+                return NullObjectSequence.Instance;
+
+            string currentScenario = SerializationScenario.Current;
+            for (int i = 0; i < ignoreScenarios.Length; i++)
+                if (currentScenario == ignoreScenarios[i])
+                    return NullObjectSequence.Instance;
+
+            return base.CreateSequence();
         }
 
         public override bool CanCreateValue(object value)
         {
-            return !ignoreAll
-                && SerializationScenario.Current != ignoreScenario
-                && base.CanCreateValue(value);
+            if (!ignoreAll)
+            {
+                string currentScenario = SerializationScenario.Current;
+                for (int i = 0; i < ignoreScenarios.Length; i++)
+                    if (ignoreScenarios[i] == currentScenario)
+                        return false;
+
+                return base.CanCreateValue(value);
+            }
+            return false;
         }
 
         public override ObjectOutput CreateValue(object value)
         {
-            return ignoreAll || SerializationScenario.Current == ignoreScenario
-                ? NullObjectValue.Instance
-                : base.CreateValue(value);
+            if (ignoreAll)
+                return NullObjectValue.Instance;
+
+            string currentScenario = SerializationScenario.Current;
+            for (int i = 0; i < ignoreScenarios.Length; i++)
+                if (currentScenario == ignoreScenarios[i])
+                    return NullObjectValue.Instance;
+
+            return base.CreateValue(value);
         }
 
         public override void Read(object value, ObjectReader reader, Writer writer)
         {
-            if (!ignoreAll && SerializationScenario.Current != ignoreScenario)
+            if (!ignoreAll)
+            {
+                string currentScenario = SerializationScenario.Current;
+                for (int i = 0; i < ignoreScenarios.Length; i++)
+                    if (currentScenario == ignoreScenarios[i])
+                        return;
+
                 base.Read(value, reader, writer);
+            }
         }
 
         public override bool MatchesPropertyFilter(PropertyFilter filter)
         {
-            return !ignoreAll
-                && SerializationScenario.Current != ignoreScenario
-                && base.MatchesPropertyFilter(filter);
+            if (!ignoreAll)
+            {
+                string currentScenario = SerializationScenario.Current;
+                for (int i = 0; i < ignoreScenarios.Length; i++)
+                    if (ignoreScenarios[i] == currentScenario)
+                        return false;
+
+                return base.MatchesPropertyFilter(filter);
+            }
+            return false;
         }
     }
 
@@ -88,6 +146,6 @@ namespace ForSerial.Objects
 
     public class JsonIgnoreAttribute : IgnoreAttribute
     {
-        public JsonIgnoreAttribute() : base(SerializationScenario.SerializeToJson) { }
+        public JsonIgnoreAttribute() : base(SerializationScenario.SerializeToJson, SerializationScenario.DeserializeJson) { }
     }
 }

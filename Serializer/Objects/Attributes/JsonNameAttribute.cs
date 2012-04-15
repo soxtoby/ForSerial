@@ -17,8 +17,9 @@ namespace ForSerial.Objects
             get
             {
                 return SerializationScenario.Current == SerializationScenario.SerializeToJson
-                    ? name
-                    : base.Name;
+                    || SerializationScenario.Current == SerializationScenario.DeserializeJson
+                        ? name
+                        : base.Name;
             }
         }
     }

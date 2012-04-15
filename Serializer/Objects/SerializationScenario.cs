@@ -8,6 +8,7 @@ namespace ForSerial.Objects
         private static StateStack<string> threadScenarioStack;
 
         public static readonly string SerializeToJson = "SerializeToJson";
+        public static readonly string DeserializeJson = "DeserializeJson";
         public static readonly string ObjectCopy = "ObjectCopy";
 
         private static StateStack<string> ScenarioStack

@@ -21,6 +21,12 @@ namespace ForSerial.Tests.Objects
             TestNameOverride(SerializationScenario.SerializeToJson, BaseName, OverrideName);
         }
 
+        [Test]
+        public void DeserializeJson_NameOverridden()
+        {
+            TestNameOverride(SerializationScenario.DeserializeJson, BaseName, OverrideName);
+        }
+
         protected override JsonNameAttribute CreateAttribute()
         {
             return new JsonNameAttribute(OverrideName);
