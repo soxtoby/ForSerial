@@ -81,7 +81,10 @@
     <Compile Include="Json\Output\JsonStringWriter.cs" />
     <Compile Include="Json\Output\PrettyPrintingJsonStringWriter.cs" />
     <Compile Include="Objects\AssemblyQualifiedNameResolver.cs" />
+    <Compile Include="Objects\Attributes\IgnoreAttribute.cs" />
+    <Compile Include="Objects\Attributes\JsonNameAttribute.cs" />
     <Compile Include="Objects\ConstructorDefinition.cs" />
+    <Compile Include="Objects\SerializationScenario.cs" />
     <Compile Include="Objects\TypeCache.cs" />
     <Compile Include="Objects\DynamicMethodProvider.cs" />
     <Compile Include="Objects\TypeDefinitions\NullableTypeDefinition.cs" />

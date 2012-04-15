@@ -367,11 +367,11 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void ReaderOverridesCurrentScenario()
         {
-            ObjectReader.CurrentScenario.ShouldBeNull();
+            SerializationScenario.Current.ShouldBeNull();
             CaptureScenarioClass captureScenarioClass = new CaptureScenarioClass();
             ObjectReader.Read(captureScenarioClass, NullWriter.Instance, new ObjectParsingOptions { Scenario = "foo" });
             captureScenarioClass.Scenario.ShouldBe("foo");
-            ObjectReader.CurrentScenario.ShouldBeNull();
+            SerializationScenario.Current.ShouldBeNull();
         }
 
         private class CaptureScenarioClass
@@ -382,7 +382,7 @@ namespace ForSerial.Tests.Objects
             {
                 get
                 {
-                    Scenario = ObjectReader.CurrentScenario;
+                    Scenario = SerializationScenario.Current;
                     return 0;
                 }
             }

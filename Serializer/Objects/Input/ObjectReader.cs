@@ -23,7 +23,7 @@ namespace ForSerial.Objects
         {
             ObjectReader reader = new ObjectReader(writer, options ?? new ObjectParsingOptions());
 
-            using (ScenarioStack.OverrideState(reader.options.Scenario))
+            using (SerializationScenario.Override(reader.options.Scenario))
             {
                 try
                 {
@@ -70,18 +70,6 @@ namespace ForSerial.Objects
         public PropertyFilter PropertyFilter
         {
             get { return options.PropertyFilter; }
-        }
-
-        [ThreadStatic]
-        private static StateStack<string> threadScenarioStack;
-        private static StateStack<string> ScenarioStack
-        {
-            get { return threadScenarioStack ?? (threadScenarioStack = new StateStack<string>(null)); }
-        }
-
-        public static string CurrentScenario
-        {
-            get { return ScenarioStack.Current; }
         }
 
         internal class ObjectReadException : Exception
