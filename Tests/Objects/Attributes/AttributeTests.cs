@@ -38,18 +38,18 @@ namespace ForSerial.Tests.Objects
                 });
         }
 
-        protected void TestCanCreateValueOverride(string scenario, bool expected)
+        protected void TestCanCreateValueOverride(string scenario, bool baseCanCreateValue, bool expected)
         {
             TestAttribute(scenario,
-                innerDefinition => innerDefinition.CanCreateValue(null).Returns(true),
+                innerDefinition => innerDefinition.CanCreateValue(null).Returns(baseCanCreateValue),
                 sut => sut.CanCreateValue(null).ShouldBe(expected));
         }
 
-        protected void TestCreateSequenceOverride(string scenario, ObjectContainer baseSequence, Action<T> assertion)
+        protected void TestCreateSequenceOverride(string scenario, ObjectContainer baseSequence, ObjectContainer expectedSequence)
         {
             TestAttribute(scenario,
                 innerDefinition => innerDefinition.CreateSequence().Returns(baseSequence),
-                assertion);
+                sut => sut.CreateSequence().ShouldBe(expectedSequence));
         }
 
         protected void TestCreateDefaultStructureOverride(string scenario, ObjectContainer baseStructure, ObjectContainer expectedStructure)
