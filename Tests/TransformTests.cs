@@ -25,6 +25,22 @@ namespace ForSerial.Tests
         }
 
         [Test]
+        public void ToJson_DefaultsToSerializeJsonScenario()
+        {
+            ScenarioCatcher result = new ScenarioCatcher();
+            result.ToJson();
+            result.Scenario.ShouldBe(SerializationScenario.SerializeToJson);
+        }
+
+        [Test]
+        public void ToJson_GivenScenario_OverridesScenario()
+        {
+            ScenarioCatcher result = new ScenarioCatcher();
+            result.ToJson(scenario: "foo");
+            result.Scenario.ShouldBe("foo");
+        }
+
+        [Test]
         public void ToFormattedJson_SerializesToFormattedJsonString()
         {
             new[] { 1 }.ToFormattedJson()
@@ -41,8 +57,24 @@ namespace ForSerial.Tests
         [Test]
         public void ToFormattedJson_PassesIndentationToPrettyPrinter()
         {
-            new[] { 1 }.ToFormattedJson(null, "_")
+            new[] { 1 }.ToFormattedJson(indentation: "_")
                 .ShouldBe("[" + lf + "_1" + lf + "]");
+        }
+
+        [Test]
+        public void ToFormattedJson_DefaultsToSerializeJsonScenario()
+        {
+            ScenarioCatcher result = new ScenarioCatcher();
+            result.ToFormattedJson();
+            result.Scenario.ShouldBe(SerializationScenario.SerializeToJson);
+        }
+
+        [Test]
+        public void ToFormattedJson_GivenScenario_OverridesScenario()
+        {
+            ScenarioCatcher result = new ScenarioCatcher();
+            result.ToFormattedJson(scenario: "foo");
+            result.Scenario.ShouldBe("foo");
         }
 
         [Test]
@@ -64,6 +96,20 @@ namespace ForSerial.Tests
         {
             "[1]".ParseJson<List<int>>()
                 .ShouldMatch(new[] { 1 });
+        }
+
+        [Test]
+        public void ParseJson_DefaultsToDeserializeJsonScenario()
+        {
+            ScenarioCatcher result = @"{ ""Property"": 1 }".ParseJson<ScenarioCatcher>();
+            result.Scenario.ShouldBe(SerializationScenario.DeserializeJson);
+        }
+
+        [Test]
+        public void ParseJson_GivenScenario_OverridesScenario()
+        {
+            ScenarioCatcher result = @"{ ""Property"": 1 }".ParseJson<ScenarioCatcher>(scenario: "foo");
+            result.Scenario.ShouldBe("foo");
         }
 
         [Test]
@@ -92,6 +138,37 @@ namespace ForSerial.Tests
 
             public int PublicGet { get; private set; }
             public int PublicGetSet { get; set; }
+        }
+
+        [Test]
+        public void CopyTo_DefaultsToObjectCopyScenario()
+        {
+            ScenarioCatcher catcher = new ScenarioCatcher();
+            catcher.CopyTo<ScenarioCatcher>();
+            catcher.Scenario.ShouldBe(SerializationScenario.ObjectCopy);
+        }
+
+        [Test]
+        public void CopyTo_GivenScenario_OverridesScenario()
+        {
+            ScenarioCatcher catcher = new ScenarioCatcher();
+            catcher.CopyTo<ScenarioCatcher>(scenario: "foo");
+            catcher.Scenario.ShouldBe("foo");
+        }
+
+        private class ScenarioCatcher
+        {
+            public string Scenario;
+
+            public int Property
+            {
+                get
+                {
+                    Scenario = SerializationScenario.Current;
+                    return 1;
+                }
+                set { Scenario = SerializationScenario.Current; }
+            }
         }
     }
 }

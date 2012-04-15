@@ -23,16 +23,13 @@ namespace ForSerial.Objects
         {
             ObjectReader reader = new ObjectReader(writer, options ?? new ObjectParsingOptions());
 
-            using (SerializationScenario.Override(reader.options.Scenario))
+            try
             {
-                try
-                {
-                    reader.Read(obj);
-                }
-                catch (Exception e)
-                {
-                    throw new ObjectReadException(reader, e);
-                }
+                reader.Read(obj);
+            }
+            catch (Exception e)
+            {
+                throw new ObjectReadException(reader, e);
             }
         }
 

@@ -364,31 +364,6 @@ namespace ForSerial.Tests.Objects
             public override string Name { get { return name; } }
         }
 
-        [Test]
-        public void ReaderOverridesCurrentScenario()
-        {
-            SerializationScenario.Current.ShouldBeNull();
-            CaptureScenarioClass captureScenarioClass = new CaptureScenarioClass();
-            ObjectReader.Read(captureScenarioClass, NullWriter.Instance, new ObjectParsingOptions { Scenario = "foo" });
-            captureScenarioClass.Scenario.ShouldBe("foo");
-            SerializationScenario.Current.ShouldBeNull();
-        }
-
-        private class CaptureScenarioClass
-        {
-            public string Scenario;
-
-            public int Property
-            {
-                get
-                {
-                    Scenario = SerializationScenario.Current;
-                    return 0;
-                }
-            }
-        }
-
-
         private static string ConvertToSimpleTypeJson(object obj)
         {
             using (CurrentTypeResolver.Override(new SimpleTypeNameTypeResolver()))
