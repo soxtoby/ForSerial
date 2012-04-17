@@ -14,31 +14,31 @@ namespace ForSerial.Tests.Objects
     public class ObjectReaderTests
     {
         [Test]
-        public void Integer()
+        public void IntegerProperty()
         {
             Assert.AreEqual("{\"foo\":5}", ConvertToJson(new { foo = 5 }));
         }
 
         [Test]
-        public void Decimal()
+        public void DecimalProperty()
         {
             Assert.AreEqual("{\"foo\":5.1}", ConvertToJson(new { foo = 5.1 }));
         }
 
         [Test]
-        public void String()
+        public void StringProperty()
         {
             Assert.AreEqual("{\"foo\":\"bar\"}", ConvertToJson(new { foo = "bar" }));
         }
 
         [Test]
-        public void Boolean()
+        public void BooleanProperty()
         {
             Assert.AreEqual("{\"foo\":true}", ConvertToJson(new { foo = true }));
         }
 
         [Test]
-        public void Null()
+        public void NullProperty()
         {
             Assert.AreEqual("{\"Property\":null}", ConvertToJson(new NullPropertyClass()));
         }
@@ -49,7 +49,7 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void Enum()
+        public void EnumProperty()
         {
             ConvertToJson(new { foo = TestEnum.One })
                 .ShouldBe(@"{""foo"":1}");
@@ -65,6 +65,18 @@ namespace ForSerial.Tests.Objects
         public void MultipleProperties()
         {
             Assert.AreEqual("{\"foo\":1,\"bar\":2}", ConvertToJson(new { foo = 1, bar = 2 }));
+        }
+
+        [Test]
+        public void IntegerField()
+        {
+            ConvertToJson(new IntegerFieldClass { Field = 1 })
+                .ShouldBe(@"{""Field"":1}");
+        }
+
+        private class IntegerFieldClass
+        {
+            public int Field;
         }
 
         [Test]

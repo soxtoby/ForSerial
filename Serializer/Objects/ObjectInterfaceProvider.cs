@@ -6,6 +6,8 @@ namespace ForSerial.Objects
     {
         GetMethod GetPropertyGetter(PropertyInfo property);
         SetMethod GetPropertySetter(PropertyInfo property);
+        GetMethod GetFieldGetter(FieldInfo field);
+        SetMethod GetFieldSetter(FieldInfo field);
         StaticFuncMethod GetStaticFunc(MethodInfo method);
         ActionMethod GetAction(MethodInfo method);
         ConstructorMethod GetConstructor(ConstructorInfo constructor);

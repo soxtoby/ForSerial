@@ -7,20 +7,21 @@ namespace ForSerial.Tests.Objects
     [TestFixture]
     public class DynamicMethodProviderClassTests
     {
+        private const BindingFlags PrivateInstanceMembers = BindingFlags.Instance | BindingFlags.NonPublic;
         private readonly DynamicMethodProvider sut = new DynamicMethodProvider();
 
         private readonly PropertyInfo publicValueProperty = typeof(Class).GetProperty("PublicValueProperty");
         private readonly PropertyInfo publicClassProperty = typeof(Class).GetProperty("PublicClassProperty");
         private readonly FieldInfo publicValueField = typeof(Class).GetField("PublicValueField");
         private readonly FieldInfo publicClassField = typeof(Class).GetField("PublicClassField");
-        private readonly PropertyInfo privateValueProperty = typeof(Class).GetProperty("PrivateValueProperty", BindingFlags.Instance | BindingFlags.NonPublic);
-        private readonly PropertyInfo privateClassProperty = typeof(Class).GetProperty("PrivateClassProperty", BindingFlags.Instance | BindingFlags.NonPublic);
-        private readonly FieldInfo privateValueField = typeof(Class).GetField("privateValueField", BindingFlags.Instance | BindingFlags.NonPublic);
-        private readonly FieldInfo privateClassField = typeof(Class).GetField("privateClassField", BindingFlags.Instance | BindingFlags.NonPublic);
+        private readonly PropertyInfo privateValueProperty = typeof(Class).GetProperty("PrivateValueProperty", PrivateInstanceMembers);
+        private readonly PropertyInfo privateClassProperty = typeof(Class).GetProperty("PrivateClassProperty", PrivateInstanceMembers);
+        private readonly FieldInfo privateValueField = typeof(Class).GetField("privateValueField", PrivateInstanceMembers);
+        private readonly FieldInfo privateClassField = typeof(Class).GetField("privateClassField", PrivateInstanceMembers);
         private readonly MethodInfo publicValueMethod = typeof(Class).GetMethod("PublicValueMethod", new[] { typeof(int) });
-        private readonly MethodInfo privateValueMethod = typeof(Class).GetMethod("PrivateValueMethod", BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(int) }, new ParameterModifier[] { });
+        private readonly MethodInfo privateValueMethod = typeof(Class).GetMethod("PrivateValueMethod", PrivateInstanceMembers, null, new[] { typeof(int) }, new ParameterModifier[] { });
         private readonly MethodInfo publicClassMethod = typeof(Class).GetMethod("PublicClassMethod", new[] { typeof(object) });
-        private readonly MethodInfo privateClassMethod = typeof(Class).GetMethod("PrivateClassMethod", BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(object) }, new ParameterModifier[] { });
+        private readonly MethodInfo privateClassMethod = typeof(Class).GetMethod("PrivateClassMethod", PrivateInstanceMembers, null, new[] { typeof(object) }, new ParameterModifier[] { });
 
         [Test]
         public void GetPublicValueProperty()

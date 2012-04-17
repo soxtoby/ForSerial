@@ -16,6 +16,16 @@ namespace ForSerial.Objects
             return (t, v) => setMethod.Invoke(t, new[] { v });
         }
 
+        public GetMethod GetFieldGetter(FieldInfo field)
+        {
+            return field.GetValue;
+        }
+
+        public SetMethod GetFieldSetter(FieldInfo field)
+        {
+            return field.SetValue;
+        }
+
         public StaticFuncMethod GetStaticFunc(MethodInfo method)
         {
             return args => method.Invoke(null, args);

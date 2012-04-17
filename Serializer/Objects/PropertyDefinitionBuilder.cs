@@ -16,6 +16,7 @@ namespace ForSerial.Objects
             this.interfaceProvider = interfaceProvider;
         }
 
+
         public PropertyDefinition Build(PropertyInfo property)
         {
             PropertyDefinition propDef = new DefaultPropertyDefinition(
@@ -72,6 +73,51 @@ namespace ForSerial.Objects
         private static bool HasPublicSetter(PropertyInfo property)
         {
             return property.GetSetMethod() != null;
+        }
+
+
+        public PropertyDefinition Build(FieldInfo field)
+        {
+            PropertyDefinition propDef = new DefaultPropertyDefinition(
+                GetTypeDefinition(field),
+                GetName(field),
+                GetGetter(field),
+                GetSetter(field),
+                GetDeclaringTypeName(field),
+                IsPublic(field),
+                IsPublic(field));
+
+            return propDef;
+        }
+
+        private static TypeDefinition GetTypeDefinition(FieldInfo field)
+        {
+            return TypeCache.GetTypeDefinition(field.FieldType);
+        }
+
+        private static string GetName(FieldInfo field)
+        {
+            return field.Name;
+        }
+
+        private SetMethod GetSetter(FieldInfo field)
+        {
+            return interfaceProvider.GetFieldSetter(field);
+        }
+
+        private GetMethod GetGetter(FieldInfo field)
+        {
+            return interfaceProvider.GetFieldGetter(field);
+        }
+
+        private static string GetDeclaringTypeName(FieldInfo field)
+        {
+            return field.DeclaringType.FullName;
+        }
+
+        private static bool IsPublic(FieldInfo field)
+        {
+            return field.IsPublic;
         }
     }
 }

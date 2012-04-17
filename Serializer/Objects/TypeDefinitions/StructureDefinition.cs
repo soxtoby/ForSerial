@@ -24,9 +24,12 @@ namespace ForSerial.Objects.TypeDefinitions
                 return;
 
             PropertyDefinitionBuilder propBuilder = new PropertyDefinitionBuilder(ObjectInterfaceProvider);
-            IEnumerable<PropertyDefinition> properties = Type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
+            const BindingFlags publicInstanceMembers = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+            IEnumerable<PropertyDefinition> properties = Type.GetProperties(publicInstanceMembers)
                 .Where(NotMarkedWithIgnoreAttribute)
-                .Select(propBuilder.Build);
+                .Select(propBuilder.Build)
+                .Concat(Type.GetFields(publicInstanceMembers)
+                    .Select(propBuilder.Build));
 
             foreach (PropertyDefinition property in properties)
                 Properties.Add(property);

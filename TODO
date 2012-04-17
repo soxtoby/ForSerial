@@ -2,9 +2,7 @@ Implement/optimise string escaping.
 
 Add TypeCache.RegisterTypeDefinitionFactory.
 Test duplicate value types - will probably incorrectly create references at the moment.
-Turn all singleton properties into public readonly fields.
 Simple struct serialization with ToString & Parse.
-Support IDictionary - detect map or KeyValuePair list.
 Better object construction
  - Avoid passing in properties that can be set directly.
  - Once property has been passed in, don't set it again.
