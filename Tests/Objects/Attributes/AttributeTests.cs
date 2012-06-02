@@ -74,11 +74,11 @@ namespace ForSerial.Tests.Objects
                 sut => sut.CreateValue(null).ShouldBe(expectedValue));
         }
 
-        protected void TestMatchesPropertyFilterOverride(string scenario, PropertyFilter propertyFilter, bool baseMatches, bool expected)
+        protected void TestMatchesPropertyFilterOverride(string scenario, MemberAccessibility memberAccessibility, MemberType memberType, bool baseMatches, bool expected)
         {
             TestAttribute(scenario,
-                innerDefinition => innerDefinition.MatchesPropertyFilter(propertyFilter).Returns(baseMatches),
-                sut => sut.MatchesPropertyFilter(propertyFilter).ShouldBe(expected));
+                innerDefinition => innerDefinition.MatchesPropertyFilter(memberAccessibility, memberType).Returns(baseMatches),
+                sut => sut.MatchesPropertyFilter(memberAccessibility, memberType).ShouldBe(expected));
         }
 
         private void TestAttribute(string scenario, Action<PropertyDefinition> setupInnerDefinition, Action<T> assertion)

@@ -62,7 +62,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void MatchesPropertyFilter_DoesNotMatch()
         {
-            TestMatchesPropertyFilterOverride(SomeScenario, PropertyFilter.PublicGet, true, false);
+            TestMatchesPropertyFilterOverride(SomeScenario, MemberAccessibility.PublicGet, MemberType.Property, true, false);
         }
 
         protected override IgnoreAttribute CreateAttribute()
@@ -231,19 +231,19 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void MatchesPropertyFilter_WrongScenario_PassesThrough()
         {
-            TestMatchesPropertyFilterOverride(null, PropertyFilter.PublicGet, true, true);
+            TestMatchesPropertyFilterOverride(null, MemberAccessibility.PublicGet, MemberType.Property, true, true);
         }
 
         [Test]
         public void MatchesPropertyFilter_IgnoreScenario1_DoesNotMatch()
         {
-            TestMatchesPropertyFilterOverride(IgnoreScenario1, PropertyFilter.PublicGet, true, false);
+            TestMatchesPropertyFilterOverride(IgnoreScenario1, MemberAccessibility.PublicGet, MemberType.Property, true, false);
         }
 
         [Test]
         public void MatchesPropertyFilter_IgnoreScenario2_DoesNotMatch()
         {
-            TestMatchesPropertyFilterOverride(IgnoreScenario2, PropertyFilter.PublicGet, true, false);
+            TestMatchesPropertyFilterOverride(IgnoreScenario2, MemberAccessibility.PublicGet, MemberType.Property, true, false);
         }
 
         protected override IgnoreAttribute CreateAttribute()

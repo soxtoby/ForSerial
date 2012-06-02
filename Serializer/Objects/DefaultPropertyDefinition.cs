@@ -5,12 +5,12 @@ namespace ForSerial.Objects
     internal class DefaultPropertyDefinition : PropertyDefinition
     {
         public DefaultPropertyDefinition(TypeDefinition typeDef,
-                                    string name,
-                                    GetMethod getter,
-                                    SetMethod setter,
-                                    string declaringTypeName,
-                                    bool hasPublicGetter,
-                                    bool hasPublicSetter)
+                                         string name,
+                                         GetMethod getter,
+                                         SetMethod setter,
+                                         string declaringTypeName,
+                                         MemberAccessibility memberAccessibility,
+                                         MemberType memberType)
         {
             if (typeDef == null) throw new ArgumentNullException("typeDef");
             if (name == null) throw new ArgumentNullException("name");
@@ -20,19 +20,19 @@ namespace ForSerial.Objects
             FullName = declaringTypeName + "." + name;
             this.getter = getter;
             this.setter = setter;
-            this.hasPublicGetter = hasPublicGetter;
-            this.hasPublicSetter = hasPublicSetter;
+            this.memberAccessibility = memberAccessibility;
+            this.memberType = memberType;
             TypeDef = typeDef;
         }
 
         public string Name { get; private set; }
         public TypeDefinition TypeDef { get; private set; }
-        private readonly bool hasPublicGetter;
-        private readonly bool hasPublicSetter;
 
         public string FullName { get; private set; }
         private readonly GetMethod getter;
         private readonly SetMethod setter;
+        private readonly MemberAccessibility memberAccessibility;
+        private readonly MemberType memberType;
 
         public bool CanGet { get { return getter != null; } }
         public bool CanSet { get { return setter != null; } }
@@ -78,17 +78,10 @@ namespace ForSerial.Objects
             TypeDef.ReadObject(value, reader, writer, false);
         }
 
-        public bool MatchesPropertyFilter(PropertyFilter filter)
+        public bool MatchesPropertyFilter(MemberAccessibility requiredAccessibility, MemberType requiredType)
         {
-            switch (filter)
-            {
-                case PropertyFilter.PublicGet:
-                    return hasPublicGetter;
-                case PropertyFilter.PublicGetSet:
-                    return hasPublicGetter && hasPublicSetter;
-                default:
-                    throw new ArgumentOutOfRangeException("filter");
-            }
+            return (requiredAccessibility & memberAccessibility) == requiredAccessibility
+                && (requiredType & memberType) > 0;
         }
     }
 }

@@ -68,18 +68,6 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void IntegerField()
-        {
-            ConvertToJson(new IntegerFieldClass { Field = 1 })
-                .ShouldBe(@"{""Field"":1}");
-        }
-
-        private class IntegerFieldClass
-        {
-            public int Field;
-        }
-
-        [Test]
         public void NestedEmptyObject()
         {
             Assert.AreEqual("{\"foo\":{}}", ConvertToJson(new { foo = new { } }));
@@ -484,7 +472,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void PublicGetPropertyFilter_GetOnlyPropertyNotRead()
         {
-            ConvertToJson(new GetOnlyPropertyClass(), new ObjectParsingOptions { PropertyFilter = PropertyFilter.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
+            ConvertToJson(new GetOnlyPropertyClass(), new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
                 .ShouldBe("{}");
         }
 
@@ -499,7 +487,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void PublicGetPropertyFilter_PrivateGetPropertyNotRead()
         {
-            ConvertToJson(new PrivateGetPropertyClass(1), new ObjectParsingOptions { PropertyFilter = PropertyFilter.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
+            ConvertToJson(new PrivateGetPropertyClass(1), new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
                 .ShouldBe("{}");
         }
 
@@ -516,8 +504,27 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void PublicGetPropertyFilter_PublicGetSetPropertyIsRead()
         {
-            ConvertToJson(new ConcreteClass { Value = 1 }, new ObjectParsingOptions { PropertyFilter = PropertyFilter.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
+            ConvertToJson(new ConcreteClass { Value = 1 }, new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
                 .ShouldBe(@"{""Value"":1}");
+        }
+
+        [Test]
+        public void PublicGetPropertyFilter_PublicFieldNotRead()
+        {
+            ConvertToJson(new IntegerFieldClass { Field = 1 }, new ObjectParsingOptions { MemberType = MemberType.Property, SerializeTypeInformation = TypeInformationLevel.None })
+                .ShouldBe("{}");
+        }
+
+        [Test]
+        public void PublicGetFieldFilter_PublicFieldIsRead()
+        {
+            ConvertToJson(new IntegerFieldClass { Field = 1 }, new ObjectParsingOptions { MemberType = MemberType.Field, SerializeTypeInformation = TypeInformationLevel.None })
+                .ShouldBe(@"{""Field"":1}");
+        }
+
+        private class IntegerFieldClass
+        {
+            public int Field;
         }
 
         private interface Interface

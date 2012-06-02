@@ -1,9 +1,18 @@
-﻿namespace ForSerial.Objects
+﻿using System;
+
+namespace ForSerial.Objects
 {
     public class ObjectParsingOptions
     {
+        public ObjectParsingOptions()
+        {
+            MemberAccessibility = MemberAccessibility.PublicGet;
+            MemberType = MemberType.Property;
+        }
+
         public TypeInformationLevel SerializeTypeInformation { get; set; }
-        public PropertyFilter PropertyFilter { get; set; }
+        public MemberAccessibility MemberAccessibility { get; set; }
+        public MemberType MemberType { get; set; }
     }
 
     public enum TypeInformationLevel
@@ -13,9 +22,19 @@
         None
     }
 
-    public enum PropertyFilter
+    [Flags]
+    public enum MemberAccessibility
     {
-        PublicGet,
-        PublicGetSet
+        PublicGet = 1,
+        PublicGetSet = 3,
+        Private = 4,
+    }
+
+    [Flags]
+    public enum MemberType
+    {
+        Property = 1,
+        Field = 2,
+        Either = 3,
     }
 }

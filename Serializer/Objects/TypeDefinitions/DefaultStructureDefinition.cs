@@ -21,21 +21,21 @@ namespace ForSerial.Objects.TypeDefinitions
             else
                 writer.BeginStructure(Type);
 
-            var filteredProperties = reader.PropertyFilter == PropertyFilter.PublicGetSet
-                ? PublicGetSetProperties
-                : AllSerializableProperties;
-
-            for (int i = 0; i < filteredProperties.Length; i++)
+            for (int i = 0; i < AllSerializableProperties.Length; i++)
             {
-                PropertyDefinition property = filteredProperties[i];
-                writer.AddProperty(property.Name);
+                PropertyDefinition property = AllSerializableProperties[i];
 
-                reader.PropertyStack.Push(property);
+                if (property.MatchesPropertyFilter(reader.MemberAccessibility, reader.MemberType))
+                {
+                    writer.AddProperty(property.Name);
 
-                object value = property.GetFrom(input);
-                property.Read(value, reader, writer);
+                    reader.PropertyStack.Push(property);
 
-                reader.PropertyStack.Pop();
+                    object value = property.GetFrom(input);
+                    property.Read(value, reader, writer);
+
+                    reader.PropertyStack.Pop();
+                }
             }
 
             writer.EndStructure();

@@ -125,7 +125,7 @@ namespace ForSerial.Tests
         public void CopyTo_PassesOptionsToObjectReader()
         {
             new MixedAccessPropertiesClass(1) { PublicGetSet = 2 }
-                .CopyTo<Dictionary<string, int>>(new ObjectParsingOptions { PropertyFilter = PropertyFilter.PublicGetSet })
+                .CopyTo<Dictionary<string, int>>(new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.PublicGetSet })
                 .ShouldMatch(new Dictionary<string, int> { { "PublicGetSet", 2 } });
         }
 

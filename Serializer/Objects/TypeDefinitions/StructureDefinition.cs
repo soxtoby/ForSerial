@@ -8,9 +8,10 @@ namespace ForSerial.Objects.TypeDefinitions
 {
     public abstract class StructureDefinition : TypeDefinition
     {
+        private const BindingFlags PublicInstanceMembers = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+
         public PropertyCollection Properties { get; private set; }
         protected PropertyDefinition[] AllSerializableProperties;
-        protected PropertyDefinition[] PublicGetSetProperties;
 
         protected StructureDefinition(Type type)
             : base(type)
@@ -24,18 +25,16 @@ namespace ForSerial.Objects.TypeDefinitions
                 return;
 
             PropertyDefinitionBuilder propBuilder = new PropertyDefinitionBuilder(ObjectInterfaceProvider);
-            const BindingFlags publicInstanceMembers = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
-            IEnumerable<PropertyDefinition> properties = Type.GetProperties(publicInstanceMembers)
+            IEnumerable<PropertyDefinition> properties = Type.GetProperties(PublicInstanceMembers)
                 .Where(NotMarkedWithIgnoreAttribute)
                 .Select(propBuilder.Build)
-                .Concat(Type.GetFields(publicInstanceMembers)
+                .Concat(Type.GetFields(PublicInstanceMembers)
                     .Select(propBuilder.Build));
 
             foreach (PropertyDefinition property in properties)
                 Properties.Add(property);
 
             AllSerializableProperties = Properties.ToArray();
-            PublicGetSetProperties = Properties.Where(p => p.MatchesPropertyFilter(PropertyFilter.PublicGetSet)).ToArray();
         }
 
         private static bool NotMarkedWithIgnoreAttribute(PropertyInfo property)

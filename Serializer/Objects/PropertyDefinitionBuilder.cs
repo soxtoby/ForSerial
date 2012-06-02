@@ -25,8 +25,8 @@ namespace ForSerial.Objects
                 GetGetter(property),
                 GetSetter(property),
                 GetDeclaringTypeName(property),
-                HasPublicGetter(property),
-                HasPublicSetter(property));
+                GetAccessibility(property),
+                MemberType.Property);
 
             IEnumerable<PropertyDefinitionAttribute> propertyDefinitionAttributes = property.GetCustomAttributes(false).OfType<PropertyDefinitionAttribute>();
             foreach (PropertyDefinitionAttribute attribute in propertyDefinitionAttributes)
@@ -65,14 +65,15 @@ namespace ForSerial.Objects
             return property.DeclaringType.FullName;
         }
 
-        private static bool HasPublicGetter(PropertyInfo property)
+        private static MemberAccessibility GetAccessibility(PropertyInfo property)
         {
-            return property.GetGetMethod() != null;
-        }
-
-        private static bool HasPublicSetter(PropertyInfo property)
-        {
-            return property.GetSetMethod() != null;
+            if (property.GetGetMethod() != null)
+            {
+                if (property.GetSetMethod() != null)
+                    return MemberAccessibility.PublicGetSet;
+                return MemberAccessibility.PublicGet;
+            }
+            return MemberAccessibility.Private;
         }
 
 
@@ -84,8 +85,8 @@ namespace ForSerial.Objects
                 GetGetter(field),
                 GetSetter(field),
                 GetDeclaringTypeName(field),
-                IsPublic(field),
-                IsPublic(field));
+                GetAccessibility(field),
+                MemberType.Field);
 
             return propDef;
         }
@@ -115,9 +116,15 @@ namespace ForSerial.Objects
             return field.DeclaringType.FullName;
         }
 
-        private static bool IsPublic(FieldInfo field)
+        private static MemberAccessibility GetAccessibility(FieldInfo field)
         {
-            return field.IsPublic;
+            if (field.IsPublic)
+            {
+                return field.IsInitOnly
+                    ? MemberAccessibility.PublicGet
+                    : MemberAccessibility.PublicGetSet;
+            }
+            return MemberAccessibility.Private;
         }
     }
 }

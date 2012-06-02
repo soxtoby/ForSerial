@@ -64,9 +64,14 @@ namespace ForSerial.Objects
 
         public readonly Stack<PropertyDefinition> PropertyStack = new Stack<PropertyDefinition>();
 
-        public PropertyFilter PropertyFilter
+        public MemberAccessibility MemberAccessibility
         {
-            get { return options.PropertyFilter; }
+            get { return options.MemberAccessibility; }
+        }
+
+        public MemberType MemberType
+        {
+            get { return options.MemberType; }
         }
 
         internal class ObjectReadException : Exception
