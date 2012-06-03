@@ -775,6 +775,26 @@ namespace ForSerial.Tests.Objects
             }
         }
 
+        [Test]
+        public void NullConstructorObjectParameter()
+        {
+            ConstructorParametersObject result = Clone(new ConstructorParametersObject(null, "foo"));
+            result.ObjectValue.ShouldBeNull();
+            result.StringValue.ShouldBe("foo");
+        }
+
+        private class ConstructorParametersObject
+        {
+            public object ObjectValue { get; set; }
+            public string StringValue { get; set; }
+
+            public ConstructorParametersObject(object objectValue, string stringValue)
+            {
+                ObjectValue = objectValue;
+                StringValue = stringValue;
+            }
+        }
+
 
         private static T DeserializeJson<T>(string json)
         {

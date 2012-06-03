@@ -1,4 +1,6 @@
-﻿namespace ForSerial.Objects
+﻿using ForSerial.Objects.TypeDefinitions;
+
+namespace ForSerial.Objects
 {
     public class DefaultObjectValue : ObjectOutput
     {
@@ -23,7 +25,7 @@
         {
             get
             {
-                return value == null ? null
+                return value == null ? NullTypeDefinition.Instance
                     : TypeCache.GetTypeDefinition(value.GetType());
             }
         }
