@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using EasyAssertions;
 using ForSerial.Json;
 using ForSerial.Objects;
 using ForSerial.Objects.TypeDefinitions;
@@ -442,8 +443,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void ExceptionWrappedWithPropertyStack()
         {
-            Function.Call(() => ConvertToJson(new ObjectPropertyClass { Object = new PropertyGetterThrowsException("foo") }))
-                .ShouldThrow<ObjectReader.ObjectReadException>()
+            Should.Throw<ObjectReader.ObjectReadException>(() => ConvertToJson(new ObjectPropertyClass { Object = new PropertyGetterThrowsException("foo") }))
                 .And.Message.ShouldContain("foo")
                         .And.ShouldContain(GetType() + "+ObjectPropertyClass.Object")
                         .And.ShouldContain(GetType() + "+PropertyGetterThrowsException.ThrowsException");

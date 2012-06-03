@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using EasyAssertions;
 using ForSerial.Json;
 using ForSerial.JsonObjects;
 using NSubstitute;
@@ -26,7 +27,7 @@ namespace ForSerial.Tests.Json
         public void Null()
         {
             ParseJson("null")
-                .ShouldBe<JsonValue>()
+                .ShouldBeA<JsonValue>()
                 .And.Value.ShouldBeNull();
         }
 
@@ -34,7 +35,7 @@ namespace ForSerial.Tests.Json
         public void True()
         {
             ParseJson("true")
-                .ShouldBe<JsonValue>()
+                .ShouldBeA<JsonValue>()
                 .And.Value.ShouldBe(true);
         }
 
@@ -42,7 +43,7 @@ namespace ForSerial.Tests.Json
         public void False()
         {
             ParseJson("false")
-                .ShouldBe<JsonValue>()
+                .ShouldBeA<JsonValue>()
                 .And.Value.ShouldBe(false);
         }
 
@@ -50,23 +51,23 @@ namespace ForSerial.Tests.Json
         public void Number()
         {
             ParseJson("1")
-                .ShouldBe<JsonValue>()
-                .And.Value.ShouldBe(1);
+                .ShouldBeA<JsonValue>()
+                .And.Value.ShouldBe(1d);
         }
 
         [Test]
         public void NegativeNumber()
         {
             ParseJson("-1")
-                .ShouldBe<JsonValue>()
-                .And.Value.ShouldBe(-1);
+                .ShouldBeA<JsonValue>()
+                .And.Value.ShouldBe(-1d);
         }
 
         [Test]
         public void String()
         {
             ParseJson(@"""foo""")
-                .ShouldBe<JsonValue>()
+                .ShouldBeA<JsonValue>()
                 .And.Value.ShouldBe("foo");
         }
 
@@ -74,7 +75,7 @@ namespace ForSerial.Tests.Json
         public void EmptyMap()
         {
             ParseJson("{}")
-                .ShouldBe<JsonMap>()
+                .ShouldBeA<JsonMap>()
                 .And.ShouldBeEmpty();
         }
 
@@ -82,7 +83,7 @@ namespace ForSerial.Tests.Json
         public void EmptyArray()
         {
             ParseJson("[]")
-                .ShouldBe<JsonArray>()
+                .ShouldBeA<JsonArray>()
                 .And.ShouldBeEmpty();
         }
 
@@ -104,14 +105,14 @@ namespace ForSerial.Tests.Json
         public void NumberProperty()
         {
             ParseFooProperty(@"{ ""foo"": 5 }")
-                .Value().ShouldBe(5);
+                .Value().ShouldBe(5d);
         }
 
         [Test]
         public void NegativeNumberProperty()
         {
             ParseFooProperty(@"{ ""foo"": -5 }")
-                .Value().ShouldBe(-5);
+                .Value().ShouldBe(-5d);
         }
 
         [Test]
@@ -132,7 +133,7 @@ namespace ForSerial.Tests.Json
         public void EmptyMapProperty()
         {
             ParseFooProperty(@"{ ""foo"": { } }")
-                .ShouldBe<JsonMap>()
+                .ShouldBeA<JsonMap>()
                 .And.ShouldBeEmpty();
         }
 
@@ -140,24 +141,24 @@ namespace ForSerial.Tests.Json
         public void ObjectThenNumberProperty()
         {
             ParseJson(@"{ ""foo"": { }, ""bar"": 4 }")
-                .ShouldBe<JsonMap>()
-                .And(map => map["foo"].ShouldBe<JsonMap>())
-                .And(map => map["bar"].Value().ShouldBe(4));
+                .ShouldBeA<JsonMap>()
+                .And(map => map["foo"].ShouldBeA<JsonMap>())
+                .And(map => map["bar"].Value().ShouldBe(4d));
         }
 
         [Test]
         public void NumberPropertyObjectProperty()
         {
             ParseFooProperty(@"{ ""foo"": { ""bar"": 3 } }")
-                .ShouldBe<JsonMap>()
-                .And.Value("bar").ShouldBe(3);
+                .ShouldBeA<JsonMap>()
+                .And.Value("bar").ShouldBe(3d);
         }
 
         [Test]
         public void EmptyArrayProperty()
         {
             ParseFooProperty(@"{ ""foo"": [ ] }")
-                .ShouldBe<JsonArray>()
+                .ShouldBeA<JsonArray>()
                 .And.ShouldBeEmpty();
         }
 
@@ -165,24 +166,24 @@ namespace ForSerial.Tests.Json
         public void SingleNumberArrayProperty()
         {
             ParseFooProperty(@"{ ""foo"": [1] }")
-                .ShouldBe<JsonArray>()
-                .And.Single().Value().ShouldBe(1);
+                .ShouldBeA<JsonArray>()
+                .And.Single().Value().ShouldBe(1d);
         }
 
         [Test]
         public void MultipleNumberArrayProperty()
         {
             ParseFooProperty(@"{ ""foo"": [ 1, 2, 3 ] }")
-                .ShouldBe<JsonArray>()
-                .And.Values().ShouldMatch<int>(new[] { 1, 2, 3 });
+                .ShouldBeA<JsonArray>()
+                .And.Values().ShouldMatch(new double[] { 1, 2, 3 });
         }
 
         [Test]
         public void MixedTypeArrayProperty()
         {
             ParseFooProperty(@"{ ""foo"": [ 1, ""two"", null ] }")
-                .ShouldBe<JsonArray>()
-                .And.Values().ShouldMatch(new object[] { 1, "two", null });
+                .ShouldBeA<JsonArray>()
+                .And.Values().ShouldMatch(new object[] { 1d, "two", null });
         }
 
         [Test]
@@ -265,7 +266,7 @@ namespace ForSerial.Tests.Json
         private static JsonObject ParseFooProperty(string json)
         {
             JsonObject result = ParseJson(json);
-            result.ShouldBe<JsonMap>();
+            result.ShouldBeA<JsonMap>();
             return result.Get("foo");
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using EasyAssertions;
 using ForSerial.Objects;
 using NSubstitute;
 using NUnit.Framework;
@@ -101,7 +102,7 @@ namespace ForSerial.Tests.Objects
             object result = sut.Build(field)
                 .GetFrom(source);
 
-            result.ShouldBeSameAs(expectedValue);
+            result.ShouldBeThis(expectedValue);
         }
     }
 }

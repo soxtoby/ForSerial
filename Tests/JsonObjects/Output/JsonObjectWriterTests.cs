@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using EasyAssertions;
 using ForSerial.JsonObjects;
 using NUnit.Framework;
 
@@ -20,7 +21,7 @@ namespace ForSerial.Tests.JsonObjects
         {
             sut.Write(null);
             sut.Result
-                .ShouldBe<JsonValue>()
+                .ShouldBeA<JsonValue>()
                 .And.Value.ShouldBeNull();
         }
 
@@ -29,7 +30,7 @@ namespace ForSerial.Tests.JsonObjects
         {
             sut.Write(1);
             sut.Result
-                .ShouldBe<JsonValue>()
+                .ShouldBeA<JsonValue>()
                 .And.Value.ShouldBe(1);
         }
 
@@ -38,7 +39,7 @@ namespace ForSerial.Tests.JsonObjects
         {
             sut.Write("foo");
             sut.Result
-                .ShouldBe<JsonValue>()
+                .ShouldBeA<JsonValue>()
                 .And.Value.ShouldBe("foo");
         }
 
@@ -47,7 +48,7 @@ namespace ForSerial.Tests.JsonObjects
         {
             sut.Write(true);
             sut.Result
-                .ShouldBe<JsonValue>()
+                .ShouldBeA<JsonValue>()
                 .And.Value.ShouldBe(true);
         }
 
@@ -56,7 +57,7 @@ namespace ForSerial.Tests.JsonObjects
         {
             sut.BeginStructure(null);
             sut.EndStructure();
-            sut.Result.ShouldBe<JsonMap>()
+            sut.Result.ShouldBeA<JsonMap>()
                 .And.Count.ShouldBe(0);
         }
 
@@ -67,8 +68,8 @@ namespace ForSerial.Tests.JsonObjects
             sut.AddProperty("foo");
             sut.Write(1);
             sut.EndStructure();
-            sut.Result.ShouldBe<JsonMap>()
-                .And["foo"].ShouldBe<JsonValue>()
+            sut.Result.ShouldBeA<JsonMap>()
+                .And["foo"].ShouldBeA<JsonValue>()
                     .And.Value.ShouldBe(1);
         }
 
@@ -82,10 +83,10 @@ namespace ForSerial.Tests.JsonObjects
             sut.Write(2);
             sut.EndStructure();
 
-            sut.Result.ShouldBe<JsonMap>()
-                .And(map => map["foo"].ShouldBe<JsonValue>()
+            sut.Result.ShouldBeA<JsonMap>()
+                .And(map => map["foo"].ShouldBeA<JsonValue>()
                     .And.Value.ShouldBe(1))
-                .And(map => map["bar"].ShouldBe<JsonValue>()
+                .And(map => map["bar"].ShouldBeA<JsonValue>()
                     .And.Value.ShouldBe(2));
         }
 
@@ -102,10 +103,10 @@ namespace ForSerial.Tests.JsonObjects
             sut.Write(2);
             sut.EndStructure();
 
-            sut.Result.ShouldBe<JsonMap>()
-                .And(map => map["foo"].ShouldBe<JsonMap>()
+            sut.Result.ShouldBeA<JsonMap>()
+                .And(map => map["foo"].ShouldBeA<JsonMap>()
                     .And.Value("bar").ShouldBe(1))
-                .And(map => map["baz"].ShouldBe<JsonValue>()
+                .And(map => map["baz"].ShouldBeA<JsonValue>()
                     .And.Value.ShouldBe(2));
         }
 
@@ -115,7 +116,7 @@ namespace ForSerial.Tests.JsonObjects
             sut.BeginSequence();
             sut.EndSequence();
 
-            sut.Result.ShouldBe<JsonArray>()
+            sut.Result.ShouldBeA<JsonArray>()
                 .And.ShouldBeEmpty();
         }
 
@@ -126,7 +127,7 @@ namespace ForSerial.Tests.JsonObjects
             sut.Write(1);
             sut.EndSequence();
 
-            sut.Result.ShouldBe<JsonArray>()
+            sut.Result.ShouldBeA<JsonArray>()
                 .And.Values().ShouldMatch(new object[] { 1 });
         }
 
@@ -138,7 +139,7 @@ namespace ForSerial.Tests.JsonObjects
             sut.Write(2);
             sut.EndSequence();
 
-            sut.Result.ShouldBe<JsonArray>()
+            sut.Result.ShouldBeA<JsonArray>()
                 .And.Values().ShouldMatch(new object[] { 1, 2 });
         }
 
@@ -152,9 +153,9 @@ namespace ForSerial.Tests.JsonObjects
             sut.Write(2);
             sut.EndSequence();
 
-            sut.Result.ShouldBe<JsonArray>()
+            sut.Result.ShouldBeA<JsonArray>()
                 .And.ItemsSatisfy(
-                    first => first.ShouldBe<JsonArray>()
+                    first => first.ShouldBeA<JsonArray>()
                         .And.Single().Value().ShouldBe(1),
                     second => second.Value().ShouldBe(2));
         }
@@ -169,8 +170,8 @@ namespace ForSerial.Tests.JsonObjects
             sut.EndSequence();
             sut.EndStructure();
 
-            sut.Result.ShouldBe<JsonMap>()
-                .And["foo"].ShouldBe<JsonArray>()
+            sut.Result.ShouldBeA<JsonMap>()
+                .And["foo"].ShouldBeA<JsonArray>()
                     .And.Single().Value().ShouldBe(1);
         }
 
@@ -184,8 +185,8 @@ namespace ForSerial.Tests.JsonObjects
             sut.EndStructure();
             sut.EndSequence();
 
-            sut.Result.ShouldBe<JsonArray>()
-                .And.Single().ShouldBe<JsonMap>()
+            sut.Result.ShouldBeA<JsonArray>()
+                .And.Single().ShouldBeA<JsonMap>()
                     .And["foo"].Value().ShouldBe(1);
         }
 
@@ -198,8 +199,8 @@ namespace ForSerial.Tests.JsonObjects
             sut.WriteReference(0);
             sut.EndSequence();
 
-            sut.Result.ShouldBe<JsonArray>()
-                .And(array => array[0].ShouldBeSameAs(array[1]));
+            sut.Result.ShouldBeA<JsonArray>()
+                .And(array => array[0].ShouldBeThis(array[1]));
         }
     }
 }

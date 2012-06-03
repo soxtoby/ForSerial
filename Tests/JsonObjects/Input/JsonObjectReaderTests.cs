@@ -1,4 +1,5 @@
 using System.IO;
+using EasyAssertions;
 using ForSerial.Json;
 using ForSerial.JsonObjects;
 using NSubstitute;

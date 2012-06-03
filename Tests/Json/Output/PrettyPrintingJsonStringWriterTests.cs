@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using EasyAssertions;
 using ForSerial.Json;
 using NUnit.Framework;
 

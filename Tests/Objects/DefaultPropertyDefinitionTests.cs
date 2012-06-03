@@ -1,4 +1,5 @@
-﻿using ForSerial.Objects;
+﻿using EasyAssertions;
+using ForSerial.Objects;
 using NSubstitute;
 using NUnit.Framework;
 

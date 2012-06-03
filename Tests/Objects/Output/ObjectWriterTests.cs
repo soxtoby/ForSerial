@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using EasyAssertions;
 using ForSerial.Json;
 using ForSerial.JsonObjects;
 using ForSerial.Objects;
@@ -56,7 +57,7 @@ namespace ForSerial.Tests.Objects
         public void NumberAsObject()
         {
             CopyTo<object>(1)
-                .ShouldBe(1);
+                .ShouldBe((object)1);
         }
 
         [Test]
@@ -221,7 +222,7 @@ namespace ForSerial.Tests.Objects
         public void ListOfSubTypes()
         {
             Clone(new List<AbstractSuperClass> { new SubClass { SuperProperty = 1, SubProperty = 2 } })
-                .Single().ShouldBe<SubClass>()
+                .Single().ShouldBeA<SubClass>()
                 .And(sub => sub.SuperProperty.ShouldBe(1))
                 .And(sub => sub.SubProperty.ShouldBe(2));
         }
@@ -230,7 +231,7 @@ namespace ForSerial.Tests.Objects
         public void Array()
         {
             Clone(new[] { 1, 2, 3 })
-                .ShouldMatch<int>(new[] { 1, 2, 3 });
+                .ShouldMatch(new[] { 1, 2, 3 });
         }
 
         [Test]
@@ -382,8 +383,8 @@ namespace ForSerial.Tests.Objects
             IntPropertyClass original = new IntPropertyClass();
             SameReferenceTwice clone = Clone(new SameReferenceTwice(original));
 
-            clone.One.ShouldBeSameAs(clone.Two);
-            clone.One.ShouldNotBeSameAs(original);
+            clone.One.ShouldBeThis(clone.Two);
+            clone.One.ShouldNotBeThis(original);
         }
 
         [Test]
@@ -394,8 +395,8 @@ namespace ForSerial.Tests.Objects
 
             ReferencePropertyClass clone = Clone(parent);
 
-            clone.Reference.ShouldBe<ReferencePropertyClass>()
-                .And.Reference.ShouldBeSameAs(clone);
+            clone.Reference.ShouldBeA<ReferencePropertyClass>()
+                .And.Reference.ShouldBeThis(clone);
         }
 
         [Test]
@@ -407,8 +408,8 @@ namespace ForSerial.Tests.Objects
 
             ReferenceConstructorClass clone = Clone(parent);
 
-            clone.Reference.ShouldBe<ReferencePropertyClass>()
-                .And.Reference.ShouldBeSameAs(clone);
+            clone.Reference.ShouldBeA<ReferencePropertyClass>()
+                .And.Reference.ShouldBeThis(clone);
         }
 
         [Test]
@@ -420,8 +421,8 @@ namespace ForSerial.Tests.Objects
 
             ReferencePropertyClass clone = Clone(parent);
 
-            clone.Reference.ShouldBe<ReferenceConstructorClass>()
-                .And.Reference.ShouldBeSameAs(clone);
+            clone.Reference.ShouldBeA<ReferenceConstructorClass>()
+                .And.Reference.ShouldBeThis(clone);
         }
 
         private class ReferenceConstructorClass
@@ -508,7 +509,7 @@ namespace ForSerial.Tests.Objects
         public void MaintainSubType()
         {
             CopyTo<AbstractSuperClass>(new SubClass { SuperProperty = 1, SubProperty = 2 })
-                .ShouldBe<SubClass>()
+                .ShouldBeA<SubClass>()
                 .And(sub => sub.SuperProperty.ShouldBe(1))
                 .And(sub => sub.SubProperty.ShouldBe(2));
         }
@@ -687,7 +688,7 @@ namespace ForSerial.Tests.Objects
 
             sut.Write(1d);
 
-            sut.Result.ShouldBe(1);
+            sut.Result.ShouldBe((int?)1);
         }
 
         [Test]
@@ -697,14 +698,13 @@ namespace ForSerial.Tests.Objects
 
             sut.Write("d0a227da-c42a-4a5d-ad3d-adf7d0b352a2");
 
-            sut.Result.ShouldBe(new Guid("d0a227da-c42a-4a5d-ad3d-adf7d0b352a2"));
+            sut.Result.ShouldBe((Guid?)new Guid("d0a227da-c42a-4a5d-ad3d-adf7d0b352a2"));
         }
 
         [Test]
         public void ExceptionWrappedInPropertyStack()
         {
-            Function.Call(() => DeserializeJson<PropertySetterThrowsExceptionContainer>(@"{ ""Property"": { ""ThrowsException"": 1, ""RegularProperty"": 2 } }"))
-                .ShouldThrow<WriteException>()
+            Should.Throw<WriteException>(() => DeserializeJson<PropertySetterThrowsExceptionContainer>(@"{ ""Property"": { ""ThrowsException"": 1, ""RegularProperty"": 2 } }"))
                 .And.Message.ShouldContain("foo")
                         .And.ShouldContain(typeof(PropertySetterThrowsExceptionContainer).FullName + ".Property")
                         .And.ShouldContain(typeof(PropertySetterThrowsExceptionClass).FullName + ".ThrowsException");
@@ -730,7 +730,7 @@ namespace ForSerial.Tests.Objects
         public void IEnumerableWithAddObjectMethod_CanBeDeserialized()
         {
             CopyTo<CollectionLikeClass>(new[] { 1, 2, 3 })
-                .ShouldMatch<int>(new[] { 1, 2, 3 });
+                .Cast<object>().ShouldMatch(new[] { 1, 2, 3 });
         }
 
         private class CollectionLikeClass : IEnumerable

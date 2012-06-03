@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using EasyAssertions;
 using ForSerial.Objects;
 using NUnit.Framework;
 
@@ -117,7 +118,7 @@ namespace ForSerial.Tests
         {
             List<int> original = new List<int> { 1 };
             original.CopyTo<List<int>>()
-                .ShouldNotBeSameAs(original)
+                .ShouldNotBeThis(original)
                 .And.ShouldMatch(new[] { 1 });
         }
 

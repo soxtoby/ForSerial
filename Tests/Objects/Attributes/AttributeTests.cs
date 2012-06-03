@@ -1,4 +1,5 @@
 ﻿using System;
+using EasyAssertions;
 using ForSerial.Objects;
 using NSubstitute;
 
