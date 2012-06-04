@@ -13,6 +13,11 @@ namespace ForSerial.Objects.TypeDefinitions
                 : null;
         }
 
+        protected override bool ReferenceStructure(object input, ObjectReader reader)
+        {
+            return false;   // Can't reference value types
+        }
+
         public override ObjectContainer CreateStructure()
         {
             return new DefaultObjectStructure(this);

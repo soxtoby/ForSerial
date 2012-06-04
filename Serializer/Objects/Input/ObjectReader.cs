@@ -8,7 +8,7 @@ namespace ForSerial.Objects
     {
         private readonly Writer writer;
         private readonly ObjectParsingOptions options;
-        private readonly Dictionary<object, int> stuctureReferences = new Dictionary<object, int>();
+        private readonly Dictionary<object, int> stuctureReferences = new Dictionary<object, int>(ReferenceEqualityComparer<object>.Instance);
 
         private ObjectReader(Writer writer, ObjectParsingOptions options)
         {

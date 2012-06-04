@@ -179,6 +179,21 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
+        public void StringStructsNotReferenced()
+        {
+            Writer writer = Substitute.For<Writer>();
+
+            ObjectReader.Read(new SameReferenceTwice(new StringStruct { Value = "foo" }), writer);
+
+            writer.DidNotReceive().WriteReference(Arg.Any<int>());
+        }
+
+        private struct StringStruct
+        {
+            public string Value { get; set; }
+        }
+
+        [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void IgnorePropertyWithAttributeOfNonAttributeType()
         {

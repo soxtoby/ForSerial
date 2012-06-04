@@ -13,7 +13,7 @@ namespace ForSerial.Objects.TypeDefinitions
 
         public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
         {
-            if (reader.ReferenceStructure(input))
+            if (ReferenceStructure(input, reader))
                 return;
 
             if (reader.ShouldWriteTypeIdentification(requestTypeIdentification))
@@ -39,6 +39,11 @@ namespace ForSerial.Objects.TypeDefinitions
             }
 
             writer.EndStructure();
+        }
+
+        protected virtual bool ReferenceStructure(object input, ObjectReader reader)
+        {
+            return reader.ReferenceStructure(input);
         }
 
         public override ObjectContainer CreateStructure()
