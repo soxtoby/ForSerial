@@ -52,6 +52,9 @@ namespace ForSerial.Objects
 
         public bool ReferenceStructure(object obj)
         {
+            if (!options.MaintainReferences)
+                return false;
+
             if (stuctureReferences.ContainsKey(obj))
             {
                 writer.WriteReference(stuctureReferences[obj]);

@@ -8,11 +8,18 @@ namespace ForSerial.Objects
         {
             MemberAccessibility = MemberAccessibility.PublicGet;
             MemberType = MemberType.Property;
+            MaintainReferences = true;
         }
 
         public TypeInformationLevel SerializeTypeInformation { get; set; }
         public MemberAccessibility MemberAccessibility { get; set; }
         public MemberType MemberType { get; set; }
+
+        /// <summary>
+        /// True (default): Object references are maintained.
+        /// False: Objects are duplicated.
+        /// </summary>
+        public bool MaintainReferences { get; set; }
     }
 
     public enum TypeInformationLevel

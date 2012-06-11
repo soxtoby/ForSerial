@@ -149,6 +149,16 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
+        public void DoNotMaintainReferences_ReferencedObjectCopied()
+        {
+            Writer writer = Substitute.For<Writer>();
+
+            ObjectReader.Read(new SameReferenceTwice(new object()), writer, new ObjectParsingOptions { MaintainReferences = false });
+
+            writer.DidNotReceive().WriteReference(Arg.Any<int>());
+        }
+
+        [Test]
         public void MaintainJsonDictionaryReferences()
         {
             Writer writer = Substitute.For<Writer>();
