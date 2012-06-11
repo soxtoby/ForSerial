@@ -6,7 +6,7 @@ namespace ForSerial.Objects.TypeDefinitions
 
         public static readonly NullTypeDefinition Instance = new NullTypeDefinition();
 
-        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public override void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
             writer.WriteNull();
         }

@@ -6,6 +6,7 @@ namespace ForSerial.Objects
     {
         public ObjectParsingOptions()
         {
+            SerializeTypeInformation = TypeInformationLevel.Minimal;
             MemberAccessibility = MemberAccessibility.PublicGet;
             MemberType = MemberType.Property;
             MaintainReferences = true;
@@ -24,9 +25,9 @@ namespace ForSerial.Objects
 
     public enum TypeInformationLevel
     {
+        None,
         Minimal,
-        All,
-        None
+        All
     }
 
     [Flags]

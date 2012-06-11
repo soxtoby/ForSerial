@@ -15,7 +15,7 @@ namespace ForSerial.Objects.TypeDefinitions
 
         public Type ItemType { get { return ItemTypeDef.Type; } }
 
-        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public override void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
             IEnumerable inputArray = input as IEnumerable;
             if (inputArray == null) return;
@@ -23,7 +23,7 @@ namespace ForSerial.Objects.TypeDefinitions
             writer.BeginSequence();
 
             foreach (object item in inputArray)
-                ItemTypeDef.ReadObject(item, reader, writer, requestTypeIdentification);
+                ItemTypeDef.ReadObject(item, reader, writer, optionsOverride);
 
             writer.EndSequence();
         }

@@ -53,7 +53,7 @@ namespace ForSerial.Tests.Objects
         {
             field.Attributes.Returns(FieldAttributes.FamANDAssem | FieldAttributes.Family); // This is what FieldInfo.IsPublic checks for
             sut.Build(field)
-                .MatchesPropertyFilter(MemberAccessibility.PublicGetSet, MemberType.Field)
+                .MatchesPropertyFilter(new ObjectParsingOptions { MemberType = MemberType.Field, MemberAccessibility = MemberAccessibility.PublicGet })
                 .ShouldBe(true);
         }
 
@@ -61,7 +61,7 @@ namespace ForSerial.Tests.Objects
         public void BuildFieldDefinition_Private()
         {
             sut.Build(field)
-                .MatchesPropertyFilter(MemberAccessibility.PublicGetSet, MemberType.Field)
+                .MatchesPropertyFilter(new ObjectParsingOptions { MemberType = MemberType.Field, MemberAccessibility = MemberAccessibility.PublicGet })
                 .ShouldBe(false);
         }
 

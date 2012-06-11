@@ -15,6 +15,6 @@ namespace ForSerial.Objects
         bool CanCreateValue(object value);
         ObjectOutput CreateValue(object value);
         void Read(object value, ObjectReader reader, Writer writer);
-        bool MatchesPropertyFilter(MemberAccessibility requiredAccessibility, MemberType requiredType);
+        bool MatchesPropertyFilter(ObjectParsingOptions options);
     }
 }

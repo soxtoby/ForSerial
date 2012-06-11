@@ -13,7 +13,7 @@ namespace ForSerial.Objects.TypeDefinitions
                 : null;
         }
 
-        protected override bool ReferenceStructure(object input, ObjectReader reader)
+        protected override bool ReferenceStructure(object input, ObjectReader reader, PartialOptions optionsOverride)
         {
             return false;   // Can't reference value types
         }
@@ -29,12 +29,12 @@ namespace ForSerial.Objects.TypeDefinitions
                 && value.GetType() == Type;
         }
 
-        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public override void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
             if (writer.CanWrite(input))
                 writer.Write(input);
             else
-                base.Read(input, reader, writer, requestTypeIdentification);
+                base.Read(input, reader, writer, optionsOverride);
         }
 
         public override ObjectOutput CreateValue(object value)

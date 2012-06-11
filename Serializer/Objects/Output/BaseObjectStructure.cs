@@ -51,6 +51,7 @@ namespace ForSerial.Objects
 
         public void Add(ObjectOutput value)
         {
+            if (value == null) throw new ArgumentNullException("value");
             Properties[CurrentProperty] = value;
         }
 

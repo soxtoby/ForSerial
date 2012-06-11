@@ -11,12 +11,12 @@ namespace ForSerial.Objects.TypeDefinitions
             return new DefaultStructureDefinition(type);
         }
 
-        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public override void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
-            if (ReferenceStructure(input, reader))
+            if (ReferenceStructure(input, reader, optionsOverride))
                 return;
 
-            if (reader.ShouldWriteTypeIdentification(requestTypeIdentification))
+            if (ShouldWriteTypeIdentifier(reader.Options, optionsOverride))
                 writer.BeginStructure(CurrentTypeResolver.GetTypeIdentifier(Type), reader.GetType());
             else
                 writer.BeginStructure(Type);
@@ -25,7 +25,7 @@ namespace ForSerial.Objects.TypeDefinitions
             {
                 PropertyDefinition property = AllSerializableProperties[i];
 
-                if (property.MatchesPropertyFilter(reader.MemberAccessibility, reader.MemberType))
+                if (property.MatchesPropertyFilter(reader.Options))
                 {
                     writer.AddProperty(property.Name);
 
@@ -39,11 +39,6 @@ namespace ForSerial.Objects.TypeDefinitions
             }
 
             writer.EndStructure();
-        }
-
-        protected virtual bool ReferenceStructure(object input, ObjectReader reader)
-        {
-            return reader.ReferenceStructure(input);
         }
 
         public override ObjectContainer CreateStructure()

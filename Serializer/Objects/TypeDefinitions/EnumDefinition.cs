@@ -13,7 +13,7 @@ namespace ForSerial.Objects.TypeDefinitions
                 : null;
         }
 
-        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public override void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
             writer.Write((int)input);
         }

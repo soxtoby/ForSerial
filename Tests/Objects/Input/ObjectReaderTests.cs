@@ -159,6 +159,66 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
+        public void DoNotMaintainReferencesOverrideOnProperty()
+        {
+            SameReferenceTwice clone = new SameReferenceTwice(new SameReferenceTwiceNotMaintained(new NullPropertyClass()))
+                .CopyTo<SameReferenceTwice>();
+
+            clone.One.ShouldBeThis(clone.Two);
+            clone.One.ShouldBeA<SameReferenceTwiceNotMaintained>()
+                .And(inner => inner.One.ShouldNotBeThis(inner.Two));
+        }
+
+        private class SameReferenceTwiceNotMaintained
+        {
+            public SameReferenceTwiceNotMaintained() { }
+
+            public SameReferenceTwiceNotMaintained(object obj)
+            {
+                One = Two = obj;
+            }
+
+            [DoNotMaintainReferences]
+            public object One { get; set; }
+
+            [DoNotMaintainReferences]
+            public object Two { get; set; }
+        }
+
+        [Test]
+        public void MaintainReferencesOverrideOnProperty()
+        {
+            SameReferenceTwice clone = new SameReferenceTwice(new SameReferenceTwiceExplicitlyMaintained(new NullPropertyClass()))
+                .CopyTo<SameReferenceTwice>(new ObjectParsingOptions { MaintainReferences = false });
+
+            clone.One.ShouldNotBeThis(clone.Two);
+            clone.One.ShouldBeA<SameReferenceTwiceExplicitlyMaintained>()
+                .And(inner => inner.One.ShouldBeThis(inner.Two));
+        }
+
+        private class SameReferenceTwiceExplicitlyMaintained
+        {
+            public SameReferenceTwiceExplicitlyMaintained() { }
+
+            public SameReferenceTwiceExplicitlyMaintained(object obj)
+            {
+                One = Two = obj;
+            }
+
+            [MaintainReferences]
+            public object One { get; set; }
+
+            [MaintainReferences]
+            public object Two { get; set; }
+        }
+
+        [Test]
+        public void Main()
+        {
+
+        }
+
+        [Test]
         public void MaintainJsonDictionaryReferences()
         {
             Writer writer = Substitute.For<Writer>();

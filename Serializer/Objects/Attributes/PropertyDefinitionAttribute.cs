@@ -66,9 +66,9 @@ namespace ForSerial.Objects
             InnerDefinition.Read(value, reader, writer);
         }
 
-        public virtual bool MatchesPropertyFilter(MemberAccessibility requiredAccessibility, MemberType requiredType)
+        public virtual bool MatchesPropertyFilter(ObjectParsingOptions options)
         {
-            return InnerDefinition.MatchesPropertyFilter(requiredAccessibility, requiredType);
+            return InnerDefinition.MatchesPropertyFilter(options);
         }
     }
 }

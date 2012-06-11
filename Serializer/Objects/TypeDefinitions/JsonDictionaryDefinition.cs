@@ -32,15 +32,15 @@ namespace ForSerial.Objects.TypeDefinitions
                 || typeCodeType == TypeCodeType.Number;
         }
 
-        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public override void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
             IDictionary dictionary = input as IDictionary;
             if (dictionary == null) return;
 
-            if (reader.ReferenceStructure(input))
+            if (ReferenceStructure(input, reader, optionsOverride))
                 return;
 
-            if (reader.ShouldWriteTypeIdentification(requestTypeIdentification))
+            if (ShouldWriteTypeIdentifier(reader.Options, optionsOverride))
                 writer.BeginStructure(CurrentTypeResolver.GetTypeIdentifier(Type), reader.GetType());
             else
                 writer.BeginStructure(Type);
@@ -53,7 +53,7 @@ namespace ForSerial.Objects.TypeDefinitions
                 object value = dictionary[key];
 
                 writer.AddProperty(name);
-                ValueTypeDef.ReadObject(value, reader, writer, false);
+                ValueTypeDef.ReadObject(value, reader, writer, PartialOptions.Default);
             }
 
             writer.EndStructure();

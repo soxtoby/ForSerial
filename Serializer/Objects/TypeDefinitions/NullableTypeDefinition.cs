@@ -21,9 +21,9 @@ namespace ForSerial.Objects.TypeDefinitions
                 : new NullableTypeDefinition(type, underlyingType);
         }
 
-        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public override void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
-            underlyingTypeDef.Read(input, reader, writer, requestTypeIdentification);
+            underlyingTypeDef.Read(input, reader, writer, optionsOverride);
         }
 
         public override ObjectOutput CreateValue(object value)

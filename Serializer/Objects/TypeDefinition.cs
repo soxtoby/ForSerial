@@ -84,20 +84,21 @@ namespace ForSerial.Objects
             return readerType == null ? null : preBuildMethods.FirstOrDefault(pb => pb.ReaderMatches(readerType));
         }
 
-        public void ReadObject(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public void ReadObject(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
             if (input == null)
                 writer.WriteNull();
             else if (isSealed || input.GetType() == Type)
-                Read(input, reader, writer, requestTypeIdentification);
+                Read(input, reader, writer, optionsOverride);
             else
             {
                 TypeDefinition inputTypeDef = TypeCache.GetTypeDefinition(input);
-                inputTypeDef.Read(input, reader, writer, true);
+                optionsOverride.SerializeTypeInformation = TypeInformationLevel.Minimal;
+                inputTypeDef.Read(input, reader, writer, optionsOverride);
             }
         }
 
-        public abstract void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification);
+        public abstract void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride);
 
         public virtual ObjectContainer CreateStructure()
         {

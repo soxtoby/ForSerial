@@ -2,11 +2,11 @@
 
 namespace ForSerial.Objects
 {
-    public class SerializeTypeAttribute : PropertyDefinitionAttribute
+    public class SerializeTypeAttribute : OverrideOptionsAttribute
     {
-        public override void Read(object value, ObjectReader reader, Writer writer)
+        public SerializeTypeAttribute()
+            : base(new PartialOptions { SerializeTypeInformation = TypeInformationLevel.Minimal })
         {
-            TypeDef.ReadObject(value, reader, writer, true);
         }
     }
 

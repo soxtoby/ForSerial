@@ -1,14 +1,14 @@
 ﻿namespace ForSerial.Objects.TypeDefinitions
 {
-    internal class ObjectDefinition : TypeDefinition
+    internal class ObjectDefinition : StructureDefinition
     {
         private ObjectDefinition() : base(typeof(object)) { }
 
         public static readonly ObjectDefinition Instance = new ObjectDefinition();
 
-        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public override void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
-            if (reader.ReferenceStructure(input))
+            if (ReferenceStructure(input, reader, optionsOverride))
                 return;
             writer.Write(input);
         }

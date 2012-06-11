@@ -75,13 +75,13 @@ namespace ForSerial.Objects
 
         public void Read(object value, ObjectReader reader, Writer writer)
         {
-            TypeDef.ReadObject(value, reader, writer, false);
+            TypeDef.ReadObject(value, reader, writer, PartialOptions.Default);
         }
 
-        public bool MatchesPropertyFilter(MemberAccessibility requiredAccessibility, MemberType requiredType)
+        public bool MatchesPropertyFilter(ObjectParsingOptions options)
         {
-            return (requiredAccessibility & memberAccessibility) == requiredAccessibility
-                && (requiredType & memberType) > 0;
+            return (options.MemberAccessibility & memberAccessibility) == options.MemberAccessibility
+                && (options.MemberType & memberType) > 0;
         }
     }
 }

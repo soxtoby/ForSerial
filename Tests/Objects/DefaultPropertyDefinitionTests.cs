@@ -65,7 +65,7 @@ namespace ForSerial.Tests.Objects
         private static void AccessibilityMatches(MemberAccessibility memberAccessibility, MemberAccessibility requiredAccessibility, bool expected)
         {
             DefaultPropertyDefinition sut = CreatePropertyDefinition(memberAccessibility, MemberType.Property);
-            sut.MatchesPropertyFilter(requiredAccessibility, MemberType.Property)
+            sut.MatchesPropertyFilter(new ObjectParsingOptions { MemberAccessibility = requiredAccessibility, MemberType = MemberType.Property })
                 .ShouldBe(expected);
         }
 
@@ -108,7 +108,7 @@ namespace ForSerial.Tests.Objects
         private static void TypeMatches(MemberType memberType, MemberType requiredType, bool expected)
         {
             DefaultPropertyDefinition sut = CreatePropertyDefinition(MemberAccessibility.PublicGetSet, memberType);
-            sut.MatchesPropertyFilter(MemberAccessibility.PublicGetSet, requiredType)
+            sut.MatchesPropertyFilter(new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.PublicGetSet, MemberType = requiredType })
                 .ShouldBe(expected);
         }
 

@@ -124,7 +124,7 @@
             }
         }
 
-        public override bool MatchesPropertyFilter(MemberAccessibility requiredAccessibility, MemberType requiredType)
+        public override bool MatchesPropertyFilter(ObjectParsingOptions options)
         {
             if (!ignoreAll)
             {
@@ -133,7 +133,7 @@
                     if (ignoreScenarios[i] == currentScenario)
                         return false;
 
-                return base.MatchesPropertyFilter(requiredAccessibility, requiredType);
+                return base.MatchesPropertyFilter(options);
             }
             return false;
         }

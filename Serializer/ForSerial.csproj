@@ -81,10 +81,14 @@
     <Compile Include="Json\Output\JsonStringWriter.cs" />
     <Compile Include="Json\Output\PrettyPrintingJsonStringWriter.cs" />
     <Compile Include="Objects\AssemblyQualifiedNameResolver.cs" />
+    <Compile Include="Objects\Attributes\DoNotMaintainReferencesAttribute.cs" />
     <Compile Include="Objects\Attributes\IgnoreAttribute.cs" />
     <Compile Include="Objects\Attributes\JsonNameAttribute.cs" />
+    <Compile Include="Objects\Attributes\MaintainReferencesAttribute.cs" />
+    <Compile Include="Objects\Attributes\OverrideOptionsAttribute.cs" />
     <Compile Include="Objects\ConstructorDefinition.cs" />
     <Compile Include="Objects\Input\ReferenceEqualityComparer.cs" />
+    <Compile Include="Objects\PartialOptions.cs" />
     <Compile Include="Objects\SerializationScenario.cs" />
     <Compile Include="Objects\TypeCache.cs" />
     <Compile Include="Objects\DynamicMethodProvider.cs" />

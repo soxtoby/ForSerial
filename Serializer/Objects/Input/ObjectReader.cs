@@ -7,7 +7,6 @@ namespace ForSerial.Objects
     public class ObjectReader
     {
         private readonly Writer writer;
-        private readonly ObjectParsingOptions options;
         private readonly Dictionary<object, int> stuctureReferences = new Dictionary<object, int>(ReferenceEqualityComparer<object>.Instance);
 
         private ObjectReader(Writer writer, ObjectParsingOptions options)
@@ -15,9 +14,11 @@ namespace ForSerial.Objects
             if (writer == null) throw new ArgumentNullException("writer");
             if (options == null) throw new ArgumentNullException("options");
 
+            Options = options;
             this.writer = writer;
-            this.options = options;
         }
+
+        public ObjectParsingOptions Options { get; set; }
 
         public static void Read(object obj, Writer writer, ObjectParsingOptions options = null)
         {
@@ -35,26 +36,12 @@ namespace ForSerial.Objects
 
         private void Read(object input)
         {
-            Read(input, options.SerializeTypeInformation != TypeInformationLevel.None);
-        }
-
-        private void Read(object input, bool requestTypeIdentification)
-        {
             TypeDefinition typeDef = TypeCache.GetTypeDefinition(input);
-            typeDef.Read(input, this, writer, requestTypeIdentification);
-        }
-
-        public bool ShouldWriteTypeIdentification(bool typeIdentifierRequested)
-        {
-            return options.SerializeTypeInformation == TypeInformationLevel.All
-                || options.SerializeTypeInformation == TypeInformationLevel.Minimal && typeIdentifierRequested;
+            typeDef.Read(input, this, writer, new PartialOptions { SerializeTypeInformation = Options.SerializeTypeInformation });
         }
 
         public bool ReferenceStructure(object obj)
         {
-            if (!options.MaintainReferences)
-                return false;
-
             if (stuctureReferences.ContainsKey(obj))
             {
                 writer.WriteReference(stuctureReferences[obj]);
@@ -66,16 +53,6 @@ namespace ForSerial.Objects
         }
 
         public readonly Stack<PropertyDefinition> PropertyStack = new Stack<PropertyDefinition>();
-
-        public MemberAccessibility MemberAccessibility
-        {
-            get { return options.MemberAccessibility; }
-        }
-
-        public MemberType MemberType
-        {
-            get { return options.MemberType; }
-        }
 
         internal class ObjectReadException : Exception
         {

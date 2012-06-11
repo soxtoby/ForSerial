@@ -90,6 +90,19 @@ namespace ForSerial.Objects.TypeDefinitions
             base.Populate();
             PopulateProperties();
         }
+
+        protected virtual bool ReferenceStructure(object input, ObjectReader reader, PartialOptions optionsOverride)
+        {
+            return optionsOverride.MaintainReferences ?? reader.Options.MaintainReferences
+                && reader.ReferenceStructure(input);
+        }
+
+        protected static bool ShouldWriteTypeIdentifier(ObjectParsingOptions readerOptions, PartialOptions optionsOverride)
+        {
+            return readerOptions.SerializeTypeInformation == TypeInformationLevel.All
+                || readerOptions.SerializeTypeInformation == TypeInformationLevel.Minimal
+                    && optionsOverride.SerializeTypeInformation > TypeInformationLevel.None;
+        }
     }
 
     public class PropertyCollection : KeyedCollection<string, PropertyDefinition>

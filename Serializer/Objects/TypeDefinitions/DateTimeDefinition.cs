@@ -18,7 +18,7 @@ namespace ForSerial.Objects.TypeDefinitions
 
         public static readonly DateTimeDefinition Instance = new DateTimeDefinition();
 
-        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public override void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
             DateTime dt = (DateTime)input;
             writer.Write(FormatAsIso8601(dt.ToUniversalTime()));

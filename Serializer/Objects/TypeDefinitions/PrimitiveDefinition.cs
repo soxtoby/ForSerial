@@ -61,7 +61,7 @@ namespace ForSerial.Objects.TypeDefinitions
                 || type == typeof(string);  // we'll consider string to be a primitive for purposes of JSON serialization
         }
 
-        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public override void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
             typedRead(input, writer);
         }

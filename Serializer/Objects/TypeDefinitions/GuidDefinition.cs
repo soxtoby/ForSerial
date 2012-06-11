@@ -8,7 +8,7 @@ namespace ForSerial.Objects.TypeDefinitions
 
         public static readonly GuidDefinition Instance = new GuidDefinition();
 
-        public override void Read(object input, ObjectReader reader, Writer writer, bool requestTypeIdentification)
+        public override void Read(object input, ObjectReader reader, Writer writer, PartialOptions optionsOverride)
         {
             Guid? guid = input as Guid?;
             if (guid == null)

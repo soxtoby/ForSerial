@@ -89,7 +89,6 @@ namespace ForSerial.Objects
         private bool HavePropertyValue(ParameterDefinition parameter)
         {
             return Properties.ContainsKey(parameter.Name)
-                && Properties[parameter.Name] != null
                 && Properties[parameter.Name].TypeDef != NullTypeDefinition.Instance;
         }
 
