@@ -63,6 +63,7 @@
     <Compile Include="Json\Output\JsonStringWriterTests.cs" />
     <Compile Include="Json\Output\PrettyPrintingJsonStringWriterTests.cs" />
     <Compile Include="Objects\Attributes\AttributeTests.cs" />
+    <Compile Include="Objects\Attributes\SerializeAsObjectAttributeTests.cs" />
     <Compile Include="Objects\Attributes\SerializeAttributeTests.cs" />
     <Compile Include="Objects\Attributes\IgnoreAttributeTests.cs" />
     <Compile Include="Objects\Attributes\JsonNameAttributeTests.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Objects\Output\DynamicMethodProviderClassTests.cs" />
     <Compile Include="Objects\Output\ObjectWriterTests.cs" />
     <Compile Include="Objects\PropertyDefinitionBuilderTests.cs" />
+    <Compile Include="Objects\TypeDefinitionFactoryTests.cs" />
     <Compile Include="Output\SameReferenceTwice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionTesting.cs" />

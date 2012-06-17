@@ -16,19 +16,6 @@ namespace ForSerial.Objects
         private static readonly Dictionary<string, TypeDefinition> KnownTypesByIdentifier = new Dictionary<string, TypeDefinition>();
         private static readonly Dictionary<Type, TypeDefinition> KnownTypesByType = new Dictionary<Type, TypeDefinition>();
 
-        private static readonly List<Func<Type, TypeDefinition>> TypeDefinitionFactories = new List<Func<Type, TypeDefinition>>
-            {
-                DefaultStructureDefinition.CreateDefaultStructureDefinition,
-                EnumerableDefinition.CreateEnumerableDefinition,
-                ArrayDefinition.CreateArrayDefinition,
-                CollectionDefinition.CreateCollectionDefinition,
-                JsonDictionaryDefinition.CreateDictionaryDefinition,
-                ValueTypeDefinition.CreateValueTypeDefinition,
-                PrimitiveDefinition.CreatePrimitiveTypeDefinition,
-                EnumDefinition.CreateEnumDefinition,
-                NullableTypeDefinition.CreateNullableTypeDefinition,
-            };
-
         public static TypeDefinition GetTypeDefinition(string assemblyQualifiedName)
         {
             return KnownTypesByIdentifier.ContainsKey(assemblyQualifiedName)
@@ -50,7 +37,7 @@ namespace ForSerial.Objects
             {
                 // Since this is where we automatically create a TypeDefinition, 
                 // we need to register before we populate, in case the type contains itself.
-                typeDef = CreateTypeDefinition(type);
+                typeDef = TypeDefinitionFactory.CreateTypeDefinition(type);
                 RegisterTypeDefinition(typeDef);
                 typeDef.Populate();
             }
@@ -62,15 +49,6 @@ namespace ForSerial.Objects
         {
             KnownTypesByIdentifier[CurrentTypeResolver.GetTypeIdentifier(typeDef.Type)] = typeDef;
             KnownTypesByType[typeDef.Type] = typeDef;
-        }
-
-        private static TypeDefinition CreateTypeDefinition(Type type)
-        {
-            TypeDefinition typeDef = null;
-            int i = TypeDefinitionFactories.Count;
-            while (typeDef == null && i >= 0)
-                typeDef = TypeDefinitionFactories[--i](type);
-            return typeDef;
         }
     }
 }

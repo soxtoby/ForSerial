@@ -86,13 +86,16 @@
     <Compile Include="Objects\Attributes\JsonNameAttribute.cs" />
     <Compile Include="Objects\Attributes\MaintainReferencesAttribute.cs" />
     <Compile Include="Objects\Attributes\OverrideOptionsAttribute.cs" />
+    <Compile Include="Objects\Attributes\SerializeAsObjectAttribute.cs" />
     <Compile Include="Objects\Attributes\SerializeAttribute.cs" />
+    <Compile Include="Objects\Attributes\TypeDefinitionFilterAttribute.cs" />
     <Compile Include="Objects\ConstructorDefinition.cs" />
     <Compile Include="Objects\Input\ReferenceEqualityComparer.cs" />
     <Compile Include="Objects\PartialOptions.cs" />
     <Compile Include="Objects\SerializationScenario.cs" />
     <Compile Include="Objects\TypeCache.cs" />
     <Compile Include="Objects\DynamicMethodProvider.cs" />
+    <Compile Include="Objects\TypeDefinitionFactory.cs" />
     <Compile Include="Objects\TypeDefinitions\NullableTypeDefinition.cs" />
     <Compile Include="Objects\ObjectInterfaceProvider.cs" />
     <Compile Include="Objects\TypeDefinitions\NullTypeDefinition.cs" />
