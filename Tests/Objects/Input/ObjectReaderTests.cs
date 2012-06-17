@@ -213,12 +213,6 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void Main()
-        {
-
-        }
-
-        [Test]
         public void MaintainJsonDictionaryReferences()
         {
             Writer writer = Substitute.For<Writer>();

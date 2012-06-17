@@ -63,6 +63,7 @@
     <Compile Include="Json\Output\JsonStringWriterTests.cs" />
     <Compile Include="Json\Output\PrettyPrintingJsonStringWriterTests.cs" />
     <Compile Include="Objects\Attributes\AttributeTests.cs" />
+    <Compile Include="Objects\Attributes\SerializeAttributeTests.cs" />
     <Compile Include="Objects\Attributes\IgnoreAttributeTests.cs" />
     <Compile Include="Objects\Attributes\JsonNameAttributeTests.cs" />
     <Compile Include="Objects\DefaultPropertyDefinitionTests.cs" />

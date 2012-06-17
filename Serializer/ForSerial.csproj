@@ -86,6 +86,7 @@
     <Compile Include="Objects\Attributes\JsonNameAttribute.cs" />
     <Compile Include="Objects\Attributes\MaintainReferencesAttribute.cs" />
     <Compile Include="Objects\Attributes\OverrideOptionsAttribute.cs" />
+    <Compile Include="Objects\Attributes\SerializeAttribute.cs" />
     <Compile Include="Objects\ConstructorDefinition.cs" />
     <Compile Include="Objects\Input\ReferenceEqualityComparer.cs" />
     <Compile Include="Objects\PartialOptions.cs" />
