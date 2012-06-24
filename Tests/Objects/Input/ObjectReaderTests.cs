@@ -59,8 +59,34 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void EnumProperty_EnumsAsStrings()
         {
-            ConvertToJson(new { foo = TestEnum.One }, new ObjectParsingOptions { EnumSerialization = EnumSerialization.AsString, SerializeTypeInformation = TypeInformationLevel.None })
+            ConvertToJson(new { foo = TestEnum.One }, SerializeEnumsAsStrings_NoTypeInformation)
                 .ShouldBe(@"{""foo"":""One""}");
+        }
+
+        [Test]
+        public void EnumProperty_SerializeAsStringOverride()
+        {
+            ConvertToJson(new SerializedAsStringEnumPropertyClass { Property = TestEnum.One })
+                .ShouldBe(@"{""Property"":""One""}");
+        }
+
+        private class SerializedAsStringEnumPropertyClass
+        {
+            [SerializeAsString]
+            public TestEnum Property { get; set; }
+        }
+
+        [Test]
+        public void EnumProperty_SerializeAsIntegerOverride()
+        {
+            ConvertToJson(new SerializedAsIntegerEnumPropertyClass { Property = TestEnum.One }, SerializeEnumsAsStrings_NoTypeInformation)
+                .ShouldBe(@"{""Property"":1}");
+        }
+
+        private class SerializedAsIntegerEnumPropertyClass
+        {
+            [SerializeAsInteger]
+            public TestEnum Property { get; set; }
         }
 
         private enum TestEnum
@@ -160,7 +186,7 @@ namespace ForSerial.Tests.Objects
         {
             Writer writer = Substitute.For<Writer>();
 
-            ObjectReader.Read(new SameReferenceTwice(new object()), writer, new ObjectParsingOptions { MaintainReferences = false });
+            ObjectReader.Read(new SameReferenceTwice(new object()), writer, DoNotMaintainReferences);
 
             writer.DidNotReceive().WriteReference(Arg.Any<int>());
         }
@@ -196,7 +222,7 @@ namespace ForSerial.Tests.Objects
         public void MaintainReferencesOverrideOnProperty()
         {
             SameReferenceTwice clone = new SameReferenceTwice(new SameReferenceTwiceExplicitlyMaintained(new NullPropertyClass()))
-                .CopyTo<SameReferenceTwice>(new ObjectParsingOptions { MaintainReferences = false });
+                .CopyTo<SameReferenceTwice>(DoNotMaintainReferences);
 
             clone.One.ShouldNotBeThis(clone.Two);
             clone.One.ShouldBeA<SameReferenceTwiceExplicitlyMaintained>()
@@ -320,7 +346,7 @@ namespace ForSerial.Tests.Objects
         {
             using (CurrentTypeResolver.Override(new CustomTypeResolver()))
             {
-                ConvertToJson(new { foo = 5 }, new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.All })
+                ConvertToJson(new { foo = 5 }, AllTypeInformation)
                     .ShouldBe(@"{""_type"":""foobar"",""foo"":5}");
             }
         }
@@ -455,7 +481,7 @@ namespace ForSerial.Tests.Objects
         {
             using (CurrentTypeResolver.Override(new SimpleTypeNameTypeResolver()))
             {
-                return ConvertToJson(obj, new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.Minimal });
+                return ConvertToJson(obj, MinimalTypeInformation);
             }
         }
 
@@ -558,7 +584,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void PublicGetPropertyFilter_GetOnlyPropertyNotRead()
         {
-            ConvertToJson(new GetOnlyPropertyClass(), new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
+            ConvertToJson(new GetOnlyPropertyClass(), PublicGetSet_NoTypeInformation)
                 .ShouldBe("{}");
         }
 
@@ -573,7 +599,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void PublicGetPropertyFilter_PrivateGetPropertyNotRead()
         {
-            ConvertToJson(new PrivateGetPropertyClass(1), new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
+            ConvertToJson(new PrivateGetPropertyClass(1), PublicGetSet_NoTypeInformation)
                 .ShouldBe("{}");
         }
 
@@ -590,21 +616,21 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void PublicGetPropertyFilter_PublicGetSetPropertyIsRead()
         {
-            ConvertToJson(new ConcreteClass { Value = 1 }, new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None })
+            ConvertToJson(new ConcreteClass { Value = 1 }, PublicGetSet_NoTypeInformation)
                 .ShouldBe(@"{""Value"":1}");
         }
 
         [Test]
         public void PublicGetPropertyFilter_PublicFieldNotRead()
         {
-            ConvertToJson(new IntegerFieldClass { Field = 1 }, new ObjectParsingOptions { MemberType = MemberType.Property, SerializeTypeInformation = TypeInformationLevel.None })
+            ConvertToJson(new IntegerFieldClass { Field = 1 }, Properties_NoTypeInformation)
                 .ShouldBe("{}");
         }
 
         [Test]
         public void PublicGetFieldFilter_PublicFieldIsRead()
         {
-            ConvertToJson(new IntegerFieldClass { Field = 1 }, new ObjectParsingOptions { MemberType = MemberType.Field, SerializeTypeInformation = TypeInformationLevel.None })
+            ConvertToJson(new IntegerFieldClass { Field = 1 }, Fields_NoTypeInformation)
                 .ShouldBe(@"{""Field"":1}");
         }
 
@@ -630,7 +656,7 @@ namespace ForSerial.Tests.Objects
 
         private static string ConvertToJson(object obj)
         {
-            return ConvertToJson(obj, new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.None });
+            return ConvertToJson(obj, NoTypeInformation);
         }
 
         private static string ConvertToJson(object obj, ObjectParsingOptions options)
@@ -640,5 +666,14 @@ namespace ForSerial.Tests.Objects
             ObjectReader.Read(obj, jsonWriter, options);
             return stringWriter.ToString();
         }
+
+        private static readonly ObjectParsingOptions NoTypeInformation = new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.None };
+        private static readonly ObjectParsingOptions MinimalTypeInformation = new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.Minimal };
+        private static readonly ObjectParsingOptions AllTypeInformation = new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.All };
+        private static readonly ObjectParsingOptions SerializeEnumsAsStrings_NoTypeInformation = new ObjectParsingOptions { EnumSerialization = EnumSerialization.AsString, SerializeTypeInformation = TypeInformationLevel.None };
+        private static readonly ObjectParsingOptions DoNotMaintainReferences = new ObjectParsingOptions { MaintainReferences = false };
+        private static readonly ObjectParsingOptions PublicGetSet_NoTypeInformation = new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None };
+        private static readonly ObjectParsingOptions Properties_NoTypeInformation = new ObjectParsingOptions { MemberType = MemberType.Property, SerializeTypeInformation = TypeInformationLevel.None };
+        private static readonly ObjectParsingOptions Fields_NoTypeInformation = new ObjectParsingOptions { MemberType = MemberType.Field, SerializeTypeInformation = TypeInformationLevel.None };
     }
 }
