@@ -12,15 +12,17 @@ namespace ForSerial.Objects
             MaintainReferences = true;
         }
 
-        public TypeInformationLevel SerializeTypeInformation { get; set; }
-        public MemberAccessibility MemberAccessibility { get; set; }
-        public MemberType MemberType { get; set; }
+        public TypeInformationLevel SerializeTypeInformation;
+        public MemberAccessibility MemberAccessibility;
+        public MemberType MemberType;
 
         /// <summary>
         /// True (default): Object references are maintained.
         /// False: Objects are duplicated.
         /// </summary>
-        public bool MaintainReferences { get; set; }
+        public bool MaintainReferences;
+
+        public EnumSerialization EnumSerialization;
     }
 
     public enum TypeInformationLevel
@@ -44,5 +46,11 @@ namespace ForSerial.Objects
         Property = 1,
         Field = 2,
         Either = 3,
+    }
+
+    public enum EnumSerialization
+    {
+        AsInteger,
+        AsString
     }
 }

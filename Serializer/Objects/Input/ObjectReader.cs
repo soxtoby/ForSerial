@@ -18,7 +18,7 @@ namespace ForSerial.Objects
             this.writer = writer;
         }
 
-        public ObjectParsingOptions Options { get; set; }
+        public ObjectParsingOptions Options { get; private set; }
 
         public static void Read(object obj, Writer writer, ObjectParsingOptions options = null)
         {

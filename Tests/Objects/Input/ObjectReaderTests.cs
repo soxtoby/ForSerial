@@ -56,6 +56,13 @@ namespace ForSerial.Tests.Objects
                 .ShouldBe(@"{""foo"":1}");
         }
 
+        [Test]
+        public void EnumProperty_EnumsAsStrings()
+        {
+            ConvertToJson(new { foo = TestEnum.One }, new ObjectParsingOptions { EnumSerialization = EnumSerialization.AsString, SerializeTypeInformation = TypeInformationLevel.None })
+                .ShouldBe(@"{""foo"":""One""}");
+        }
+
         private enum TestEnum
         {
             Zero,

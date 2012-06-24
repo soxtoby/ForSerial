@@ -4,9 +4,10 @@ namespace ForSerial.Objects
     {
         public static readonly PartialOptions Default = default(PartialOptions);
 
-        public TypeInformationLevel? SerializeTypeInformation { get; set; }
-        public MemberAccessibility? MemberAccessibility { get; set; }
-        public MemberType? MemberType { get; set; }
-        public bool? MaintainReferences { get; set; }
+        public TypeInformationLevel? SerializeTypeInformation;
+        public MemberAccessibility? MemberAccessibility;
+        public MemberType? MemberType;
+        public bool? MaintainReferences;
+        public EnumSerialization? EnumSerialization;
     }
 }

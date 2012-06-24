@@ -40,10 +40,32 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
-        public void Enum()
+        public void EnumFromNumber()
         {
             CopyTo<TestEnum>(1d)   // Numbers coming from JsonReader will be doubles
                 .ShouldBe(TestEnum.One);
+        }
+
+        [Test]
+        public void EnumFromString()
+        {
+            CopyTo<TestEnum>("One")
+                .ShouldBe(TestEnum.One);
+        }
+
+        [Test]
+        public void FlagsEnumFromString()
+        {
+            CopyTo<FlagsEnum>("One, Two")
+                .ShouldBe(FlagsEnum.Three);
+        }
+
+        [Flags]
+        private enum FlagsEnum
+        {
+            One = 1,
+            Two = 2,
+            Three = 3
         }
 
         [Test]
