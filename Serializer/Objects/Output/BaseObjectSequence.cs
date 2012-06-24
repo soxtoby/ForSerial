@@ -71,8 +71,14 @@ namespace ForSerial.Objects
         protected void PopulateCollection(CollectionDefinition collectionDefinition, object collection)
         {
             if (collection != null)
+            {
+                // Property type might not have an Add method, but the concrete collection will
+                if (!collectionDefinition.CanAdd)
+                    collectionDefinition = (CollectionDefinition)TypeCache.GetTypeDefinition(collection);
+
                 foreach (ObjectOutput value in Items)
                     collectionDefinition.AddToCollection(collection, value.GetTypedValue());
+            }
         }
     }
 }

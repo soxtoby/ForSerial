@@ -9,6 +9,9 @@ namespace ForSerial.Objects
     {
         public GetMethod GetPropertyGetter(PropertyInfo property)
         {
+            if (property.DeclaringType.IsInterface)
+                return null;
+
             GetMethod compiledGet = null;
             return source => (compiledGet ?? (compiledGet = CompilePropertyGetter(property)))(source);
         }
@@ -28,6 +31,9 @@ namespace ForSerial.Objects
 
         public SetMethod GetPropertySetter(PropertyInfo property)
         {
+            if (property.DeclaringType.IsInterface)
+                return null;
+
             SetMethod compiledSet = null;
             return (target, value) => (compiledSet ?? (compiledSet = CompilePropertySetter(property)))(target, value);
         }
@@ -109,6 +115,9 @@ namespace ForSerial.Objects
 
         public ActionMethod GetAction(MethodInfo method)
         {
+            if (method.DeclaringType.IsInterface)
+                return null;
+
             ActionMethod compiledActionCall = null;
             return (target, args) => (compiledActionCall ?? (compiledActionCall = CompileActionCall(method)))(target, args);
         }

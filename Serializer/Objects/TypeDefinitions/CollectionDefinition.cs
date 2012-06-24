@@ -41,6 +41,11 @@ namespace ForSerial.Objects.TypeDefinitions
             return null;
         }
 
+        public bool CanAdd
+        {
+            get { return adder != null; }
+        }
+
         public override ObjectContainer CreateSequence()
         {
             return new CollectionSequence(this);

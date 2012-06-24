@@ -197,6 +197,28 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
+        public void PopulateICollectionProperty()
+        {
+            GettableICollectionPropertyClass obj = new GettableICollectionPropertyClass
+                {
+                    Collection =
+                        {
+                            new IntPropertyClass { Integer = 1 },
+                            new IntPropertyClass { Integer = 2 }
+                        }
+                };
+
+            Clone(obj)
+                .Collection.Select(i => i.Integer).ShouldMatch(new[] { 1, 2 });
+        }
+
+        private class GettableICollectionPropertyClass
+        {
+            private readonly List<IntPropertyClass> list = new List<IntPropertyClass>();
+            public ICollection<IntPropertyClass> Collection { get { return list; } }
+        }
+
+        [Test]
         public void NestedListProperty()
         {
             NestedListPropertyClass obj = new NestedListPropertyClass

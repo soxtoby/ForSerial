@@ -69,6 +69,7 @@
     <Compile Include="Objects\Attributes\JsonNameAttributeTests.cs" />
     <Compile Include="Objects\DefaultPropertyDefinitionTests.cs" />
     <Compile Include="Objects\Input\ObjectReaderTests.cs" />
+    <Compile Include="Objects\Output\DynamicMethodProviderInterfaceTests.cs" />
     <Compile Include="Objects\Output\DynamicMethodProviderStructTests.cs" />
     <Compile Include="Objects\Output\DynamicMethodProviderClassTests.cs" />
     <Compile Include="Objects\Output\ObjectWriterTests.cs" />
