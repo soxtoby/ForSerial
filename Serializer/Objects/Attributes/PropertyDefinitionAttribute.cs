@@ -2,7 +2,7 @@
 
 namespace ForSerial.Objects
 {
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public abstract class PropertyDefinitionAttribute : Attribute, PropertyDefinition
     {
         protected internal PropertyDefinition InnerDefinition;
