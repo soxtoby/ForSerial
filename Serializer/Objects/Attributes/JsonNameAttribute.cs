@@ -12,14 +12,14 @@ namespace ForSerial.Objects
             this.name = name;
         }
 
-        public override string Name
+        public override string SerializedName
         {
             get
             {
                 return SerializationScenario.Current == SerializationScenario.SerializeToJson
                     || SerializationScenario.Current == SerializationScenario.DeserializeJson
                         ? name
-                        : base.Name;
+                        : base.SerializedName;
             }
         }
     }

@@ -474,7 +474,7 @@ namespace ForSerial.Tests.Objects
                 this.name = name;
             }
 
-            public override string Name { get { return name; } }
+            public override string SerializedName { get { return name; } }
         }
 
         private static string ConvertToSimpleTypeJson(object obj)
@@ -634,6 +634,68 @@ namespace ForSerial.Tests.Objects
                 .ShouldBe(@"{""Field"":1}");
         }
 
+        [Test]
+        public void PrivatePropertyFilter_PrivatePropertyIsRead()
+        {
+            ConvertToJson(new PrivatePropertyClass(1), PrivateProperties_NoTypeInformation)
+                .ShouldBe(@"{""Property"":1}");
+        }
+
+        private class PrivatePropertyClass
+        {
+            public PrivatePropertyClass(int property)
+            {
+                Property = property;
+            }
+
+            private int Property { get; set; }
+        }
+
+        [Test]
+        public void PrivateFieldFilter_PrivateFieldIsRead()
+        {
+            ConvertToJson(new PrivateFieldClass(1), PrivateFields_NoTypeInformation)
+                .ShouldBe(@"{""field"":1}");
+        }
+
+        private class PrivateFieldClass
+        {
+            private int field;
+
+            public PrivateFieldClass(int field)
+            {
+                this.field = field;
+            }
+        }
+
+        [Test]
+        public void PrivateFieldFilter_PublicAutoPropertyIsRead()
+        {
+            ConvertToJson(new ConcreteClass { Value = 1 }, PrivateFields_NoTypeInformation)
+                .ShouldBe(@"{""Value"":1}");
+        }
+
+        [Test]
+        public void SubClassPropertyPreferredOverSuperClass()
+        {
+            ConvertToJson(new SubClass { Property = 1 })
+                .ShouldBe(@"{""Property"":2}");
+        }
+
+        private class SuperClass
+        {
+            public virtual int Property { get; set; }
+        }
+
+        private class SubClass : SuperClass
+        {
+            public override int Property
+            {
+                get { return base.Property * 2; }
+                set { base.Property = value; }
+            }
+        }
+
         private class IntegerFieldClass
         {
             public int Field;
@@ -675,5 +737,7 @@ namespace ForSerial.Tests.Objects
         private static readonly ObjectParsingOptions PublicGetSet_NoTypeInformation = new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.PublicGetSet, SerializeTypeInformation = TypeInformationLevel.None };
         private static readonly ObjectParsingOptions Properties_NoTypeInformation = new ObjectParsingOptions { MemberType = MemberType.Property, SerializeTypeInformation = TypeInformationLevel.None };
         private static readonly ObjectParsingOptions Fields_NoTypeInformation = new ObjectParsingOptions { MemberType = MemberType.Field, SerializeTypeInformation = TypeInformationLevel.None };
+        private static readonly ObjectParsingOptions PrivateProperties_NoTypeInformation = new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.Private, SerializeTypeInformation = TypeInformationLevel.None };
+        private static readonly ObjectParsingOptions PrivateFields_NoTypeInformation = new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.Private, MemberType = MemberType.Field, SerializeTypeInformation = TypeInformationLevel.None };
     }
 }

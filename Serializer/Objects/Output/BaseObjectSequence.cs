@@ -24,13 +24,12 @@ namespace ForSerial.Objects
         // TODO throw exception - can't have properties in a sequence
         public void SetCurrentProperty(string name) { }
 
-        // TODO throw exception - can't change type of sequence (in JSON at least)
-
         public ObjectContainer CreateStructure()
         {
             return collectionDef.CreateStructureForItem();
         }
 
+        // TODO throw exception - can't change type of sequence (in JSON at least)
         public ObjectContainer CreateStructure(string typeIdentifier)
         {
             return collectionDef.CreateStructureForItem(typeIdentifier);

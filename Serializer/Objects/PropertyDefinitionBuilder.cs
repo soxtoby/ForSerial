@@ -16,7 +16,6 @@ namespace ForSerial.Objects
             this.interfaceProvider = interfaceProvider;
         }
 
-
         public PropertyDefinition Build(PropertyInfo property)
         {
             PropertyDefinition propDef = new DefaultPropertyDefinition(
@@ -87,6 +86,13 @@ namespace ForSerial.Objects
                 GetDeclaringTypeName(field),
                 GetAccessibility(field),
                 MemberType.Field);
+
+            IEnumerable<PropertyDefinitionAttribute> propertyDefinitionAttributes = field.GetCustomAttributes(false).OfType<PropertyDefinitionAttribute>();
+            foreach (PropertyDefinitionAttribute attribute in propertyDefinitionAttributes)
+            {
+                attribute.InnerDefinition = propDef;
+                propDef = attribute;
+            }
 
             return propDef;
         }

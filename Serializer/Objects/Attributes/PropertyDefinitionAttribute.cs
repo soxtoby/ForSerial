@@ -7,9 +7,11 @@ namespace ForSerial.Objects
     {
         protected internal PropertyDefinition InnerDefinition;
 
-        public virtual string Name
+        public string Name { get { return InnerDefinition.Name; } }
+
+        public virtual string SerializedName
         {
-            get { return InnerDefinition.Name; }
+            get { return InnerDefinition.SerializedName; }
         }
 
         public TypeDefinition TypeDef { get { return InnerDefinition.TypeDef; } }

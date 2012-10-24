@@ -50,9 +50,7 @@ namespace ForSerial.Objects
             foreach (KeyValuePair<string, ObjectOutput> property in Properties)
             {
                 CurrentProperty = property.Key;
-                PropertyDefinition propDef;
-                if (StructureDef.Properties.TryGetValue(property.Key, out propDef))
-                    property.Value.AssignToProperty(typedValue, propDef);
+                StructureDef.AssignValueToProperty(typedValue, property.Key, property.Value);
             }
 
             return typedValue;

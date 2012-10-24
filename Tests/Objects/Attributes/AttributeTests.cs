@@ -12,8 +12,8 @@ namespace ForSerial.Tests.Objects
         protected void TestNameOverride(string scenario, string baseName, string expectedName)
         {
             TestAttribute(scenario,
-                innerDefinition => innerDefinition.Name.Returns(baseName),
-                sut => sut.Name.ShouldBe(expectedName));
+                innerDefinition => innerDefinition.SerializedName.Returns(baseName),
+                sut => sut.SerializedName.ShouldBe(expectedName));
         }
 
         protected void TestCanGetOverride(string scenario, bool baseCanGet, bool expectedCanGet)

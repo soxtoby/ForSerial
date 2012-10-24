@@ -27,7 +27,7 @@ namespace ForSerial.Objects.TypeDefinitions
 
                 if (property.MatchesPropertyFilter(reader.Options))
                 {
-                    writer.AddProperty(property.Name);
+                    writer.AddProperty(property.SerializedName);
 
                     reader.PropertyStack.Push(property);
 

@@ -839,12 +839,23 @@ namespace ForSerial.Tests.Objects
             }
         }
 
+        [Test]
+        public void OverridenPropertyName()
+        {
+            DeserializeJson<OverridePropertyNameClass>(@"{""property"":1}")
+                .Property.ShouldBe(1);
+        }
+
+        private class OverridePropertyNameClass
+        {
+            [JsonName("property")]
+            public int Property { get; set; }
+        }
+
 
         private static T DeserializeJson<T>(string json)
         {
-            ObjectWriter<T> writer = new ObjectWriter<T>();
-            JsonReader.Read(json, writer);
-            return writer.Result;
+            return json.ParseJson<T>();
         }
 
         private static T Clone<T>(T obj)

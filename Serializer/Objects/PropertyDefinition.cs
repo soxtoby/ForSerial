@@ -7,6 +7,7 @@ namespace ForSerial.Objects
         bool CanSet { get; }
         TypeDefinition TypeDef { get; }
         string FullName { get; }
+        string SerializedName { get; }
         object GetFrom(object source);
         void SetOn(object target, object value);
         ObjectContainer CreateStructure();

@@ -23,9 +23,24 @@ namespace ForSerial.Objects
             this.memberAccessibility = memberAccessibility;
             this.memberType = memberType;
             TypeDef = typeDef;
+
+            SerializedName = IsAutoPropertyBackingField(name)
+                ? AutoPropertyName(name)
+                : name;
+        }
+
+        private static bool IsAutoPropertyBackingField(string name)
+        {
+            return name.StartsWith("<") && name.Contains("BackingField");
+        }
+
+        private static string AutoPropertyName(string name)
+        {
+            return name.Substring(1, name.IndexOf('>') - 1);
         }
 
         public string Name { get; private set; }
+        public string SerializedName { get; private set; }
         public TypeDefinition TypeDef { get; private set; }
 
         public string FullName { get; private set; }
