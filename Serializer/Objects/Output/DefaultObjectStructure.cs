@@ -68,7 +68,9 @@ namespace ForSerial.Objects
         private object GetParameterPropertyValue(ParameterDefinition parameter)
         {
             TypeDefinition typeDef = TypeCache.GetTypeDefinition(parameter.Type);
-            return typeDef.ConvertToCorrectType(Properties.Get(parameter.Name).GetTypedValue());
+            ObjectOutput objectOutput = Properties.Get(parameter.Name) ?? Properties.Get("_" + parameter.Name);
+            return objectOutput == null ? null
+                : typeDef.ConvertToCorrectType(objectOutput.GetTypedValue());
         }
 
         private bool ConstructorParametersMatchProperties(ConstructorDefinition constructor)
