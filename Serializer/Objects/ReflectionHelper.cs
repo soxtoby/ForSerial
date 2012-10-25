@@ -80,6 +80,30 @@ namespace ForSerial.Objects
                 || valueType == typeof(double)
                 || valueType == typeof(decimal);
         }
+
+        internal static bool IsAutoPropertyBackingField(this string name)
+        {
+            return name.StartsWith("<") && name.Contains("BackingField");
+        }
+
+        internal static MemberInfo GetSourceMember(this FieldInfo field)
+        {
+            return IsAutoPropertyBackingField(field.Name)
+                ? (MemberInfo)GetAutoPropertyInfo(field)
+                : field;
+        }
+
+        private static PropertyInfo GetAutoPropertyInfo(FieldInfo field)
+        {
+            return field.DeclaringType.GetProperty(AutoPropertyName(field.Name), InstanceMembers);
+        }
+
+        internal static string AutoPropertyName(this string name)
+        {
+            return name.Substring(1, name.IndexOf('>') - 1);
+        }
+
+        internal const BindingFlags InstanceMembers = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
     }
 
     internal enum TypeCodeType

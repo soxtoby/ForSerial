@@ -87,7 +87,8 @@ namespace ForSerial.Objects
                 GetAccessibility(field),
                 MemberType.Field);
 
-            IEnumerable<PropertyDefinitionAttribute> propertyDefinitionAttributes = field.GetCustomAttributes(false).OfType<PropertyDefinitionAttribute>();
+            IEnumerable<PropertyDefinitionAttribute> propertyDefinitionAttributes = field.GetSourceMember().GetCustomAttributes(false).OfType<PropertyDefinitionAttribute>();
+
             foreach (PropertyDefinitionAttribute attribute in propertyDefinitionAttributes)
             {
                 attribute.InnerDefinition = propDef;

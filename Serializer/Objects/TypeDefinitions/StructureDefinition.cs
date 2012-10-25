@@ -8,8 +8,6 @@ namespace ForSerial.Objects.TypeDefinitions
 {
     public abstract class StructureDefinition : TypeDefinition
     {
-        private const BindingFlags InstanceMembers = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-
         protected PropertyDefinition[] AllSerializableProperties;
 
         private readonly PropertyCollection originalProperties = new PropertyCollection();
@@ -26,10 +24,10 @@ namespace ForSerial.Objects.TypeDefinitions
                 return;
 
             PropertyDefinitionBuilder propBuilder = new PropertyDefinitionBuilder(ObjectInterfaceProvider);
-            IEnumerable<PropertyDefinition> properties = Type.GetProperties(InstanceMembers)
+            IEnumerable<PropertyDefinition> properties = Type.GetProperties(ReflectionHelper.InstanceMembers)
                 .Where(NotMarkedWithIgnoreAttribute)
                 .Select(propBuilder.Build)
-                .Concat(Type.GetFields(InstanceMembers)
+                .Concat(Type.GetFields(ReflectionHelper.InstanceMembers)
                     .Select(propBuilder.Build));
 
             foreach (PropertyDefinition property in properties)

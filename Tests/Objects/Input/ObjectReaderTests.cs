@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using EasyAssertions;
-using ForSerial.Json;
 using ForSerial.Objects;
 using ForSerial.Objects.TypeDefinitions;
 using NSubstitute;
@@ -676,6 +674,19 @@ namespace ForSerial.Tests.Objects
         }
 
         [Test]
+        public void FieldForAutoProperty_PropertyAttributesAreUsed()
+        {
+            ConvertToJson(new RenamedAutoPropertyClass { Property = 1 }, PrivateFields_NoTypeInformation)
+                .ShouldBe(@"{""foo"":1}");
+        }
+
+        public class RenamedAutoPropertyClass
+        {
+            [JsonName("foo")]
+            public int Property { get; set; }
+        }
+
+        [Test]
         public void SubClassPropertyPreferredOverSuperClass()
         {
             ConvertToJson(new SubClass { Property = 1 })
@@ -723,10 +734,7 @@ namespace ForSerial.Tests.Objects
 
         private static string ConvertToJson(object obj, ObjectParsingOptions options)
         {
-            StringWriter stringWriter = new StringWriter();
-            JsonStringWriter jsonWriter = new JsonStringWriter(stringWriter);
-            ObjectReader.Read(obj, jsonWriter, options);
-            return stringWriter.ToString();
+            return obj.ToJson(options);
         }
 
         private static readonly ObjectParsingOptions NoTypeInformation = new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.None };
