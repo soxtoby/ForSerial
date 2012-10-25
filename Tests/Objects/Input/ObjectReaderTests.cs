@@ -57,7 +57,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void EnumProperty_EnumsAsStrings()
         {
-            ConvertToJson(new { foo = TestEnum.One }, SerializeEnumsAsStrings_NoTypeInformation)
+            new { foo = TestEnum.One }.ToJson(SerializeEnumsAsStrings_NoTypeInformation)
                 .ShouldBe(@"{""foo"":""One""}");
         }
 
@@ -77,7 +77,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void EnumProperty_SerializeAsIntegerOverride()
         {
-            ConvertToJson(new SerializedAsIntegerEnumPropertyClass { Property = TestEnum.One }, SerializeEnumsAsStrings_NoTypeInformation)
+            new SerializedAsIntegerEnumPropertyClass { Property = TestEnum.One }.ToJson(SerializeEnumsAsStrings_NoTypeInformation)
                 .ShouldBe(@"{""Property"":1}");
         }
 
@@ -195,9 +195,9 @@ namespace ForSerial.Tests.Objects
             SameReferenceTwice clone = new SameReferenceTwice(new SameReferenceTwiceNotMaintained(new NullPropertyClass()))
                 .CopyTo<SameReferenceTwice>();
 
-            clone.One.ShouldBeThis(clone.Two);
+            clone.One.ShouldReferTo(clone.Two);
             clone.One.ShouldBeA<SameReferenceTwiceNotMaintained>()
-                .And(inner => inner.One.ShouldNotBeThis(inner.Two));
+                .And(inner => inner.One.ShouldNotReferTo(inner.Two));
         }
 
         private class SameReferenceTwiceNotMaintained
@@ -222,9 +222,9 @@ namespace ForSerial.Tests.Objects
             SameReferenceTwice clone = new SameReferenceTwice(new SameReferenceTwiceExplicitlyMaintained(new NullPropertyClass()))
                 .CopyTo<SameReferenceTwice>(DoNotMaintainReferences);
 
-            clone.One.ShouldNotBeThis(clone.Two);
+            clone.One.ShouldNotReferTo(clone.Two);
             clone.One.ShouldBeA<SameReferenceTwiceExplicitlyMaintained>()
-                .And(inner => inner.One.ShouldBeThis(inner.Two));
+                .And(inner => inner.One.ShouldReferTo(inner.Two));
         }
 
         private class SameReferenceTwiceExplicitlyMaintained
@@ -344,7 +344,7 @@ namespace ForSerial.Tests.Objects
         {
             using (CurrentTypeResolver.Override(new CustomTypeResolver()))
             {
-                ConvertToJson(new { foo = 5 }, AllTypeInformation)
+                new { foo = 5 }.ToJson(AllTypeInformation)
                     .ShouldBe(@"{""_type"":""foobar"",""foo"":5}");
             }
         }
@@ -479,7 +479,7 @@ namespace ForSerial.Tests.Objects
         {
             using (CurrentTypeResolver.Override(new SimpleTypeNameTypeResolver()))
             {
-                return ConvertToJson(obj, MinimalTypeInformation);
+                return obj.ToJson(MinimalTypeInformation);
             }
         }
 
@@ -582,7 +582,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void PublicGetPropertyFilter_GetOnlyPropertyNotRead()
         {
-            ConvertToJson(new GetOnlyPropertyClass(), PublicGetSet_NoTypeInformation)
+            new GetOnlyPropertyClass().ToJson(PublicGetSet_NoTypeInformation)
                 .ShouldBe("{}");
         }
 
@@ -597,7 +597,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void PublicGetPropertyFilter_PrivateGetPropertyNotRead()
         {
-            ConvertToJson(new PrivateGetPropertyClass(1), PublicGetSet_NoTypeInformation)
+            new PrivateGetPropertyClass(1).ToJson(PublicGetSet_NoTypeInformation)
                 .ShouldBe("{}");
         }
 
@@ -614,28 +614,28 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void PublicGetPropertyFilter_PublicGetSetPropertyIsRead()
         {
-            ConvertToJson(new ConcreteClass { Value = 1 }, PublicGetSet_NoTypeInformation)
+            new ConcreteClass { Value = 1 }.ToJson(PublicGetSet_NoTypeInformation)
                 .ShouldBe(@"{""Value"":1}");
         }
 
         [Test]
         public void PublicGetPropertyFilter_PublicFieldNotRead()
         {
-            ConvertToJson(new IntegerFieldClass { Field = 1 }, Properties_NoTypeInformation)
+            new IntegerFieldClass { Field = 1 }.ToJson(Properties_NoTypeInformation)
                 .ShouldBe("{}");
         }
 
         [Test]
         public void PublicGetFieldFilter_PublicFieldIsRead()
         {
-            ConvertToJson(new IntegerFieldClass { Field = 1 }, Fields_NoTypeInformation)
+            new IntegerFieldClass { Field = 1 }.ToJson(Fields_NoTypeInformation)
                 .ShouldBe(@"{""Field"":1}");
         }
 
         [Test]
         public void PrivatePropertyFilter_PrivatePropertyIsRead()
         {
-            ConvertToJson(new PrivatePropertyClass(1), PrivateProperties_NoTypeInformation)
+            new PrivatePropertyClass(1).ToJson(PrivateProperties_NoTypeInformation)
                 .ShouldBe(@"{""Property"":1}");
         }
 
@@ -652,7 +652,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void PrivateFieldFilter_PrivateFieldIsRead()
         {
-            ConvertToJson(new PrivateFieldClass(1), PrivateFields_NoTypeInformation)
+            new PrivateFieldClass(1).ToJson(PrivateFields_NoTypeInformation)
                 .ShouldBe(@"{""field"":1}");
         }
 
@@ -669,36 +669,73 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void PrivateFieldFilter_PublicAutoPropertyIsRead()
         {
-            ConvertToJson(new ConcreteClass { Value = 1 }, PrivateFields_NoTypeInformation)
+            new ConcreteClass { Value = 1 }.ToJson(PrivateFields_NoTypeInformation)
                 .ShouldBe(@"{""Value"":1}");
         }
 
         [Test]
         public void FieldForAutoProperty_PropertyAttributesAreUsed()
         {
-            ConvertToJson(new RenamedAutoPropertyClass { Property = 1 }, PrivateFields_NoTypeInformation)
+            new RenamedAutoPropertyClass { Property = 1 }.ToJson(PrivateFields_NoTypeInformation)
                 .ShouldBe(@"{""foo"":1}");
         }
 
-        public class RenamedAutoPropertyClass
+        private class RenamedAutoPropertyClass
         {
             [JsonName("foo")]
             public int Property { get; set; }
         }
 
         [Test]
-        public void SubClassPropertyPreferredOverSuperClass()
+        public void SubClassPropertyPreferredOverBaseClass()
         {
             ConvertToJson(new SubClass { Property = 1 })
                 .ShouldBe(@"{""Property"":2}");
         }
 
-        private class SuperClass
+        [Test]
+        public void PrivateFieldFilter_IncludesBaseClassField()
+        {
+            new PrivateFieldSubClass(1).ToJson(PrivateFields_NoTypeInformation)
+                .ShouldBe(@"{""field"":1}");
+        }
+
+        private class PrivateFieldSubClass : PrivateFieldClass
+        {
+            public PrivateFieldSubClass(int field) : base(field) { }
+        }
+
+        [Test]
+        public void PrivateFieldFilter_IncludesBaseClassAutoProperty()
+        {
+            new SubClass { Property = 1 }.ToJson(PrivateFields_NoTypeInformation)
+                .ShouldBe(@"{""Property"":1}");
+        }
+
+        private class BaseClass
         {
             public virtual int Property { get; set; }
         }
 
-        private class SubClass : SuperClass
+        [Test]
+        public void SubClassFieldPreferredOverBaseClass()
+        {
+            new PrivateFieldOverrideClass(1, 2).ToJson(PrivateFields_NoTypeInformation)
+                .ShouldBe(@"{""field"":2}");
+        }
+
+        private class PrivateFieldOverrideClass : PrivateFieldClass
+        {
+            private int field;
+
+            public PrivateFieldOverrideClass(int baseFieldValue, int fieldValue)
+                : base(baseFieldValue)
+            {
+                field = fieldValue;
+            }
+        }
+
+        private class SubClass : BaseClass
         {
             public override int Property
             {
@@ -729,12 +766,7 @@ namespace ForSerial.Tests.Objects
 
         private static string ConvertToJson(object obj)
         {
-            return ConvertToJson(obj, NoTypeInformation);
-        }
-
-        private static string ConvertToJson(object obj, ObjectParsingOptions options)
-        {
-            return obj.ToJson(options);
+            return obj.ToJson(NoTypeInformation);
         }
 
         private static readonly ObjectParsingOptions NoTypeInformation = new ObjectParsingOptions { SerializeTypeInformation = TypeInformationLevel.None };

@@ -399,7 +399,7 @@ namespace ForSerial.Tests.Objects
             ObjectReader.Read(original, jsonWriter);
             string json = stringWriter.ToString();
 
-            PreDeserializeUpgradeClass swapped = DeserializeJson<PreDeserializeUpgradeClass>(json);
+            PreDeserializeUpgradeClass swapped = json.ParseJson<PreDeserializeUpgradeClass>();
 
             swapped.One.ShouldBe(2);
             swapped.Two.ShouldBe(1);
@@ -427,8 +427,8 @@ namespace ForSerial.Tests.Objects
             IntPropertyClass original = new IntPropertyClass();
             SameReferenceTwice clone = Clone(new SameReferenceTwice(original));
 
-            clone.One.ShouldBeThis(clone.Two);
-            clone.One.ShouldNotBeThis(original);
+            clone.One.ShouldReferTo(clone.Two);
+            clone.One.ShouldNotReferTo(original);
         }
 
         [Test]
@@ -440,7 +440,7 @@ namespace ForSerial.Tests.Objects
             ReferencePropertyClass clone = Clone(parent);
 
             clone.Reference.ShouldBeA<ReferencePropertyClass>()
-                .And.Reference.ShouldBeThis(clone);
+                .And.Reference.ShouldReferTo(clone);
         }
 
         [Test]
@@ -453,7 +453,7 @@ namespace ForSerial.Tests.Objects
             ReferenceConstructorClass clone = Clone(parent);
 
             clone.Reference.ShouldBeA<ReferencePropertyClass>()
-                .And.Reference.ShouldBeThis(clone);
+                .And.Reference.ShouldReferTo(clone);
         }
 
         [Test]
@@ -466,7 +466,7 @@ namespace ForSerial.Tests.Objects
             ReferencePropertyClass clone = Clone(parent);
 
             clone.Reference.ShouldBeA<ReferenceConstructorClass>()
-                .And.Reference.ShouldBeThis(clone);
+                .And.Reference.ShouldReferTo(clone);
         }
 
         private class ReferenceConstructorClass
@@ -487,14 +487,14 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void BuildTypedObject()
         {
-            DeserializeJson<IntPropertyClass>(@"{""Integer"":3}")
+            @"{""Integer"":3}".ParseJson<IntPropertyClass>()
                 .Integer.ShouldBe(3);
         }
 
         [Test]
         public void BuildTypedProperty()
         {
-            ObjectPropertyClass obj = DeserializeJson<ObjectPropertyClass>(@"{""Object"":{""Integer"":4}}");
+            ObjectPropertyClass obj = @"{""Object"":{""Integer"":4}}".ParseJson<ObjectPropertyClass>();
 
             Assert.AreEqual(4, obj.Object.Integer);
         }
@@ -502,7 +502,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void BuildTypedArrayProperty()
         {
-            ObjectListPropertyClass obj = DeserializeJson<ObjectListPropertyClass>(@"{""List"":[{""Integer"":1},{""Integer"":2},{""Integer"":3}]}");
+            ObjectListPropertyClass obj = @"{""List"":[{""Integer"":1},{""Integer"":2},{""Integer"":3}]}".ParseJson<ObjectListPropertyClass>();
 
             CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.List.Select(i => i.Integer));
         }
@@ -510,7 +510,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void BuildTypedNestedArrayProperty()
         {
-            NestedListPropertyClass obj = DeserializeJson<NestedListPropertyClass>(@"{""NestedList"":[[1,2,3],[4,5,6]]}");
+            NestedListPropertyClass obj = @"{""NestedList"":[[1,2,3],[4,5,6]]}".ParseJson<NestedListPropertyClass>();
 
             Assert.NotNull(obj.NestedList);
             CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.NestedList[0]);
@@ -663,7 +663,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void BuildGuid()
         {
-            DeserializeJson<Guid>(@"""4bb47128-42c1-4a75-9b0c-cd424f84d3e3""")
+            @"""4bb47128-42c1-4a75-9b0c-cd424f84d3e3""".ParseJson<Guid>()
                 .ShouldBe(new Guid("4bb47128-42c1-4a75-9b0c-cd424f84d3e3"));
         }
 
@@ -675,14 +675,14 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void BuildDateTimeFromString()
         {
-            DeserializeJson<DateTime>(@"""2001-02-02T18:05:06.007Z""")
+            @"""2001-02-02T18:05:06.007Z""".ParseJson<DateTime>()
                 .ShouldBe(new DateTime(2001, 2, 3, 4, 5, 6, 7).ToUniversalTime());
         }
 
         [Test]
         public void BuildKeyValuePair()
         {
-            KeyValuePair<string, int> result = DeserializeJson<KeyValuePair<string, int>>(@"{""Key"":""foo"", ""Value"":5}");
+            KeyValuePair<string, int> result = @"{""Key"":""foo"", ""Value"":5}".ParseJson<KeyValuePair<string, int>>();
             result.Key.ShouldBe("foo");
             result.Value.ShouldBe(5);
         }
@@ -697,7 +697,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void BuildIEnumerable()
         {
-            DeserializeJson<EnumerablePropertyClass>(@"{""Property"":[0,1,2]}")
+            @"{""Property"":[0,1,2]}".ParseJson<EnumerablePropertyClass>()
                 .Property.ShouldMatch(new[] { 0, 1, 2 });
         }
 
@@ -748,7 +748,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void ExceptionWrappedInPropertyStack()
         {
-            Should.Throw<WriteException>(() => DeserializeJson<PropertySetterThrowsExceptionContainer>(@"{ ""Property"": { ""ThrowsException"": 1, ""RegularProperty"": 2 } }"))
+            Should.Throw<WriteException>(() => Transform.ParseJson<PropertySetterThrowsExceptionContainer>(@"{ ""Property"": { ""ThrowsException"": 1, ""RegularProperty"": 2 } }", null))
                 .And.Message.ShouldContain("foo")
                         .And.ShouldContain(typeof(PropertySetterThrowsExceptionContainer).FullName + ".Property")
                         .And.ShouldContain(typeof(PropertySetterThrowsExceptionClass).FullName + ".ThrowsException");
@@ -842,7 +842,7 @@ namespace ForSerial.Tests.Objects
         [Test]
         public void OverridenPropertyName()
         {
-            DeserializeJson<OverridePropertyNameClass>(@"{""property"":1}")
+            @"{""property"":1}".ParseJson<OverridePropertyNameClass>()
                 .Property.ShouldBe(1);
         }
 
@@ -852,11 +852,52 @@ namespace ForSerial.Tests.Objects
             public int Property { get; set; }
         }
 
-
-        private static T DeserializeJson<T>(string json)
+        [Test]
+        public void PrivateField()
         {
-            return json.ParseJson<T>();
+            @"{""field"":1}".ParseJson<PrivateFieldClass>()
+                .FieldValue.ShouldBe(1);
         }
+
+        [Test]
+        public void PrivateFieldInBaseClass()
+        {
+            @"{""field"":1}".ParseJson<PrivateFieldSubClass>()
+                .FieldValue.ShouldBe(1);
+        }
+
+        [Test]
+        public void PrivateFieldInSubClassPreferredOverBase()
+        {
+            @"{""field"":1}".ParseJson<PrivateFieldOverrideClass>()
+                .Assert(c => c.FieldValue.ShouldBe(0))
+                .And.OverrideFieldValue.ShouldBe(1);
+        }
+
+        private class PrivateFieldClass
+        {
+            private int field;
+
+            public int FieldValue
+            {
+                get { return field; }
+                set { field = value; }
+            }
+        }
+
+        private class PrivateFieldSubClass : PrivateFieldClass { }
+
+        private class PrivateFieldOverrideClass : PrivateFieldClass
+        {
+            private int field;
+
+            public int OverrideFieldValue
+            {
+                get { return field; }
+                set { field = value; }
+            }
+        }
+
 
         private static T Clone<T>(T obj)
         {

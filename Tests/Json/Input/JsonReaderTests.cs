@@ -52,7 +52,7 @@ namespace ForSerial.Tests.Json
         {
             ParseJson("1")
                 .ShouldBeA<JsonValue>()
-                .And.Value.ShouldBe(1d);
+                .And.Value.ShouldBe(1d, 0);
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace ForSerial.Tests.Json
         {
             ParseJson("-1")
                 .ShouldBeA<JsonValue>()
-                .And.Value.ShouldBe(-1d);
+                .And.Value.ShouldBe(-1d, 0);
         }
 
         [Test]
@@ -105,14 +105,14 @@ namespace ForSerial.Tests.Json
         public void NumberProperty()
         {
             ParseFooProperty(@"{ ""foo"": 5 }")
-                .Value().ShouldBe(5d);
+                .Value().ShouldBe(5d, 0);
         }
 
         [Test]
         public void NegativeNumberProperty()
         {
             ParseFooProperty(@"{ ""foo"": -5 }")
-                .Value().ShouldBe(-5d);
+                .Value().ShouldBe(-5d, 0);
         }
 
         [Test]
@@ -143,7 +143,7 @@ namespace ForSerial.Tests.Json
             ParseJson(@"{ ""foo"": { }, ""bar"": 4 }")
                 .ShouldBeA<JsonMap>()
                 .And(map => map["foo"].ShouldBeA<JsonMap>())
-                .And(map => map["bar"].Value().ShouldBe(4d));
+                .And(map => map["bar"].Value().ShouldBe(4d, 0));
         }
 
         [Test]
@@ -151,7 +151,7 @@ namespace ForSerial.Tests.Json
         {
             ParseFooProperty(@"{ ""foo"": { ""bar"": 3 } }")
                 .ShouldBeA<JsonMap>()
-                .And.Value("bar").ShouldBe(3d);
+                .And.Value("bar").ShouldBe(3d, 0);
         }
 
         [Test]
@@ -167,7 +167,7 @@ namespace ForSerial.Tests.Json
         {
             ParseFooProperty(@"{ ""foo"": [1] }")
                 .ShouldBeA<JsonArray>()
-                .And.Single().Value().ShouldBe(1d);
+                .And.Single().Value().ShouldBe(1d, 0);
         }
 
         [Test]

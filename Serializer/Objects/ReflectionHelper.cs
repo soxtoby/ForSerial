@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -6,6 +7,8 @@ namespace ForSerial.Objects
 {
     internal static class ReflectionHelper
     {
+        private const BindingFlags InstanceMembers = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
         public static Type GetGenericInterfaceType(this Type derivedType, Type genericType, int typeIndex = 0)
         {
             return derivedType.GetInterfaces()
@@ -103,7 +106,21 @@ namespace ForSerial.Objects
             return name.Substring(1, name.IndexOf('>') - 1);
         }
 
-        internal const BindingFlags InstanceMembers = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+        internal static IEnumerable<PropertyInfo> GetAllProperties(this Type type)
+        {
+            PropertyInfo[] properties = type.GetProperties(InstanceMembers);
+            return type.BaseType == null
+                ? properties
+                : properties.Concat(type.BaseType.GetAllProperties());
+        }
+
+        internal static IEnumerable<FieldInfo> GetAllFields(this Type type)
+        {
+            FieldInfo[] fields = type.GetFields(InstanceMembers);
+            return type.BaseType == null
+                ? fields
+                : fields.Concat(type.BaseType.GetAllFields());
+        }
     }
 
     internal enum TypeCodeType

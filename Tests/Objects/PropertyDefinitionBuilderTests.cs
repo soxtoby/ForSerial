@@ -102,7 +102,7 @@ namespace ForSerial.Tests.Objects
             object result = sut.Build(field)
                 .GetFrom(source);
 
-            result.ShouldBeThis(expectedValue);
+            result.ShouldReferTo(expectedValue);
         }
     }
 }

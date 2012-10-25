@@ -24,10 +24,11 @@ namespace ForSerial.Objects.TypeDefinitions
                 return;
 
             PropertyDefinitionBuilder propBuilder = new PropertyDefinitionBuilder(ObjectInterfaceProvider);
-            IEnumerable<PropertyDefinition> properties = Type.GetProperties(ReflectionHelper.InstanceMembers)
+            IEnumerable<PropertyDefinition> properties = Type.GetAllProperties()
                 .Where(NotMarkedWithIgnoreAttribute)
                 .Select(propBuilder.Build)
-                .Concat(Type.GetFields(ReflectionHelper.InstanceMembers)
+                .Concat(Type.GetAllFields()
+                    .Where(NotMarkedWithIgnoreAttribute)
                     .Select(propBuilder.Build));
 
             foreach (PropertyDefinition property in properties)
@@ -37,9 +38,9 @@ namespace ForSerial.Objects.TypeDefinitions
             AllSerializableProperties = originalProperties.ToArray();
         }
 
-        private static bool NotMarkedWithIgnoreAttribute(PropertyInfo property)
+        private static bool NotMarkedWithIgnoreAttribute(MemberInfo member)
         {
-            object[] attributes = property.GetCustomAttributes(true);
+            object[] attributes = member.GetCustomAttributes(true);
             lock (IgnoreAttributes)
             {
                 return attributes.None(a => IgnoreAttributes.Contains(a.GetType()));

@@ -37,14 +37,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EasyAssertions, Version=0.1.0.0, Culture=neutral, PublicKeyToken=439de676be7d1690, processorArchitecture=MSIL">
-      <HintPath>..\packages\EasyAssertions.0.2.0\lib\net35\EasyAssertions.dll</HintPath>
+    <Reference Include="EasyAssertions, Version=0.7.0.0, Culture=neutral, PublicKeyToken=439de676be7d1690, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EasyAssertions.0.7.0.0\lib\net35\EasyAssertions.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.5.10.11092\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Text">
       <HintPath>..\packages\ServiceStack.Text.3.5.7\lib\net35\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="SmartFormat">
+      <HintPath>..\packages\EasyAssertions.0.7.0.0\lib\net35\SmartFormat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

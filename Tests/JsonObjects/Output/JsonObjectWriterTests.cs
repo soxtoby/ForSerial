@@ -200,7 +200,7 @@ namespace ForSerial.Tests.JsonObjects
             sut.EndSequence();
 
             sut.Result.ShouldBeA<JsonArray>()
-                .And(array => array[0].ShouldBeThis(array[1]));
+                .And(array => array[0].ShouldReferTo(array[1]));
         }
     }
 }

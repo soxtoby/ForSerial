@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using EasyAssertions;
 using ForSerial.Objects;
 using NUnit.Framework;
+using System.Linq;
 
 namespace ForSerial.Tests
 {
@@ -118,7 +119,7 @@ namespace ForSerial.Tests
         {
             List<int> original = new List<int> { 1 };
             original.CopyTo<List<int>>()
-                .ShouldNotBeThis(original)
+                .ShouldNotReferTo(original)
                 .And.ShouldMatch(new[] { 1 });
         }
 
@@ -127,7 +128,7 @@ namespace ForSerial.Tests
         {
             new MixedAccessPropertiesClass(1) { PublicGetSet = 2 }
                 .CopyTo<Dictionary<string, int>>(new ObjectParsingOptions { MemberAccessibility = MemberAccessibility.PublicGetSet })
-                .ShouldMatch(new Dictionary<string, int> { { "PublicGetSet", 2 } });
+                .ShouldMatch(new KeyValuePair<string, int>("PublicGetSet", 2));
         }
 
         private class MixedAccessPropertiesClass
