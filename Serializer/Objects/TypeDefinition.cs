@@ -33,7 +33,9 @@ namespace ForSerial.Objects
 
         private void PopulateConstructors()
         {
-            Constructors.AddRange(Type.GetConstructors().Select(BuildConstructorDefinition));
+            Constructors.AddRange(Type.GetConstructors()
+                .Select(BuildConstructorDefinition)
+                .OrderByDescending(c => c.IsPreferredConstructor));
         }
 
         private static ConstructorDefinition BuildConstructorDefinition(ConstructorInfo constructorInfo)
@@ -42,7 +44,8 @@ namespace ForSerial.Objects
                 .GetParameters()
                 .Select(p => new ParameterDefinition(p.Name, p.ParameterType));
             ConstructorMethod constructorMethod = ObjectInterfaceProvider.GetConstructor(constructorInfo);
-            return new ConstructorDefinition(constructorMethod, parameters);
+            bool isPreferredConstructor = constructorInfo.GetCustomAttributes(typeof(SerializationConstructorAttribute), true).Any();
+            return new ConstructorDefinition(constructorMethod, parameters, isPreferredConstructor);
         }
 
         private void PopulatePreBuildMethods()

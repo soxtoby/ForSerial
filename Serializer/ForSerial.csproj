@@ -86,6 +86,7 @@
     <Compile Include="Objects\Attributes\JsonNameAttribute.cs" />
     <Compile Include="Objects\Attributes\MaintainReferencesAttribute.cs" />
     <Compile Include="Objects\Attributes\OverrideOptionsAttribute.cs" />
+    <Compile Include="Objects\Attributes\SerializationConstructorAttribute.cs" />
     <Compile Include="Objects\Attributes\SerializeAsIntegerAttribute.cs" />
     <Compile Include="Objects\Attributes\SerializeAsObjectAttribute.cs" />
     <Compile Include="Objects\Attributes\SerializeAsStringAttribute.cs" />
