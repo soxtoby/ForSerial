@@ -33,7 +33,7 @@ namespace ForSerial.Objects
 
         private void PopulateConstructors()
         {
-            Constructors.AddRange(Type.GetConstructors()
+            Constructors.AddRange(Type.GetAllConstructors()
                 .Select(BuildConstructorDefinition)
                 .OrderByDescending(c => c.IsPreferredConstructor));
         }

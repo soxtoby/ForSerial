@@ -898,6 +898,28 @@ namespace ForSerial.Tests.Objects
             }
         }
 
+        [Test]
+        public void PrivateConstructor()
+        {
+            Clone(PrivateConstructorClass.Create(1))
+                .Value.ShouldBe(1);
+        }
+
+        private class PrivateConstructorClass
+        {
+            private PrivateConstructorClass(int value)
+            {
+                Value = value;
+            }
+
+            public static PrivateConstructorClass Create(int value)
+            {
+                return new PrivateConstructorClass(value);
+            }
+
+            public int Value { get; private set; }
+        }
+
 
         private static T Clone<T>(T obj)
         {

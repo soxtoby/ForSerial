@@ -121,6 +121,11 @@ namespace ForSerial.Objects
                 ? fields
                 : fields.Concat(type.BaseType.GetAllFields());
         }
+
+        internal static IEnumerable<ConstructorInfo> GetAllConstructors(this Type type)
+        {
+            return type.GetConstructors(InstanceMembers);
+        }
     }
 
     internal enum TypeCodeType
