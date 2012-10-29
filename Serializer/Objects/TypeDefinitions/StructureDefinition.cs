@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
-namespace ForSerial.Objects.TypeDefinitions
+namespace ForSerial.Objects
 {
     public abstract class StructureDefinition : TypeDefinition
     {

@@ -68,9 +68,9 @@ namespace ForSerial.Objects
         private object GetParameterPropertyValue(ParameterDefinition parameter)
         {
             TypeDefinition typeDef = TypeCache.GetTypeDefinition(parameter.Type);
-            ObjectOutput objectOutput = Properties.Get(parameter.Name) ?? Properties.Get("_" + parameter.Name);
-            return objectOutput == null ? null
-                : typeDef.ConvertToCorrectType(objectOutput.GetTypedValue());
+            ObjectOutput property = Property(parameter.Name);
+            return property == null ? null
+                : typeDef.ConvertToCorrectType(property.GetTypedValue());
         }
 
         private bool ConstructorParametersMatchProperties(ConstructorDefinition constructor)
@@ -88,13 +88,15 @@ namespace ForSerial.Objects
 
         private bool HavePropertyValue(ParameterDefinition parameter)
         {
-            return Properties.ContainsKey(parameter.Name)
-                && Properties[parameter.Name].TypeDef != NullTypeDefinition.Instance;
+            ObjectOutput value = Property(parameter.Name);
+            return value != null
+                && value.TypeDef != NullTypeDefinition.Instance;
         }
 
         private bool ParameterTypeMatchesPropertyValue(ParameterDefinition parameter)
         {
-            Type propertyValueType = Properties[parameter.Name].TypeDef.Type;
+            ObjectOutput property = Property(parameter.Name);
+            Type propertyValueType = property.TypeDef.Type;
             TypeCodeType propertyValueTypeCodeType = propertyValueType.GetTypeCodeType();
 
             return propertyValueTypeCodeType == TypeCodeType.Object
@@ -105,6 +107,12 @@ namespace ForSerial.Objects
         private static bool ParameterCanBeNull(ParameterDefinition parameter)
         {
             return !parameter.Type.IsValueType;
+        }
+
+        private ObjectOutput Property(string propertyName)
+        {
+            return Properties.Get(propertyName)
+                ?? Properties.Get("_" + propertyName);
         }
 
         private class NoMatchingConstructor : Exception

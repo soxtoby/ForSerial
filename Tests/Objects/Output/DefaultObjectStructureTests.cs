@@ -38,6 +38,27 @@ namespace ForSerial.Tests.Objects
             }
         }
 
+        [Test]
+        public void ConstructorParamsMatchedToFieldsWithUnderscorePrefix()
+        {
+            DefaultObjectStructure sut = new DefaultObjectStructure((StructureDefinition)TypeCache.GetTypeDefinition(typeof(UnderscorePrefixedFieldClass)));
+            SetProperty(sut, "_field", 1);
+
+            sut.GetTypedValue()
+                .ShouldBeA<UnderscorePrefixedFieldClass>()
+                .And._field.ShouldBe(1);
+        }
+
+        private class UnderscorePrefixedFieldClass
+        {
+            public readonly int _field;
+
+            public UnderscorePrefixedFieldClass(int field)
+            {
+                _field = field;
+            }
+        }
+
         private void SetProperty(DefaultObjectStructure sut, string name, object value)
         {
             sut.SetCurrentProperty(name);
