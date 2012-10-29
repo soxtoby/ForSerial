@@ -17,7 +17,7 @@ namespace ForSerial.Objects.TypeDefinitions
             Array values = Enum.GetValues(type);
 
             for (int i = 0; i < names.Length; i++)
-                nameMap[names[i]] = (int)values.GetValue(i);
+                nameMap[names[i]] = Convert.ToInt32(values.GetValue(i));
         }
 
         internal static EnumDefinition CreateEnumDefinition(Type type)
