@@ -229,13 +229,8 @@ namespace ForSerial.Json
             i++; // "
 
             return containsBackslash
-                ? UnescapeString(value)
+                ? JsonStringEscaper.UnescapeString(value)
                 : value;
-        }
-
-        private static string UnescapeString(string value)
-        {
-            return value;
         }
 
         private void ParseWord()
@@ -308,7 +303,7 @@ namespace ForSerial.Json
         }
 
 
-        internal class ExpectedToken : ParseException
+        private class ExpectedToken : ParseException
         {
             public ExpectedToken(char expectedToken, char actualToken, int line, int position)
                 : base("Expected {0}.".FormatWith(expectedToken), actualToken.ToString(), line, position)
@@ -316,7 +311,7 @@ namespace ForSerial.Json
             }
         }
 
-        internal class UnmatchedBrace : ParseException
+        private class UnmatchedBrace : ParseException
         {
             public UnmatchedBrace(char brace, int line, int position)
                 : base("Brace is unmatched.", brace.ToString(), line, position)
@@ -324,12 +319,12 @@ namespace ForSerial.Json
             }
         }
 
-        internal class UnexpectedEndOfFile : ParseException
+        private class UnexpectedEndOfFile : ParseException
         {
             public UnexpectedEndOfFile() : base("Unexpected end of file.", string.Empty, 0, 0) { }
         }
 
-        internal class ExpectedValue : ParseException
+        private class ExpectedValue : ParseException
         {
             protected internal ExpectedValue(string tokenString, int line, int position)
                 : base("Expected value. ", tokenString, line, position)

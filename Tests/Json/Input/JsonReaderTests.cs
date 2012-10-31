@@ -72,6 +72,38 @@ namespace ForSerial.Tests.Json
         }
 
         [Test]
+        public void StringWithEscapedBackslash_IsUnescaped()
+        {
+            ParseJson(@"""foo\\bar""")
+                .ShouldBeA<JsonValue>()
+                .And.Value.ShouldBe("foo\\bar");
+        }
+
+        [Test]
+        public void StringWithEscapedQuotes_IsUnescaped()
+        {
+            ParseJson(@"""foo\""bar""")
+                .ShouldBeA<JsonValue>()
+                .And.Value.ShouldBe("foo\"bar");
+        }
+
+        [Test]
+        public void StringWithEscapedReturn_IsUnescaped()
+        {
+            ParseJson(@"""foo\rbar""")
+                .ShouldBeA<JsonValue>()
+                .And.Value.ShouldBe("foo\rbar");
+        }
+
+        [Test]
+        public void StringWithEscapedNewLine_IsUnescaped()
+        {
+            ParseJson(@"""foo\nbar""")
+                .ShouldBeA<JsonValue>()
+                .And.Value.ShouldBe("foo\nbar");
+        }
+
+        [Test]
         public void EmptyMap()
         {
             ParseJson("{}")

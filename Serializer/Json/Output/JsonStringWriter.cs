@@ -19,13 +19,6 @@ namespace ForSerial.Json
         private const string True = "true";
         private const string False = "false";
         private const string Null = "null";
-        private const string Backslash = "\\";
-        private const string EscapedBackslash = "\\\\";
-        private const string QuoteString = "\"";
-        private const string EscapedQuote = "\\\"";
-        private const string Return = "\r";
-        private const string NewLine = "\n";
-        private const string EscapedNewLine = "\\n";
 
         protected readonly TextWriter Json;
         private bool suppressDelimiter = true;
@@ -96,7 +89,7 @@ namespace ForSerial.Json
         {
             Delimit();
             Json.Write(QuoteChar);
-            Json.Write(EscapeForJson(value));
+            Json.Write(JsonStringEscaper.EscapeForJson(value));
             Json.Write(QuoteChar);
         }
 
@@ -123,15 +116,6 @@ namespace ForSerial.Json
             Json.Write(QuoteChar);
             Json.Write(value);
             Json.Write(QuoteChar);
-        }
-
-        private static string EscapeForJson(string value)
-        {
-            return value
-                .Replace(Backslash, EscapedBackslash)
-                .Replace(QuoteString, EscapedQuote)
-                .Replace(Return, string.Empty)
-                .Replace(NewLine, EscapedNewLine);
         }
 
         public virtual void BeginStructure(Type readerType)

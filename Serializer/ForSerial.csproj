@@ -78,6 +78,7 @@
     <Compile Include="JsonObjects\Output\JsonObjectWriter.cs" />
     <Compile Include="JsonObjects\Output\JsonValue.cs" />
     <Compile Include="JsonObjects\PreDeserializeAttribute.cs" />
+    <Compile Include="Json\JsonStringEscaper.cs" />
     <Compile Include="Json\Output\JsonStringWriter.cs" />
     <Compile Include="Json\Output\PrettyPrintingJsonStringWriter.cs" />
     <Compile Include="Objects\AssemblyQualifiedNameResolver.cs" />
