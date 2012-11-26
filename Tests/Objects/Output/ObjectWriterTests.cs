@@ -920,6 +920,13 @@ namespace ForSerial.Tests.Objects
             public int Value { get; private set; }
         }
 
+        [Test]
+        public void HashSet()
+        {
+            Clone(new HashSet<string> { "foo" })
+                .ShouldMatch("foo");
+        }
+
 
         private static T Clone<T>(T obj)
         {
