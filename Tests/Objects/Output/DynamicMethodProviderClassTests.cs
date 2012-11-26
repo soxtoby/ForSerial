@@ -22,6 +22,7 @@ namespace ForSerial.Tests.Objects
         private readonly MethodInfo privateValueMethod = typeof(Class).GetMethod("PrivateValueMethod", PrivateInstanceMembers, null, new[] { typeof(int) }, new ParameterModifier[] { });
         private readonly MethodInfo publicClassMethod = typeof(Class).GetMethod("PublicClassMethod", new[] { typeof(object) });
         private readonly MethodInfo privateClassMethod = typeof(Class).GetMethod("PrivateClassMethod", PrivateInstanceMembers, null, new[] { typeof(object) }, new ParameterModifier[] { });
+        private readonly MethodInfo publicClassMethodWithReturnValue = typeof(Class).GetMethod("PublicClassMethodWithReturnValue", new[] { typeof(object) });
 
         [Test]
         public void GetPublicValueProperty()
@@ -245,6 +246,18 @@ namespace ForSerial.Tests.Objects
             Assert.AreSame(expected, instance.GetPrivateClassField());
         }
 
+        [Test]
+        public void CallPublicClassMethodWithReturnValue()
+        {
+            Class instance = new Class();
+            object expected = new object();
+
+            ActionMethod result = sut.GetAction(publicClassMethodWithReturnValue);
+
+            result(instance, new[] { expected });
+            Assert.AreSame(expected, instance.GetPrivateClassField());
+        }
+
         private class Class
         {
             public Class(int privateValueField = 0, object privateClassField = null, int privateValueProperty = 0, object privateClassProperty = null)
@@ -283,6 +296,12 @@ namespace ForSerial.Tests.Objects
             private void PrivateClassMethod(object obj)
             {
                 privateClassField = obj;
+            }
+
+            public object PublicClassMethodWithReturnValue(object obj)
+            {
+                PublicClassMethod(obj);
+                return obj;
             }
 
             public int PublicValueField;

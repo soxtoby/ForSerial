@@ -131,6 +131,7 @@ namespace ForSerial.Objects
                 .LoadObjectInstance(method.DeclaringType)
                 .LoadParamsFromObjectArrayArg(1, method)
                 .CallMethod(method)
+                .IgnoreReturnValue(method)
                 .Return();
 
             return (ActionMethod)dynamicMethod.CreateDelegate(typeof(ActionMethod));
@@ -289,6 +290,13 @@ namespace ForSerial.Objects
         {
             if (type.IsValueType)
                 il.Emit(OpCodes.Unbox_Any, type);
+            return il;
+        }
+
+        public static ILGenerator IgnoreReturnValue(this ILGenerator il, MethodInfo method)
+        {
+            if (method.ReturnType != typeof(void))
+                il.Emit(OpCodes.Pop);
             return il;
         }
 
