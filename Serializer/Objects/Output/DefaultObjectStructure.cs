@@ -8,6 +8,7 @@ namespace ForSerial.Objects
     public class DefaultObjectStructure : BaseObjectStructure
     {
         private object typedValue;
+        private ConstructorDefinition chosenConstructor;
         private readonly List<object> constructorArguments = new List<object>();
 
         public DefaultObjectStructure(StructureDefinition typeDef) : base(typeDef) { }
@@ -34,18 +35,21 @@ namespace ForSerial.Objects
             if (typedValue != null)
                 return typedValue;
 
-            IEnumerable<ConstructorDefinition> constructors = TypeDef.Constructors;
-            ConstructorDefinition matchingConstructor = constructors.FirstOrDefault(ConstructorParametersMatchProperties);
+            if (chosenConstructor == null)
+            {
+                IEnumerable<ConstructorDefinition> constructors = TypeDef.Constructors;
+                chosenConstructor = constructors.FirstOrDefault(ConstructorParametersMatchProperties);
 
-            if (matchingConstructor == null)
-                throw new NoMatchingConstructor(TypeDef.Type, Properties);
+                if (chosenConstructor == null)
+                    throw new NoMatchingConstructor(TypeDef.Type, Properties);
+            }
 
-            PopulateConstructorParameters(matchingConstructor);
+            PopulateConstructorParameters();
 
             if (typedValue != null) // If any constructor arguments have references back to this structure, it will already have been constructed while populating their properties
                 return typedValue;
 
-            typedValue = matchingConstructor.Construct(constructorArguments.ToArray());
+            typedValue = chosenConstructor.Construct(constructorArguments.ToArray());
 
             foreach (KeyValuePair<string, ObjectOutput> property in Properties)
             {
@@ -56,21 +60,30 @@ namespace ForSerial.Objects
             return typedValue;
         }
 
-        private void PopulateConstructorParameters(ConstructorDefinition constructor)
+        private void PopulateConstructorParameters()
         {
             // Hold onto constructor arguments in case any args have back-references and we attempt to construct this more than once
-            for (int i = constructorArguments.Count; i < constructor.Parameters.Count; i++)
+            for (int i = constructorArguments.Count; i < chosenConstructor.Parameters.Count; i++)
             {
-                constructorArguments.Add(GetParameterPropertyValue(constructor.Parameters[i]));
+                constructorArguments.Add(GetConstructorParameterPropertyValue(chosenConstructor.Parameters[i]));
             }
         }
 
-        private object GetParameterPropertyValue(ParameterDefinition parameter)
+        private object GetConstructorParameterPropertyValue(ParameterDefinition parameter)
         {
+            string propertyName = AvailablePropertyName(parameter.Name);
+
+            if (propertyName == null)
+                return null;
+
+            ObjectOutput property = Properties[propertyName];
+
             TypeDefinition typeDef = TypeCache.GetTypeDefinition(parameter.Type);
-            ObjectOutput property = Property(parameter.Name);
-            return property == null ? null
-                : typeDef.ConvertToCorrectType(property.GetTypedValue());
+            object propertyValue = typeDef.ConvertToCorrectType(property.GetTypedValue());
+
+            Properties.Remove(propertyName);    // Don't want to re-populate property that's being passed into the constructor
+
+            return propertyValue;
         }
 
         private bool ConstructorParametersMatchProperties(ConstructorDefinition constructor)
@@ -81,21 +94,21 @@ namespace ForSerial.Objects
 
         private bool CanBeAssignedFromProperty(ParameterDefinition parameter)
         {
-            return HavePropertyValue(parameter)
+            return HasPropertyValue(parameter)
                 ? ParameterTypeMatchesPropertyValue(parameter)
                 : ParameterCanBeNull(parameter);
         }
 
-        private bool HavePropertyValue(ParameterDefinition parameter)
+        private bool HasPropertyValue(ParameterDefinition parameter)
         {
-            ObjectOutput value = Property(parameter.Name);
+            ObjectOutput value = GetProperty(parameter.Name);
             return value != null
                 && value.TypeDef != NullTypeDefinition.Instance;
         }
 
         private bool ParameterTypeMatchesPropertyValue(ParameterDefinition parameter)
         {
-            ObjectOutput property = Property(parameter.Name);
+            ObjectOutput property = GetProperty(parameter.Name);
             Type propertyValueType = property.TypeDef.Type;
             TypeCodeType propertyValueTypeCodeType = propertyValueType.GetTypeCodeType();
 
@@ -109,10 +122,18 @@ namespace ForSerial.Objects
             return !parameter.Type.IsValueType;
         }
 
-        private ObjectOutput Property(string propertyName)
+        private ObjectOutput GetProperty(string propertyName)
         {
-            return Properties.Get(propertyName)
-                ?? Properties.Get("_" + propertyName);
+            string availablePropertyName = AvailablePropertyName(propertyName);
+            return availablePropertyName == null ? null
+                : Properties[availablePropertyName];
+        }
+
+        private string AvailablePropertyName(string propertyName)
+        {
+            return Properties.ContainsKey(propertyName) ? propertyName
+                : Properties.ContainsKey("_" + propertyName) ? "_" + propertyName
+                : null;
         }
 
         private class NoMatchingConstructor : Exception

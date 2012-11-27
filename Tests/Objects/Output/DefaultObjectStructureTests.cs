@@ -1,6 +1,5 @@
 ﻿using EasyAssertions;
 using ForSerial.Objects;
-using ForSerial.Objects.TypeDefinitions;
 using NUnit.Framework;
 
 namespace ForSerial.Tests.Objects
@@ -59,7 +58,30 @@ namespace ForSerial.Tests.Objects
             }
         }
 
-        private void SetProperty(DefaultObjectStructure sut, string name, object value)
+        [Test]
+        public void PropertiesPassedIntoConstructorAreNotRepopulated()
+        {
+            DefaultObjectStructure sut = new DefaultObjectStructure((StructureDefinition)TypeCache.GetTypeDefinition(typeof(PropertyConstructorClass)));
+            SetProperty(sut, "Property", 1);
+
+            sut.GetTypedValue()
+                .ShouldBeA<PropertyConstructorClass>()
+                .And(o => o.PropertyViaConstructor.ShouldBe(1))
+                .And(o => o.Property.ShouldBe(0));
+        }
+
+        private class PropertyConstructorClass
+        {
+            public int PropertyViaConstructor;
+            public int Property;
+
+            public PropertyConstructorClass(int property)
+            {
+                PropertyViaConstructor = property;
+            }
+        }
+
+        private static void SetProperty(DefaultObjectStructure sut, string name, object value)
         {
             sut.SetCurrentProperty(name);
             sut.Add(new DefaultObjectValue(value));
