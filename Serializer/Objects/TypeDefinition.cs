@@ -139,8 +139,11 @@ namespace ForSerial.Objects
         protected object ConstructDefault()
         {
             ConstructorDefinition defaultConstructor = Constructors.FirstOrDefault(c => c.Parameters.None());
-            return defaultConstructor == null ? null
-                : defaultConstructor.Construct(new object[] { });
+
+            if (defaultConstructor == null)
+                throw new NoDefaultConstructor(Type);
+
+            return defaultConstructor.Construct(new object[] { });
         }
 
         private class NotAValue : Exception
@@ -156,6 +159,11 @@ namespace ForSerial.Objects
         private class NotAnArray : Exception
         {
             public NotAnArray(Type type) : base("Cannot create sequence for type {0}".FormatWith(type.FullName)) { }
+        }
+
+        internal class NoDefaultConstructor : Exception
+        {
+            public NoDefaultConstructor(Type type) : base("No default constructor found for type {0}".FormatWith(type.FullName)) { }
         }
     }
 }
