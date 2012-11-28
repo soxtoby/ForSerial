@@ -8,6 +8,7 @@ namespace ForSerial.Objects
     {
         private readonly Writer writer;
         private readonly Dictionary<object, int> stuctureReferences = new Dictionary<object, int>(ReferenceEqualityComparer<object>.Instance);
+        private int referenceCount;
 
         private ObjectReader(Writer writer, ObjectParsingOptions options)
         {
@@ -48,8 +49,14 @@ namespace ForSerial.Objects
                 return true;
             }
 
-            stuctureReferences[obj] = stuctureReferences.Count;
+            stuctureReferences[obj] = referenceCount;
+            AddReference();
             return false;
+        }
+
+        public void AddReference()
+        {
+            referenceCount++;
         }
 
         public readonly Stack<PropertyDefinition> PropertyStack = new Stack<PropertyDefinition>();

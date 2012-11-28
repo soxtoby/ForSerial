@@ -15,6 +15,7 @@ namespace ForSerial.Objects.TypeDefinitions
 
         protected override bool ReferenceStructure(object input, ObjectReader reader, PartialOptions optionsOverride)
         {
+            reader.AddReference();
             return false;   // Can't reference value types
         }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using EasyAssertions;
 using ForSerial.Objects;
-using ForSerial.Objects.TypeDefinitions;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -281,6 +280,17 @@ namespace ForSerial.Tests.Objects
             ObjectReader.Read(new SameReferenceTwice(new StringStruct { Value = "foo" }), writer);
 
             writer.DidNotReceive().WriteReference(Arg.Any<int>());
+        }
+
+        [Test]
+        public void StructCountedAsReferences()
+        {
+            Writer writer = Substitute.For<Writer>();
+            object obj = new object();
+
+            ObjectReader.Read(new { one = new StringStruct(), two = obj, three = obj }, writer);
+
+            writer.Received().WriteReference(2); // [outer obj, struct, inner obj]
         }
 
         private struct StringStruct
